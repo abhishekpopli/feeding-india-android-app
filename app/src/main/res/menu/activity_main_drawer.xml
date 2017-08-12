@@ -25,4 +25,13 @@
         </menu>
     </item>
 
+    <item android:title="Others">
+        <menu>
+            <item
+                android:id="@+id/nav_support_dev"
+                android:icon="@drawable/ic_menu_slideshow"
+                android:title="Support Dev" />
+        </menu>
+    </item>
+
 </menu>

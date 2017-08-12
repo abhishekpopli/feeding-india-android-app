@@ -69,7 +69,7 @@ public class DonationAdapter extends RecyclerView.Adapter<DonationAdapter.ViewHo
             super(itemView);
 
             // View holder creates link to element in the view
-            listItemSubheading = (TextView) itemView.findViewById(R.id.list_item_subheading);
+            listItemSubheading = (TextView) itemView.findViewById(R.id.list_item_donation_area);
             listItemTime = (TextView) itemView.findViewById(R.id.list_item_time);
             listItemLayout = (LinearLayout) itemView.findViewById(R.id.list_item_layout);
         }
