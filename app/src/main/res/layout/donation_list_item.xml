@@ -12,146 +12,167 @@
         android:elevation="1dp">
 
         <LinearLayout
-            android:id="@+id/list_item_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:paddingBottom="8dp"
-            android:paddingLeft="16dp"
-            android:paddingRight="16dp"
-            android:paddingTop="8dp">
-
-            <de.hdodenhof.circleimageview.CircleImageView xmlns:app="http://schemas.android.com/apk/res-auto"
-                android:id="@+id/list_item_image"
-                android:layout_width="60dp"
-                android:layout_height="60dp"
-                android:layout_gravity="center"
-                android:src="@drawable/profile_placeholder"
-                app:civ_border_width="0dp" />
+            android:orientation="vertical">
 
             <LinearLayout
-                android:layout_width="0dp"
+                android:id="@+id/list_item_layout"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:orientation="vertical"
-                android:paddingLeft="16dp">
+                android:orientation="horizontal"
+                android:paddingLeft="16dp"
+                android:paddingRight="16dp"
+                android:paddingTop="8dp">
+
+                <de.hdodenhof.circleimageview.CircleImageView xmlns:app="http://schemas.android.com/apk/res-auto"
+                    android:id="@+id/list_item_image"
+                    android:layout_width="60dp"
+                    android:layout_height="60dp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/profile_placeholder"
+                    app:civ_border_width="0dp" />
 
                 <LinearLayout
-                    android:layout_width="match_parent"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="5dp"
-                    android:orientation="horizontal">
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:paddingLeft="16dp">
 
                     <LinearLayout
-                        android:layout_width="0dp"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:orientation="vertical">
-
-                        <TextView
-                            android:id="@+id/list_item_donor_name"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:maxLines="1"
-                            android:text="Abhishek Nigam"
-                            android:textColor="@color/colorPrimaryText"
-                            android:textSize="18sp" />
-
-                        <TextView
-                            android:id="@+id/list_item_donation_area"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:maxLines="1"
-                            android:text="Sarojini Nagar"
-                            android:textColor="@color/colorSecondaryText"
-                            android:textSize="17sp" />
-
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:gravity="center"
+                        android:layout_marginBottom="5dp"
                         android:orientation="horizontal">
 
-                        <ImageView
-                            android:layout_width="20dp"
-                            android:layout_height="20dp"
-                            android:src="@drawable/ic_clock_24dp" />
-
-                        <TextView
-                            android:id="@+id/list_item_time"
-                            android:layout_width="wrap_content"
+                        <LinearLayout
+                            android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:layout_marginLeft="5dp"
-                            android:maxLines="1"
-                            android:text="2:50 PM"
-                            android:textColor="@color/colorSecondaryText"
-                            android:textSize="16sp" />
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:id="@+id/list_item_donor_name"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:maxLines="1"
+                                android:text="Abhishek Nigam"
+                                android:textColor="@color/colorPrimaryText"
+                                android:textSize="18sp" />
+
+                            <TextView
+                                android:id="@+id/list_item_donation_area"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:maxLines="1"
+                                android:text="Sarojini Nagar"
+                                android:textColor="@color/colorSecondaryText"
+                                android:textSize="17sp" />
+
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:gravity="center"
+                            android:orientation="horizontal">
+
+                            <ImageView
+                                android:layout_width="20dp"
+                                android:layout_height="20dp"
+                                android:src="@drawable/ic_clock_24dp" />
+
+                            <TextView
+                                android:id="@+id/list_item_time"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginLeft="5dp"
+                                android:maxLines="1"
+                                android:text="2:50 PM"
+                                android:textColor="@color/colorSecondaryText"
+                                android:textSize="16sp" />
+
+                        </LinearLayout>
 
                     </LinearLayout>
 
-                </LinearLayout>
-
-                <TextView
-                    android:id="@+id/list_item_food_detail"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="8dp"
-                    android:maxLines="2"
-                    android:text="Hello my name is Abhishek. I like in New Delhi. I live to eat pizza and have some coffee"
-                    android:textSize="15sp"
-                    android:textStyle="italic" />
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-
                     <TextView
-                        android:layout_width="wrap_content"
+                        android:id="@+id/list_item_food_detail"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:maxLines="1"
-                        android:paddingRight="6dp"
-                        android:text="Type:"
-                        android:textColor="@color/colorSecondaryText"
-                        android:textSize="17sp" />
-
-                    <View
-                        android:id="@+id/list_item_is_veg"
-                        android:layout_width="16dp"
-                        android:layout_height="16dp"
-                        android:layout_gravity="center"
-                        android:background="@drawable/red_circle_shape" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="10dp"
-                        android:maxLines="1"
-                        android:paddingRight="6dp"
-                        android:text="Status:"
-                        android:textColor="@color/colorSecondaryText"
-                        android:textSize="17sp" />
-
-                    <TextView
-                        android:id="@+id/list_item_donation_status"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:background="@drawable/blue_tag"
-                        android:maxLines="1"
-                        android:paddingBottom="2dp"
-                        android:paddingLeft="9dp"
-                        android:paddingRight="9dp"
-                        android:paddingTop="1dp"
-                        android:text="Accepted"
-                        android:textColor="#FFFF"
-                        android:textSize="16sp" />
+                        android:layout_marginBottom="8dp"
+                        android:maxLines="2"
+                        android:text="Hello my name is Abhishek. I like in New Delhi. I live to eat pizza and have some coffee"
+                        android:textSize="15sp"
+                        android:textStyle="italic" />
 
                 </LinearLayout>
 
             </LinearLayout>
 
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingBottom="8dp">
+
+                <!--width = 16+60+16-->
+                <LinearLayout
+                    android:layout_width="92dp"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="16dp"
+                        android:maxLines="1"
+                        android:paddingRight="6dp"
+                        android:text="Type:"
+                        android:textColor="@color/colorSecondaryText"
+                        android:textSize="16sp" />
+
+                    <View
+                        android:id="@+id/list_item_is_veg"
+                        android:layout_width="15dp"
+                        android:layout_height="15dp"
+                        android:layout_gravity="center"
+                        android:background="@drawable/red_circle_shape" />
+
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/list_item_donation_status"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/blue_tag"
+                    android:maxLines="1"
+                    android:paddingBottom="2dp"
+                    android:paddingLeft="9dp"
+                    android:paddingRight="9dp"
+                    android:paddingTop="1dp"
+                    android:text="Accepted"
+                    android:textColor="#FFFF"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:id="@+id/list_item_perishable"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="8dp"
+                    android:background="@drawable/orange_tag"
+                    android:maxLines="1"
+                    android:paddingBottom="2dp"
+                    android:paddingLeft="9dp"
+                    android:paddingRight="9dp"
+                    android:paddingTop="1dp"
+                    android:text="Perishable"
+                    android:textColor="#FFFF"
+                    android:textSize="16sp" />
+
+            </LinearLayout>
 
         </LinearLayout>
 

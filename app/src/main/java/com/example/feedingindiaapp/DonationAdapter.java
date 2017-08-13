@@ -2,7 +2,6 @@ package com.example.feedingindiaapp;
 
 
 import android.content.Context;
-import android.graphics.Color;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -65,9 +64,11 @@ public class DonationAdapter extends RecyclerView.Adapter<DonationAdapter.ViewHo
         }
 
         if (donation.isPerishable() == 1) {
-            holder.listItemCardView.setCardBackgroundColor(Color.parseColor("#fff9c4"));
+            holder.isPerishable.setText("Perishable");
+            holder.isPerishable.setBackgroundResource(R.drawable.orange_tag);
         } else {
-            holder.listItemCardView.setCardBackgroundColor(Color.parseColor("#e0f7fa"));
+            holder.isPerishable.setText("Non-Perishable");
+            holder.isPerishable.setBackgroundResource(R.drawable.indigo_tag);
         }
 
         if (donation.isAccepted() == 1) {
@@ -122,7 +123,7 @@ public class DonationAdapter extends RecyclerView.Adapter<DonationAdapter.ViewHo
             foodDetails = (TextView) itemView.findViewById(R.id.list_item_food_detail);
             status = (TextView) itemView.findViewById(R.id.list_item_donation_status);
             listItemLayout = (LinearLayout) itemView.findViewById(R.id.list_item_layout);
-            listItemCardView = (CardView) itemView.findViewById(R.id.list_item_card_view);
+            isPerishable = (TextView) itemView.findViewById(R.id.list_item_perishable);
         }
     }
 
