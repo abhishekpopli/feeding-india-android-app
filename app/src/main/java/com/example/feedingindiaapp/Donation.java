@@ -3,10 +3,8 @@ package com.example.feedingindiaapp;
 public class Donation {
 
     private long donationId;
-    private String requestTime;
-    private String requestDate;
-    private String pickupTime;
-    private String pickupDate;
+    private String requestDateTime;
+    private String pickupDateTime;
     private int donorId;
     private int volunteerId;
     private String pickupPhotoUrl;
@@ -15,40 +13,60 @@ public class Donation {
     private String pickupArea;
     private String pickupStreet;
     private String pickupHouseNo;
+    private boolean isVeg;
     private boolean isPerishable;
     private boolean isAccepted;
     private boolean isPicked;
     private boolean isCompleted;
     private String otherDetails;
 
-    // Need to change this, get all data values
-    public Donation(String pickupTime, String pickupArea) {
-        this.pickupTime = pickupTime;
+    private String donorPhotoUrl;
+    private String donorName;
+
+    public Donation(long donationId, String pickupArea, boolean isVeg, boolean isPerishable, boolean isAccepted, boolean isPicked, String otherDetails, String donorPhotoUrl, String donorName) {
+        this.donationId = donationId;
         this.pickupArea = pickupArea;
+        this.isVeg = isVeg;
+        this.isPerishable = isPerishable;
+        this.isAccepted = isAccepted;
+        this.isPicked = isPicked;
+        this.otherDetails = otherDetails;
+        this.donorPhotoUrl = donorPhotoUrl;
+        this.donorName = donorName;
     }
 
-    /**
-     * Getters
-     */
+    public Donation(long donationId, String requestDateTime, String pickupDateTime, int donorId, int volunteerId, String pickupPhotoUrl, String deliveryPhotoUrl, String pickupCity, String pickupArea, String pickupStreet, String pickupHouseNo, boolean isVeg, boolean isPerishable, boolean isAccepted, boolean isPicked, boolean isCompleted, String otherDetails, String donorPhotoUrl, String donorName) {
+        this.donationId = donationId;
+        this.requestDateTime = requestDateTime;
+        this.pickupDateTime = pickupDateTime;
+        this.donorId = donorId;
+        this.volunteerId = volunteerId;
+        this.pickupPhotoUrl = pickupPhotoUrl;
+        this.deliveryPhotoUrl = deliveryPhotoUrl;
+        this.pickupCity = pickupCity;
+        this.pickupArea = pickupArea;
+        this.pickupStreet = pickupStreet;
+        this.pickupHouseNo = pickupHouseNo;
+        this.isVeg = isVeg;
+        this.isPerishable = isPerishable;
+        this.isAccepted = isAccepted;
+        this.isPicked = isPicked;
+        this.isCompleted = isCompleted;
+        this.otherDetails = otherDetails;
+        this.donorPhotoUrl = donorPhotoUrl;
+        this.donorName = donorName;
+    }
 
     public long getDonationId() {
         return donationId;
     }
 
-    public String getRequestTime() {
-        return requestTime;
+    public String getRequestDateTime() {
+        return requestDateTime;
     }
 
-    public String getRequestDate() {
-        return requestDate;
-    }
-
-    public String getPickupTime() {
-        return pickupTime;
-    }
-
-    public String getPickupDate() {
-        return pickupDate;
+    public String getPickupDateTime() {
+        return pickupDateTime;
     }
 
     public int getDonorId() {
@@ -83,6 +101,10 @@ public class Donation {
         return pickupHouseNo;
     }
 
+    public boolean isVeg() {
+        return isVeg;
+    }
+
     public boolean isPerishable() {
         return isPerishable;
     }
@@ -101,6 +123,14 @@ public class Donation {
 
     public String getOtherDetails() {
         return otherDetails;
+    }
+
+    public String getDonorPhotoUrl() {
+        return donorPhotoUrl;
+    }
+
+    public String getDonorName() {
+        return donorName;
     }
 }
 
