@@ -1,6 +1,7 @@
 package com.example.feedingindiaapp;
 
 
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
@@ -55,10 +56,8 @@ public class PendingDonationsFragment extends Fragment {
         recyclerView.setLayoutManager(new LinearLayoutManager(PendingDonationsFragment.this.getContext()));
 
 
-        listItems.add(new Donation("03:00 PM", "Rohini"));
-        listItems.add(new Donation("04:00 PM", "Sarojini Nagar"));
-        listItems.add(new Donation("05:30 PM", "Greater Kailash"));
-        listItems.add(new Donation("01:21 PM", "Greenpark"));
+        loadDonationsFromServer(0);
+
 
         // Create a new adapter
         adapter = new DonationAdapter(listItems, PendingDonationsFragment.this.getContext());
@@ -75,6 +74,25 @@ public class PendingDonationsFragment extends Fragment {
         });
 
 
+    }
+
+    private void loadDonationsFromServer(int donation_id) {
+
+        AsyncTask<Integer, Void, Void> task = new AsyncTask<Integer, Void, Void>() {
+            @Override
+            protected Void doInBackground(Integer... params) {
+
+
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(Void aVoid) {
+                super.onPostExecute(aVoid);
+            }
+        };
+
+        task.execute(donation_id);
     }
 
 }

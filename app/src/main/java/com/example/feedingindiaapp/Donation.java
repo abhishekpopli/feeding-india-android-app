@@ -23,7 +23,7 @@ public class Donation {
     private String donorPhotoUrl;
     private String donorName;
 
-    public Donation(long donationId, String pickupArea, boolean isVeg, boolean isPerishable, boolean isAccepted, boolean isPicked, String otherDetails, String donorPhotoUrl, String donorName) {
+    public Donation(long donationId, String pickupArea, boolean isVeg, boolean isPerishable, boolean isAccepted, boolean isPicked, String otherDetails, String donorPhotoUrl, String donorName, String requestDateTime, String pickupDateTime) {
         this.donationId = donationId;
         this.pickupArea = pickupArea;
         this.isVeg = isVeg;
@@ -33,6 +33,8 @@ public class Donation {
         this.otherDetails = otherDetails;
         this.donorPhotoUrl = donorPhotoUrl;
         this.donorName = donorName;
+        this.requestDateTime = requestDateTime;
+        this.pickupDateTime = pickupDateTime;
     }
 
     public Donation(long donationId, String requestDateTime, String pickupDateTime, int donorId, int volunteerId, String pickupPhotoUrl, String deliveryPhotoUrl, String pickupCity, String pickupArea, String pickupStreet, String pickupHouseNo, boolean isVeg, boolean isPerishable, boolean isAccepted, boolean isPicked, boolean isCompleted, String otherDetails, String donorPhotoUrl, String donorName) {
