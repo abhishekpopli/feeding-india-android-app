@@ -48,7 +48,12 @@ public class DonationAdapter extends RecyclerView.Adapter<DonationAdapter.ViewHo
         //Populate list view with data from server
         holder.donorName.setText(donation.getDonorName());
         holder.pickupArea.setText(donation.getPickupArea());
-        holder.pickupTime.setText(donation.getRequestDateTime());
+
+        if ((donation.isCompleted() == 1) || (donation.isPicked() == 1)) {
+            holder.itemTime.setText(donation.getPickupDateTime());
+        } else {
+            holder.itemTime.setText(donation.getRequestDateTime());
+        }
 
 
         if (donation.getOtherDetails().equals("null")) {
@@ -72,8 +77,23 @@ public class DonationAdapter extends RecyclerView.Adapter<DonationAdapter.ViewHo
         }
 
         if (donation.isAccepted() == 1) {
-            holder.status.setText("Accepted");
-            holder.status.setBackgroundResource(R.drawable.blue_tag);
+
+            if (donation.isPicked() == 1) {
+
+                if (donation.isCompleted() == 1) {
+
+                    holder.status.setText("Completed");
+                    holder.status.setBackgroundResource(R.drawable.green_tag);
+
+                } else {
+                    holder.status.setText("Picked");
+                    holder.status.setBackgroundResource(R.drawable.green_tag);
+                }
+
+            } else {
+                holder.status.setText("Accepted");
+                holder.status.setBackgroundResource(R.drawable.blue_tag);
+            }
         } else {
             holder.status.setText("Not Accepted");
             holder.status.setBackgroundResource(R.drawable.blue_tag);
@@ -105,7 +125,7 @@ public class DonationAdapter extends RecyclerView.Adapter<DonationAdapter.ViewHo
         public TextView pickupArea;
         public View isVeg;
         public TextView isPerishable;
-        public TextView pickupTime;
+        public TextView itemTime;
         public TextView foodDetails;
         public TextView status;
         public LinearLayout listItemLayout;
@@ -119,7 +139,7 @@ public class DonationAdapter extends RecyclerView.Adapter<DonationAdapter.ViewHo
             donorImage = (ImageView) itemView.findViewById(R.id.list_item_image);
             pickupArea = (TextView) itemView.findViewById(R.id.list_item_donation_area);
             isVeg = itemView.findViewById(R.id.list_item_is_veg);
-            pickupTime = (TextView) itemView.findViewById(R.id.list_item_time);
+            itemTime = (TextView) itemView.findViewById(R.id.list_item_time);
             foodDetails = (TextView) itemView.findViewById(R.id.list_item_food_detail);
             status = (TextView) itemView.findViewById(R.id.list_item_donation_status);
             listItemLayout = (LinearLayout) itemView.findViewById(R.id.list_item_layout);

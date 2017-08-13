@@ -32,12 +32,12 @@ import okhttp3.Response;
  */
 public class PendingDonationsFragment extends Fragment {
 
-    private static final String DONATION_LIST_URL = "http://914fd1e9.ngrok.io/feeding-india-app-backend/getdata/donations_list.php?donation_id=";
+    private static final String DONATION_LIST_URL = "http://d80258f0.ngrok.io/feeding-india-app-backend/getdata/donations_list.php?donation_id=";
 
     private RecyclerView recyclerView;
     private RecyclerView.Adapter adapter;
 
-    private ArrayList<Donation> listItems = new ArrayList<>();
+    private ArrayList<Donation> listItemsPending = new ArrayList<>();
 
     private FloatingActionButton addDonationBtn;
 
@@ -89,7 +89,7 @@ public class PendingDonationsFragment extends Fragment {
 
 
         // Create a new adapter
-        adapter = new DonationAdapter(listItems, PendingDonationsFragment.this.getContext());
+        adapter = new DonationAdapter(listItemsPending, PendingDonationsFragment.this.getContext());
         // Assign adapter to recycler view
         recyclerView.setAdapter(adapter);
 
@@ -99,8 +99,8 @@ public class PendingDonationsFragment extends Fragment {
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
 
                 // Load more data when last item in arraylist is displayed on screen
-                if (layoutManager.findLastCompletelyVisibleItemPosition() == listItems.size() - 1) {
-                    loadDonationsFromServer(listItems.get(listItems.size() - 1).getDonationId());
+                if (layoutManager.findLastCompletelyVisibleItemPosition() == listItemsPending.size() - 1) {
+                    loadDonationsFromServer(listItemsPending.get(listItemsPending.size() - 1).getDonationId());
                 }
 
             }
@@ -156,7 +156,7 @@ public class PendingDonationsFragment extends Fragment {
                                 o.getString("pickup_datetime")
                         );
 
-                        listItems.add(item);
+                        listItemsPending.add(item);
                     }
 
                 } catch (IOException e) {
