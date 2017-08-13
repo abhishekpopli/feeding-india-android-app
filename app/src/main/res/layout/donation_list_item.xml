@@ -5,6 +5,7 @@
     android:orientation="vertical">
 
     <android.support.v7.widget.CardView
+        android:id="@+id/list_item_card_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="4dp"
@@ -13,7 +14,7 @@
         <LinearLayout
             android:id="@+id/list_item_layout"
             android:layout_width="match_parent"
-            android:layout_height="172dp"
+            android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:paddingBottom="8dp"
             android:paddingLeft="16dp"
@@ -30,7 +31,7 @@
 
             <LinearLayout
                 android:layout_width="0dp"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:orientation="vertical"
                 android:paddingLeft="16dp">
@@ -74,7 +75,6 @@
                         android:orientation="horizontal">
 
                         <ImageView
-                            android:id="@+id/list_item_check"
                             android:layout_width="20dp"
                             android:layout_height="20dp"
                             android:src="@drawable/ic_clock_24dp" />
@@ -93,49 +93,15 @@
 
                 </LinearLayout>
 
-                <LinearLayout
+                <TextView
+                    android:id="@+id/list_item_food_detail"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="8dp"
-                    android:orientation="vertical">
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="5dp"
-                        android:orientation="horizontal">
-
-                        <View
-                            android:id="@+id/list_item_is_veg"
-                            android:layout_width="16dp"
-                            android:layout_height="16dp"
-                            android:layout_gravity="bottom"
-                            android:background="@drawable/red_circle_shape" />
-
-                        <TextView
-                            android:id="@+id/list_item_is_perishable"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginLeft="10dp"
-                            android:gravity="bottom"
-                            android:maxLines="1"
-                            android:text="Perishable"
-                            android:textColor="#fb8c00"
-                            android:textSize="16dp" />
-
-                    </LinearLayout>
-
-                    <TextView
-                        android:id="@+id/list_item_food_detail"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:maxLines="2"
-                        android:text="Hello my name is Abhishek. I like in New Delhi. I live to eat pizza and have some coffee"
-                        android:textSize="15sp"
-                        android:textStyle="italic" />
-
-                </LinearLayout>
-
+                    android:maxLines="2"
+                    android:text="Hello my name is Abhishek. I like in New Delhi. I live to eat pizza and have some coffee"
+                    android:textSize="15sp"
+                    android:textStyle="italic" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -143,9 +109,25 @@
                     android:orientation="horizontal">
 
                     <TextView
-                        android:id="@+id/list_item_donation_food_type"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:maxLines="1"
+                        android:paddingRight="6dp"
+                        android:text="Type:"
+                        android:textColor="@color/colorSecondaryText"
+                        android:textSize="17sp" />
+
+                    <View
+                        android:id="@+id/list_item_is_veg"
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:layout_gravity="center"
+                        android:background="@drawable/red_circle_shape" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="10dp"
                         android:maxLines="1"
                         android:paddingRight="6dp"
                         android:text="Status:"

@@ -13,17 +13,19 @@ public class Donation {
     private String pickupArea;
     private String pickupStreet;
     private String pickupHouseNo;
-    private boolean isVeg;
-    private boolean isPerishable;
-    private boolean isAccepted;
-    private boolean isPicked;
-    private boolean isCompleted;
     private String otherDetails;
+
+    // Made all flag variables short instead of because "0" or "1" can be parsed to short, not boolean
+    private short isVeg;
+    private short isPerishable;
+    private short isAccepted;
+    private short isPicked;
+    private short isCompleted;
 
     private String donorPhotoUrl;
     private String donorName;
 
-    public Donation(long donationId, String pickupArea, boolean isVeg, boolean isPerishable, boolean isAccepted, boolean isPicked, String otherDetails, String donorPhotoUrl, String donorName, String requestDateTime, String pickupDateTime) {
+    public Donation(long donationId, String pickupArea, short isVeg, short isPerishable, short isAccepted, short isPicked, String otherDetails, String donorPhotoUrl, String donorName, String requestDateTime, String pickupDateTime) {
         this.donationId = donationId;
         this.pickupArea = pickupArea;
         this.isVeg = isVeg;
@@ -37,7 +39,7 @@ public class Donation {
         this.pickupDateTime = pickupDateTime;
     }
 
-    public Donation(long donationId, String requestDateTime, String pickupDateTime, int donorId, int volunteerId, String pickupPhotoUrl, String deliveryPhotoUrl, String pickupCity, String pickupArea, String pickupStreet, String pickupHouseNo, boolean isVeg, boolean isPerishable, boolean isAccepted, boolean isPicked, boolean isCompleted, String otherDetails, String donorPhotoUrl, String donorName) {
+    public Donation(long donationId, String requestDateTime, String pickupDateTime, int donorId, int volunteerId, String pickupPhotoUrl, String deliveryPhotoUrl, String pickupCity, String pickupArea, String pickupStreet, String pickupHouseNo, short isVeg, short isPerishable, short isAccepted, short isPicked, short isCompleted, String otherDetails, String donorPhotoUrl, String donorName) {
         this.donationId = donationId;
         this.requestDateTime = requestDateTime;
         this.pickupDateTime = pickupDateTime;
@@ -103,23 +105,23 @@ public class Donation {
         return pickupHouseNo;
     }
 
-    public boolean isVeg() {
+    public short isVeg() {
         return isVeg;
     }
 
-    public boolean isPerishable() {
+    public short isPerishable() {
         return isPerishable;
     }
 
-    public boolean isAccepted() {
+    public short isAccepted() {
         return isAccepted;
     }
 
-    public boolean isPicked() {
+    public short isPicked() {
         return isPicked;
     }
 
-    public boolean isCompleted() {
+    public short isCompleted() {
         return isCompleted;
     }
 
