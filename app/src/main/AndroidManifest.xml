@@ -20,10 +20,6 @@
             </intent-filter>
         </activity>
         <activity android:name=".LoginActivity" />
-        <activity
-            android:name=".DonationDetailActivity"
-            android:label="@string/title_activity_donation_detail"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 
 </manifest>
