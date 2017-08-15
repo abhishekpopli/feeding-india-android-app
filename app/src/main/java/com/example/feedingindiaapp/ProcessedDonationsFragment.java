@@ -2,6 +2,7 @@ package com.example.feedingindiaapp;
 
 
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -75,7 +76,8 @@ public class ProcessedDonationsFragment extends Fragment {
         addDonationBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(ProcessedDonationsFragment.this.getContext(), "You clicked on add fab", Toast.LENGTH_SHORT).show();
+                Intent i =new Intent(ProcessedDonationsFragment.this.getContext(),AddFood.class);
+                startActivity(i);
             }
         });
 

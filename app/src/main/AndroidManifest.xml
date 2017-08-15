@@ -20,6 +20,8 @@
             </intent-filter>
         </activity>
         <activity android:name=".LoginActivity" />
+        <activity android:name=".AddFood"
+            android:theme="@style/AppTheme.NoActionBar"/>
     </application>
 
 </manifest>
