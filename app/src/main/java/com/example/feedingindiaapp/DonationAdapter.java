@@ -2,6 +2,7 @@ package com.example.feedingindiaapp;
 
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -10,7 +11,6 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 
@@ -105,7 +105,9 @@ public class DonationAdapter extends RecyclerView.Adapter<DonationAdapter.ViewHo
         holder.listItemLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(context, "You clicked", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(context, DonationDetailActivity.class);
+                intent.putExtra("donation_id", donation.getDonationId());
+                context.startActivity(intent);
             }
         });
     }

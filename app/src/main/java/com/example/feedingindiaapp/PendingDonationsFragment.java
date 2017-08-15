@@ -1,7 +1,6 @@
 package com.example.feedingindiaapp;
 
 
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -14,7 +13,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
+import android.widget.ProgressBar;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -33,7 +32,7 @@ import okhttp3.Response;
  */
 public class PendingDonationsFragment extends Fragment {
 
-    private static final String DONATION_LIST_URL = "http://d80258f0.ngrok.io/feeding-india-app-backend/getdata/donations_list.php?donation_id=";
+    private static final String DONATION_LIST_URL = "http://bdfb4a13.ngrok.io/feeding-india-app-backend/getdata/donations_list.php?donation_id=";
 
     private RecyclerView recyclerView;
     private RecyclerView.Adapter adapter;
@@ -41,7 +40,7 @@ public class PendingDonationsFragment extends Fragment {
     private ArrayList<Donation> listItemsPending = new ArrayList<>();
 
     private FloatingActionButton addDonationBtn;
-
+    private ProgressBar progressBar;
 
     public PendingDonationsFragment() {
         // Required empty public constructor
@@ -59,6 +58,7 @@ public class PendingDonationsFragment extends Fragment {
 
         recyclerView = (RecyclerView) view.findViewById(R.id.recylerView);
         addDonationBtn = (FloatingActionButton) view.findViewById(R.id.add_fab_btn);
+        progressBar = (ProgressBar) view.findViewById(R.id.list_progress_bar);
 
         return view;
 
@@ -114,14 +114,6 @@ public class PendingDonationsFragment extends Fragment {
 
     private void loadDonationsFromServer(final long donation_id) {
 
-        final ProgressDialog progressDialog = new ProgressDialog(PendingDonationsFragment.this.getContext());
-        progressDialog.setMessage("Loading data....");
-
-        //Show progress dialog on first load only
-        if (donation_id == 0) {
-            progressDialog.show();
-        }
-
         // Perform all network requests in Async tasks
         AsyncTask<Long, Void, Void> task = new AsyncTask<Long, Void, Void>() {
 
@@ -141,21 +133,21 @@ public class PendingDonationsFragment extends Fragment {
 
                     for (int i = 0; i < array.length(); i++) {
 
-                        JSONObject o = array.getJSONObject(i);
+                        JSONObject object = array.getJSONObject(i);
 
                         // All values from JSON objects are Strings, hence need to parse in appropriate type
                         Donation item = new Donation(
-                                o.getLong("donation_id"),
-                                o.getString("pickup_area"),
-                                Short.parseShort(o.getString("is_veg")),
-                                Short.parseShort(o.getString("is_perishable")),
-                                Short.parseShort(o.getString("is_accepted")),
-                                Short.parseShort(o.getString("is_picked")),
-                                o.getString("other_details"),
-                                o.getString("photo_url"),
-                                o.getString("name"),
-                                o.getString("request_datetime"),
-                                o.getString("pickup_datetime")
+                                object.getLong("donation_id"),
+                                object.getString("pickup_area"),
+                                Short.parseShort(object.getString("is_veg")),
+                                Short.parseShort(object.getString("is_perishable")),
+                                Short.parseShort(object.getString("is_accepted")),
+                                Short.parseShort(object.getString("is_picked")),
+                                object.getString("other_details"),
+                                object.getString("photo_url"),
+                                object.getString("name"),
+                                object.getString("request_datetime"),
+                                object.getString("pickup_datetime")
                         );
 
                         listItemsPending.add(item);
@@ -167,17 +159,16 @@ public class PendingDonationsFragment extends Fragment {
                     Log.e(PendingDonationsFragment.class.getSimpleName(), "JSON exception occured");
                 }
 
-                //Progress dialog was show on first dialog only
-                if (donation_id == 0) {
-                    progressDialog.dismiss();
-                }
-
                 return null;
             }
 
             @Override
             protected void onPostExecute(Void aVoid) {
                 super.onPostExecute(aVoid);
+
+                if (donation_id == 0) {
+                    progressBar.setVisibility(View.INVISIBLE);
+                }
 
                 // To tell adapter to supply added data items
                 adapter.notifyDataSetChanged();

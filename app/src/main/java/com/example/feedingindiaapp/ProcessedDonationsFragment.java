@@ -1,7 +1,6 @@
 package com.example.feedingindiaapp;
 
 
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -14,7 +13,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
+import android.widget.ProgressBar;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -33,7 +32,7 @@ import okhttp3.Response;
  */
 public class ProcessedDonationsFragment extends Fragment {
 
-    private static final String DONATION_LIST_URL = "http://d80258f0.ngrok.io/feeding-india-app-backend/getdata/donations_list.php?donation_id=";
+    private static final String DONATION_LIST_URL = "http://bdfb4a13.ngrok.io/feeding-india-app-backend/getdata/donations_list.php?donation_id=";
 
     private RecyclerView recyclerView;
     private RecyclerView.Adapter adapter;
@@ -41,7 +40,7 @@ public class ProcessedDonationsFragment extends Fragment {
     private ArrayList<Donation> listItemsProcessed = new ArrayList<>();
 
     private FloatingActionButton addDonationBtn;
-
+    private ProgressBar progressBar;
 
     public ProcessedDonationsFragment() {
         // Required empty public constructor
@@ -59,6 +58,7 @@ public class ProcessedDonationsFragment extends Fragment {
 
         recyclerView = (RecyclerView) view.findViewById(R.id.recylerView);
         addDonationBtn = (FloatingActionButton) view.findViewById(R.id.add_fab_btn);
+        progressBar = (ProgressBar) view.findViewById(R.id.list_progress_bar);
 
         return view;
 
@@ -114,14 +114,6 @@ public class ProcessedDonationsFragment extends Fragment {
 
     private void loadDonationsFromServer(final long donation_id) {
 
-        final ProgressDialog progressDialog = new ProgressDialog(ProcessedDonationsFragment.this.getContext());
-        progressDialog.setMessage("Loading data....");
-
-        //Show progress dialog on first load only
-        if (donation_id == 0) {
-            progressDialog.show();
-        }
-
         // Perform all network requests in Async tasks
         AsyncTask<Long, Void, Void> task = new AsyncTask<Long, Void, Void>() {
 
@@ -167,17 +159,16 @@ public class ProcessedDonationsFragment extends Fragment {
                     Log.e(ProcessedDonationsFragment.class.getSimpleName(), "JSON exception occured");
                 }
 
-                //Progress dialog was show on first dialog only
-                if (donation_id == 0) {
-                    progressDialog.dismiss();
-                }
-
                 return null;
             }
 
             @Override
             protected void onPostExecute(Void aVoid) {
                 super.onPostExecute(aVoid);
+
+                if (donation_id == 0) {
+                    progressBar.setVisibility(View.INVISIBLE);
+                }
 
                 // To tell adapter to supply added data items
                 adapter.notifyDataSetChanged();

@@ -22,6 +22,10 @@
         <activity android:name=".LoginActivity" />
         <activity android:name=".AddFood"
             android:theme="@style/AppTheme.NoActionBar"/>
+        <activity
+            android:name=".DonationDetailActivity"
+            android:label="Donation Details"
+            android:parentActivityName=".MainActivity"></activity>
     </application>
 
 </manifest>

@@ -5,8 +5,8 @@ public class Donation {
     private long donationId;
     private String requestDateTime;
     private String pickupDateTime;
-    private int donorId;
-    private int volunteerId;
+    private long donorId;//
+    private long volunteerId;
     private String pickupPhotoUrl;
     private String deliveryPhotoUrl;
     private String pickupCity;
@@ -39,7 +39,28 @@ public class Donation {
         this.pickupDateTime = pickupDateTime;
     }
 
-    public Donation(long donationId, String requestDateTime, String pickupDateTime, int donorId, int volunteerId, String pickupPhotoUrl, String deliveryPhotoUrl, String pickupCity, String pickupArea, String pickupStreet, String pickupHouseNo, short isVeg, short isPerishable, short isAccepted, short isPicked, short isCompleted, String otherDetails, String donorPhotoUrl, String donorName) {
+    public Donation(long donationId, String requestDateTime, String pickupDateTime, long donorId, String pickupPhotoUrl, String deliveryPhotoUrl, String pickupCity, String pickupArea, String pickupStreet, String pickupHouseNo, String otherDetails, short isVeg, short isPerishable, short isAccepted, short isPicked, short isCompleted, String donorPhotoUrl, String donorName) {
+        this.donationId = donationId;
+        this.requestDateTime = requestDateTime;
+        this.pickupDateTime = pickupDateTime;
+        this.donorId = donorId;
+        this.pickupPhotoUrl = pickupPhotoUrl;
+        this.deliveryPhotoUrl = deliveryPhotoUrl;
+        this.pickupCity = pickupCity;
+        this.pickupArea = pickupArea;
+        this.pickupStreet = pickupStreet;
+        this.pickupHouseNo = pickupHouseNo;
+        this.otherDetails = otherDetails;
+        this.isVeg = isVeg;
+        this.isPerishable = isPerishable;
+        this.isAccepted = isAccepted;
+        this.isPicked = isPicked;
+        this.isCompleted = isCompleted;
+        this.donorPhotoUrl = donorPhotoUrl;
+        this.donorName = donorName;
+    }
+
+    public Donation(long donationId, String requestDateTime, String pickupDateTime, long donorId, long volunteerId, String pickupPhotoUrl, String deliveryPhotoUrl, String pickupCity, String pickupArea, String pickupStreet, String pickupHouseNo, short isVeg, short isPerishable, short isAccepted, short isPicked, short isCompleted, String otherDetails, String donorPhotoUrl, String donorName) {
         this.donationId = donationId;
         this.requestDateTime = requestDateTime;
         this.pickupDateTime = pickupDateTime;
@@ -73,11 +94,11 @@ public class Donation {
         return pickupDateTime;
     }
 
-    public int getDonorId() {
+    public long getDonorId() {
         return donorId;
     }
 
-    public int getVolunteerId() {
+    public long getVolunteerId() {
         return volunteerId;
     }
 
