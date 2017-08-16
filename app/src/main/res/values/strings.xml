@@ -102,5 +102,6 @@
         "when a user tries to pick up one of cards.\n\n"
     </string>
     <string name="title_activity_add_food">AddFood</string>
+    <string name="ipsum">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc ultrices neque sit amet ultricies eleifend</string>
 
 </resources>

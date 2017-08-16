@@ -32,7 +32,7 @@ import okhttp3.Response;
  */
 public class ProcessedDonationsFragment extends Fragment {
 
-    private static final String DONATION_LIST_URL = "http://bdfb4a13.ngrok.io/feeding-india-app-backend/getdata/donations_list.php?donation_id=";
+    private static final String DONATION_LIST_URL = "https://feedingindiaapp.000webhostapp.com/getdata/donations_list.php?donation_id=";
 
     private RecyclerView recyclerView;
     private RecyclerView.Adapter adapter;

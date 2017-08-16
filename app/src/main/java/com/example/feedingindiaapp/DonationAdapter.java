@@ -1,8 +1,10 @@
 package com.example.feedingindiaapp;
 
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -40,7 +42,7 @@ public class DonationAdapter extends RecyclerView.Adapter<DonationAdapter.ViewHo
 
     // Method 2 to implement
     @Override
-    public void onBindViewHolder(ViewHolder holder, int position) {
+    public void onBindViewHolder(final ViewHolder holder, int position) {
 
         // Get that particular donation
         final Donation donation = listItems.get(position);
@@ -106,8 +108,11 @@ public class DonationAdapter extends RecyclerView.Adapter<DonationAdapter.ViewHo
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(context, DonationDetailActivity.class);
+
+                ActivityOptionsCompat optionsCompat = ActivityOptionsCompat.makeSceneTransitionAnimation((Activity) context, holder.donorImage, "donorImage");
                 intent.putExtra("donation_id", donation.getDonationId());
-                context.startActivity(intent);
+
+                context.startActivity(intent, optionsCompat.toBundle());
             }
         });
     }
