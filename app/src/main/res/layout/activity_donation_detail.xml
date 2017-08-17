@@ -579,9 +579,22 @@
                                 <com.google.android.gms.maps.MapView
                                     android:id="@+id/detail_map"
                                     android:layout_width="match_parent"
-                                    android:layout_height="300dp">
+                                    android:layout_height="300dp"
+                                    android:layout_marginBottom="8dp">
 
                                 </com.google.android.gms.maps.MapView>
+
+                                <Button
+                                    android:id="@+id/detail_open_maps_btn"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="48dp"
+                                    android:background="@drawable/light_blue_tag"
+                                    android:paddingLeft="8dp"
+                                    android:paddingRight="8dp"
+                                    android:text="Open in maps"
+                                    android:textAllCaps="false"
+                                    android:textColor="#fff"
+                                    android:textSize="16sp" />
 
                             </LinearLayout>
 

@@ -1,11 +1,14 @@
 package com.example.feedingindiaapp;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.ScrollView;
@@ -81,6 +84,7 @@ public class DonationDetailActivity extends AppCompatActivity implements OnMapRe
     private LinearLayout otherDetailsContainer;
     private LinearLayout mapContainer;
     private TextView pickupLocationView;
+    private Button openMapsBtn;
     private GoogleMap myGoogleMap;
     private MapView mapView;
 
@@ -120,6 +124,7 @@ public class DonationDetailActivity extends AppCompatActivity implements OnMapRe
         mapContainer = (LinearLayout) findViewById(R.id.detail_map_container);
         pickupLocationView = (TextView) findViewById(R.id.detail_location);
         mapView = (MapView) findViewById(R.id.detail_map);
+        openMapsBtn = (Button) findViewById(R.id.detail_open_maps_btn);
 
         // Initialising the map view
         mapView.onCreate(null);
@@ -452,6 +457,18 @@ public class DonationDetailActivity extends AppCompatActivity implements OnMapRe
 
             if (hasPickupGPS == true) {
                 mapContainer.setVisibility(View.VISIBLE);
+
+                openMapsBtn.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+
+                        Intent intent = new Intent(Intent.ACTION_VIEW, Uri
+                                .parse("geo:28.719492,77.066122"));
+                        if (intent.resolveActivity(getPackageManager()) != null) {
+                            startActivity(intent);
+                        }
+                    }
+                });
             }
         }
 
@@ -486,6 +503,7 @@ public class DonationDetailActivity extends AppCompatActivity implements OnMapRe
             }
 
         }
+
 
         // After all views have been set, finally hiding the progress bar and making the scroll view vsisible
         scrollView.setVisibility(View.VISIBLE);
