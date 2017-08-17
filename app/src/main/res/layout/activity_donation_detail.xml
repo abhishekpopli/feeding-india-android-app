@@ -80,7 +80,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="vertical"
-                        android:padding="12dp">
+                        android:padding="8dp">
 
                         <LinearLayout
                             android:layout_width="match_parent"
@@ -88,8 +88,8 @@
 
                             <de.hdodenhof.circleimageview.CircleImageView
                                 android:id="@+id/detail_donor_image"
-                                android:layout_width="70dp"
-                                android:layout_height="70dp"
+                                android:layout_width="60dp"
+                                android:layout_height="60dp"
                                 android:transitionName="donorImage" />
 
                             <LinearLayout
@@ -103,7 +103,7 @@
                                 <TextView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:text="Donor Name:"
+                                    android:text="Donor:"
                                     android:textSize="16sp" />
 
 
@@ -118,7 +118,7 @@
                                         android:layout_weight="1"
                                         android:text="Abhishek Nigam"
                                         android:textColor="#000"
-                                        android:textSize="18sp" />
+                                        android:textSize="17sp" />
 
                                     <TextView
                                         android:id="@+id/detail_donor_type"
@@ -142,8 +142,8 @@
 
                             <de.hdodenhof.circleimageview.CircleImageView
                                 android:id="@+id/detail_volunteer_image"
-                                android:layout_width="70dp"
-                                android:layout_height="70dp" />
+                                android:layout_width="60dp"
+                                android:layout_height="60dp" />
 
                             <LinearLayout
                                 android:layout_width="0dp"
@@ -156,7 +156,7 @@
                                 <TextView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:text="Volunteer Name:"
+                                    android:text="Volunteer:"
                                     android:textSize="16sp" />
 
 
@@ -171,7 +171,7 @@
                                         android:layout_weight="1"
                                         android:text="Ravi Sharma"
                                         android:textColor="#000"
-                                        android:textSize="18sp" />
+                                        android:textSize="17sp" />
 
                                     <LinearLayout
                                         android:layout_width="wrap_content"
@@ -557,7 +557,7 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:fontFamily="sans-serif-light"
-                                android:text="@string/ipsum"
+                                android:text="(hidden)"
                                 android:textColor="#fff"
                                 android:textSize="16dp" />
 
@@ -576,10 +576,12 @@
                                     android:textColor="#fff"
                                     android:textSize="18dp" />
 
-                                <ImageView
+                                <com.google.android.gms.maps.MapView
+                                    android:id="@+id/detail_map"
                                     android:layout_width="match_parent"
-                                    android:layout_height="200dp"
-                                    android:src="@color/colorSecondaryText" />
+                                    android:layout_height="300dp">
+
+                                </com.google.android.gms.maps.MapView>
 
                             </LinearLayout>
 

@@ -2,7 +2,16 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.feedingindiaapp">
 
+    <uses-feature
+        android:glEsVersion="0x00020000"
+        android:required="true" />
+
+    <!--Required permissions-->
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -27,6 +36,13 @@
             android:name=".DonationDetailActivity"
             android:label="Donation Details"
             android:parentActivityName=".MainActivity" />
+
+        <!--Maps Android Key-->
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyDVV0JuqEstGuxswOOkcXJnwM3u_Sm-pD8" />
+        <!--End Maps Android Key-->
+
     </application>
 
 </manifest>

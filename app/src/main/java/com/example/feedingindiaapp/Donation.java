@@ -13,6 +13,8 @@ public class Donation {
     private String pickupArea;
     private String pickupStreet;
     private String pickupHouseNo;
+    private Float pickupGPSLatitude;
+    private Float pickupGPSLongitude;
     private String otherDetails;
 
     // Made all flag variables short instead of because "0" or "1" can be parsed to short, not boolean
@@ -21,6 +23,7 @@ public class Donation {
     private short isAccepted;
     private short isPicked;
     private short isCompleted;
+    private short hasPickupGPS;
 
     private String donorPhotoUrl;
     private String donorName;
@@ -39,7 +42,7 @@ public class Donation {
         this.pickupDateTime = pickupDateTime;
     }
 
-    public Donation(long donationId, String requestDateTime, String pickupDateTime, long donorId, String pickupPhotoUrl, String deliveryPhotoUrl, String pickupCity, String pickupArea, String pickupStreet, String pickupHouseNo, String otherDetails, short isVeg, short isPerishable, short isAccepted, short isPicked, short isCompleted, String donorPhotoUrl, String donorName) {
+    public Donation(long donationId, String requestDateTime, String pickupDateTime, long donorId, String pickupPhotoUrl, String deliveryPhotoUrl, String pickupCity, String pickupArea, String pickupStreet, String pickupHouseNo, String otherDetails, short isVeg, short isPerishable, short isAccepted, short isPicked, short isCompleted, String donorPhotoUrl, String donorName, short hasPickupGPS) {
         this.donationId = donationId;
         this.requestDateTime = requestDateTime;
         this.pickupDateTime = pickupDateTime;
@@ -58,9 +61,34 @@ public class Donation {
         this.isCompleted = isCompleted;
         this.donorPhotoUrl = donorPhotoUrl;
         this.donorName = donorName;
+        this.hasPickupGPS = hasPickupGPS;
     }
 
-    public Donation(long donationId, String requestDateTime, String pickupDateTime, long donorId, long volunteerId, String pickupPhotoUrl, String deliveryPhotoUrl, String pickupCity, String pickupArea, String pickupStreet, String pickupHouseNo, short isVeg, short isPerishable, short isAccepted, short isPicked, short isCompleted, String otherDetails, String donorPhotoUrl, String donorName) {
+    public Donation(long donationId, String requestDateTime, String pickupDateTime, long donorId, String pickupPhotoUrl, String deliveryPhotoUrl, String pickupCity, String pickupArea, String pickupStreet, String pickupHouseNo, String otherDetails, short isVeg, short isPerishable, short isAccepted, short isPicked, short isCompleted, String donorPhotoUrl, String donorName, short hasPickupGPS, Float pickupGPSLatitude, Float pickupGPSLongitude) {
+        this.donationId = donationId;
+        this.requestDateTime = requestDateTime;
+        this.pickupDateTime = pickupDateTime;
+        this.donorId = donorId;
+        this.pickupPhotoUrl = pickupPhotoUrl;
+        this.deliveryPhotoUrl = deliveryPhotoUrl;
+        this.pickupCity = pickupCity;
+        this.pickupArea = pickupArea;
+        this.pickupStreet = pickupStreet;
+        this.pickupHouseNo = pickupHouseNo;
+        this.otherDetails = otherDetails;
+        this.isVeg = isVeg;
+        this.isPerishable = isPerishable;
+        this.isAccepted = isAccepted;
+        this.isPicked = isPicked;
+        this.isCompleted = isCompleted;
+        this.donorPhotoUrl = donorPhotoUrl;
+        this.donorName = donorName;
+        this.hasPickupGPS = hasPickupGPS;
+        this.pickupGPSLatitude = pickupGPSLatitude;
+        this.pickupGPSLongitude = pickupGPSLongitude;
+    }
+
+    public Donation(long donationId, String requestDateTime, String pickupDateTime, long donorId, long volunteerId, String pickupPhotoUrl, String deliveryPhotoUrl, String pickupCity, String pickupArea, String pickupStreet, String pickupHouseNo, short isVeg, short isPerishable, short isAccepted, short isPicked, short isCompleted, String otherDetails, String donorPhotoUrl, String donorName, short hasPickupGPS) {
         this.donationId = donationId;
         this.requestDateTime = requestDateTime;
         this.pickupDateTime = pickupDateTime;
@@ -80,6 +108,32 @@ public class Donation {
         this.otherDetails = otherDetails;
         this.donorPhotoUrl = donorPhotoUrl;
         this.donorName = donorName;
+        this.hasPickupGPS = hasPickupGPS;
+    }
+
+    public Donation(long donationId, String requestDateTime, String pickupDateTime, long donorId, long volunteerId, String pickupPhotoUrl, String deliveryPhotoUrl, String pickupCity, String pickupArea, String pickupStreet, String pickupHouseNo, short isVeg, short isPerishable, short isAccepted, short isPicked, short isCompleted, String otherDetails, String donorPhotoUrl, String donorName, short hasPickupGPS, Float pickupGPSLatitude, Float pickupGPSLongitude) {
+        this.donationId = donationId;
+        this.requestDateTime = requestDateTime;
+        this.pickupDateTime = pickupDateTime;
+        this.donorId = donorId;
+        this.volunteerId = volunteerId;
+        this.pickupPhotoUrl = pickupPhotoUrl;
+        this.deliveryPhotoUrl = deliveryPhotoUrl;
+        this.pickupCity = pickupCity;
+        this.pickupArea = pickupArea;
+        this.pickupStreet = pickupStreet;
+        this.pickupHouseNo = pickupHouseNo;
+        this.isVeg = isVeg;
+        this.isPerishable = isPerishable;
+        this.isAccepted = isAccepted;
+        this.isPicked = isPicked;
+        this.isCompleted = isCompleted;
+        this.otherDetails = otherDetails;
+        this.donorPhotoUrl = donorPhotoUrl;
+        this.donorName = donorName;
+        this.hasPickupGPS = hasPickupGPS;
+        this.pickupGPSLatitude = pickupGPSLatitude;
+        this.pickupGPSLongitude = pickupGPSLongitude;
     }
 
     public long getDonationId() {
@@ -156,6 +210,18 @@ public class Donation {
 
     public String getDonorName() {
         return donorName;
+    }
+
+    public Float getPickupGPSLatitude() {
+        return pickupGPSLatitude;
+    }
+
+    public Float getPickupGPSLongitude() {
+        return pickupGPSLongitude;
+    }
+
+    public short getHasPickupGPS() {
+        return hasPickupGPS;
     }
 }
 
