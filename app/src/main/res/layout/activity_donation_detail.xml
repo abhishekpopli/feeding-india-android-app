@@ -575,14 +575,19 @@
                                     android:text="Map"
                                     android:textColor="#fff"
                                     android:textSize="18dp" />
-
-                                <com.google.android.gms.maps.MapView
-                                    android:id="@+id/detail_map"
+                                <LinearLayout
+                                    android:id="@+id/map_layout"
                                     android:layout_width="match_parent"
+                                    android:layout_height="wrap_content">
+                                <fragment xmlns:android="http://schemas.android.com/apk/res/android"
+                                    xmlns:map="http://schemas.android.com/apk/res-auto"
+                                    android:id="@+id/detail_map"
+                                    android:layout_width="fill_parent"
                                     android:layout_height="300dp"
-                                    android:layout_marginBottom="8dp">
-
-                                </com.google.android.gms.maps.MapView>
+                                    class="com.google.android.gms.maps.SupportMapFragment"
+                                    tools:layout_editor_absoluteY="8dp"
+                                    tools:layout_editor_absoluteX="8dp" />
+                                </LinearLayout>
 
                                 <Button
                                     android:id="@+id/detail_open_maps_btn"

@@ -13,8 +13,8 @@ public class Donation {
     private String pickupArea;
     private String pickupStreet;
     private String pickupHouseNo;
-    private Float pickupGPSLatitude;
-    private Float pickupGPSLongitude;
+    private Double pickupGPSLatitude;
+    private Double pickupGPSLongitude;
     private String otherDetails;
 
     // Made all flag variables short instead of because "0" or "1" can be parsed to short, not boolean
@@ -64,7 +64,7 @@ public class Donation {
         this.hasPickupGPS = hasPickupGPS;
     }
 
-    public Donation(long donationId, String requestDateTime, String pickupDateTime, long donorId, String pickupPhotoUrl, String deliveryPhotoUrl, String pickupCity, String pickupArea, String pickupStreet, String pickupHouseNo, String otherDetails, short isVeg, short isPerishable, short isAccepted, short isPicked, short isCompleted, String donorPhotoUrl, String donorName, short hasPickupGPS, Float pickupGPSLatitude, Float pickupGPSLongitude) {
+    public Donation(long donationId, String requestDateTime, String pickupDateTime, long donorId, String pickupPhotoUrl, String deliveryPhotoUrl, String pickupCity, String pickupArea, String pickupStreet, String pickupHouseNo, String otherDetails, short isVeg, short isPerishable, short isAccepted, short isPicked, short isCompleted, String donorPhotoUrl, String donorName, short hasPickupGPS, Double pickupGPSLatitude, Double pickupGPSLongitude) {
         this.donationId = donationId;
         this.requestDateTime = requestDateTime;
         this.pickupDateTime = pickupDateTime;
@@ -111,7 +111,7 @@ public class Donation {
         this.hasPickupGPS = hasPickupGPS;
     }
 
-    public Donation(long donationId, String requestDateTime, String pickupDateTime, long donorId, long volunteerId, String pickupPhotoUrl, String deliveryPhotoUrl, String pickupCity, String pickupArea, String pickupStreet, String pickupHouseNo, short isVeg, short isPerishable, short isAccepted, short isPicked, short isCompleted, String otherDetails, String donorPhotoUrl, String donorName, short hasPickupGPS, Float pickupGPSLatitude, Float pickupGPSLongitude) {
+    public Donation(long donationId, String requestDateTime, String pickupDateTime, long donorId, long volunteerId, String pickupPhotoUrl, String deliveryPhotoUrl, String pickupCity, String pickupArea, String pickupStreet, String pickupHouseNo, short isVeg, short isPerishable, short isAccepted, short isPicked, short isCompleted, String otherDetails, String donorPhotoUrl, String donorName, short hasPickupGPS, Double pickupGPSLatitude, Double pickupGPSLongitude) {
         this.donationId = donationId;
         this.requestDateTime = requestDateTime;
         this.pickupDateTime = pickupDateTime;
@@ -212,11 +212,11 @@ public class Donation {
         return donorName;
     }
 
-    public Float getPickupGPSLatitude() {
+    public Double getPickupGPSLatitude() {
         return pickupGPSLatitude;
     }
 
-    public Float getPickupGPSLongitude() {
+    public Double getPickupGPSLongitude() {
         return pickupGPSLongitude;
     }
 

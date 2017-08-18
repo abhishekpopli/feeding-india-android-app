@@ -1,10 +1,14 @@
 package com.example.feedingindiaapp;
 
+import android.app.FragmentTransaction;
 import android.content.Intent;
+import android.location.Location;
+import android.location.LocationManager;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -21,6 +25,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -38,6 +43,11 @@ import okhttp3.Response;
 
 public class DonationDetailActivity extends AppCompatActivity implements OnMapReadyCallback {
 
+
+    GoogleMap googleMap;
+    LatLng myPosition;
+    Location location;
+    LocationManager locationManager;
     private static final String DONATION_DETAIL_URL = "https://feedingindiaapp.000webhostapp.com/getdata/donation_detail.php?donation_id=";
     DonationDetailsImageAdapter donationDetailsImageAdapter;
 
@@ -85,19 +95,18 @@ public class DonationDetailActivity extends AppCompatActivity implements OnMapRe
     private LinearLayout mapContainer;
     private TextView pickupLocationView;
     private Button openMapsBtn;
-    private GoogleMap myGoogleMap;
-    private MapView mapView;
-
-
-
+    SupportMapFragment fm;
+    android.support.v4.app.FragmentTransaction ft;
+    LinearLayout layout;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_donation_detail);
 
         // Puts the back button in AppBar
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
+        //getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        layout = (LinearLayout) findViewById(R.id.map_layout);
+        layout.setVisibility(View.GONE);
         progressBar = (ProgressBar) findViewById(R.id.detail_progress_bar);
         donorImage = (CircleImageView) findViewById(R.id.detail_donor_image);
         confirmBtn = (FloatingActionButton) findViewById(R.id.confirm_fab_btn);
@@ -123,13 +132,8 @@ public class DonationDetailActivity extends AppCompatActivity implements OnMapRe
         otherDetailsContainer = (LinearLayout) findViewById(R.id.other_details_container);
         mapContainer = (LinearLayout) findViewById(R.id.detail_map_container);
         pickupLocationView = (TextView) findViewById(R.id.detail_location);
-        mapView = (MapView) findViewById(R.id.detail_map);
         openMapsBtn = (Button) findViewById(R.id.detail_open_maps_btn);
 
-        // Initialising the map view
-        mapView.onCreate(null);
-        mapView.onResume();
-        mapView.getMapAsync(this);
 
         // Setting onClick listener on FAB
         confirmBtn.setOnClickListener(new View.OnClickListener() {
@@ -219,8 +223,8 @@ public class DonationDetailActivity extends AppCompatActivity implements OnMapRe
                                     object.getString("donor_photo_url"),
                                     object.getString("donor_name"),
                                     Short.parseShort(object.getString("has_pickup_gps")),
-                                    Float.parseFloat(object.getString("pickup_gps_latitude")),
-                                    Float.parseFloat(object.getString("pickup_gps_longitude"))
+                                    Double.parseDouble(object.getString("pickup_gps_latitude")),
+                                    Double.parseDouble(object.getString("pickup_gps_longitude"))
                             );
 
                         } else {
@@ -286,8 +290,8 @@ public class DonationDetailActivity extends AppCompatActivity implements OnMapRe
                                     object.getString("donor_photo_url"),
                                     object.getString("donor_name"),
                                     Short.parseShort(object.getString("has_pickup_gps")),
-                                    Float.parseFloat(object.getString("pickup_gps_latitude")),
-                                    Float.parseFloat(object.getString("pickup_gps_longitude"))
+                                    Double.parseDouble(object.getString("pickup_gps_latitude")),
+                                    Double.parseDouble(object.getString("pickup_gps_longitude"))
                             );
                         } else {
 
@@ -456,14 +460,22 @@ public class DonationDetailActivity extends AppCompatActivity implements OnMapRe
             pickupLocationView.setText(pickupLocation);
 
             if (hasPickupGPS == true) {
+                layout.setVisibility(View.VISIBLE);
                 mapContainer.setVisibility(View.VISIBLE);
+                fm = (SupportMapFragment)
+                        getSupportFragmentManager().findFragmentById(R.id.detail_map);
+
+                // Getting GoogleMap object from the fragment
+                fm.getMapAsync(this);
 
                 openMapsBtn.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
 
                         Intent intent = new Intent(Intent.ACTION_VIEW, Uri
-                                .parse("geo:28.719492,77.066122"));
+                                .parse("geo:"+donation.getPickupGPSLatitude()+","+ donation.getPickupGPSLongitude()));
+                        String a ="geo:"+donation.getPickupGPSLatitude()+","+ donation.getPickupGPSLongitude();
+                        Toast.makeText(DonationDetailActivity.this,a, Toast.LENGTH_SHORT).show();
                         if (intent.resolveActivity(getPackageManager()) != null) {
                             startActivity(intent);
                         }
@@ -514,13 +526,12 @@ public class DonationDetailActivity extends AppCompatActivity implements OnMapRe
     public void onMapReady(GoogleMap googleMap) {
         MapsInitializer.initialize(this);
 
-        myGoogleMap = googleMap;
 
-        myGoogleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
-        myGoogleMap.addMarker(new MarkerOptions().position(new LatLng(28.719492, 77.066122)).title("Pickup Location"));
+       googleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+        googleMap.addMarker(new MarkerOptions().position(new LatLng(donation.getPickupGPSLatitude(), donation.getPickupGPSLongitude()  )).title("Pickup Location"));
 
-        CameraPosition cameraPosition = CameraPosition.builder().target(new LatLng(28.719492, 77.066122)).zoom(16).bearing(0).tilt(45).build();
-        myGoogleMap.moveCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+        CameraPosition cameraPosition = CameraPosition.builder().target(new LatLng(donation.getPickupGPSLatitude(), donation.getPickupGPSLongitude())).zoom(16).bearing(0).tilt(45).build();
+        googleMap.moveCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
     }
 
 }
