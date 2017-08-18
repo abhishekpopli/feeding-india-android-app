@@ -2,26 +2,32 @@ package com.example.feedingindiaapp;
 
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
+
+import android.Manifest;
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.ActivityNotFoundException;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
+import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.File;
@@ -29,21 +35,24 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-public class AddFood extends AppCompatActivity implements View.OnClickListener {
+public class AddFood extends AppCompatActivity implements  View.OnClickListener {
 
+    private TextView latitude;
+    private TextView longitude;
     private Spinner city;
     private EditText area;
     private EditText street;
     private EditText houseno;
     private ImageView upload_pic;
     private CheckBox isveg;
+    private CheckBox isperishable;
     private EditText other_details;
-    private Button submit_button;
+    private FloatingActionButton submit_button;
     protected int LOAD_IMAGE_CAMERA = 0, CROP_IMAGE = 1, LOAD_IMAGE_GALLARY = 2;
     private Uri picUri;
-    private File pic;
+    Button seemap;
+    File pic;
     Bundle extras;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,15 +61,30 @@ public class AddFood extends AppCompatActivity implements View.OnClickListener {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        latitude = (TextView) findViewById(R.id.latitude_map);
+        longitude = (TextView) findViewById(R.id.longitude_map);
+        latitude.setVisibility(View.GONE);
+        longitude.setVisibility(View.GONE);
+        seemap =(Button) findViewById(R.id.map_button);
         area = (EditText) findViewById(R.id.area);
         street = (EditText) findViewById(R.id.street);
         houseno = (EditText) findViewById(R.id.houseno);
         city = (Spinner) findViewById(R.id.spinner_city);
         upload_pic = (ImageView) findViewById(R.id.upload_pic);
-        isveg =(CheckBox) findViewById(R.id.is_veg);
+        isveg = (CheckBox) findViewById(R.id.is_veg);
+        isperishable = (CheckBox) findViewById(R.id.is_perishable);
         other_details = (EditText) findViewById(R.id.other_details);
-        submit_button=(Button)  findViewById(R.id.submitfood);
+
+
+        submit_button = (FloatingActionButton) findViewById(R.id.submit_button);
         submit_button.setOnClickListener(this);
+        seemap.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(AddFood.this, Getlocation.class);
+                startActivityForResult(i,10);
+            }
+        });
         upload_pic.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -104,6 +128,8 @@ public class AddFood extends AppCompatActivity implements View.OnClickListener {
         });
 
     }
+
+
 
     public boolean validate() {
         boolean valid = true;
@@ -160,6 +186,34 @@ public class AddFood extends AppCompatActivity implements View.OnClickListener {
                 new uploadcloudinary().execute();
             }
         }
+        else if (resultCode == Activity.RESULT_OK && data!=null)
+        {
+            String latitude_value = data.getStringExtra("latitude");
+            String longitude_value = data.getStringExtra("longitude");
+            latitude.setVisibility(View.VISIBLE);
+            longitude.setVisibility(View.VISIBLE);
+            latitude.setText(latitude_value);
+            longitude.setText(longitude_value);
+        }
+    }
+    public void TransferData()
+    {
+
+        Toast.makeText(this, "Happy!!", Toast.LENGTH_SHORT).show();
+        Resources resources = this.getResources();
+        String[] codes = resources.getStringArray(R.array.city_arrays);
+        int pos = city.getSelectedItemPosition();
+        String donorid;
+        String city = codes[pos];
+        String areaname = area.getText().toString();
+        String streetname = street.getText().toString();
+        String house = houseno.getText().toString();
+        String picurl;
+        Boolean veg = isveg.isChecked();
+        //false if non-veg
+        Boolean perishable = isperishable.isChecked();
+        //true if persihable
+        String otherdetails = other_details.getText().toString();
     }
 
     protected void CropImage() {
@@ -209,12 +263,15 @@ public class AddFood extends AppCompatActivity implements View.OnClickListener {
                 new Runnable() {
                     public void run() {
                         // On complete, adding food to database
-                        TransferData();
+                        Toast.makeText(AddFood.this, "Hello", Toast.LENGTH_SHORT).show();
 
                         progressDialog.dismiss();
                     }
                 }, 2000);
     }
+
+
+
 
     public class uploadcloudinary extends AsyncTask<Void,Void,Void> {
 
@@ -233,26 +290,9 @@ public class AddFood extends AppCompatActivity implements View.OnClickListener {
             }
             return null;
         }
-    }
-
-
-
-    public void TransferData()
-{
-
-    Toast.makeText(this, "Happy!!", Toast.LENGTH_SHORT).show();
-    Resources resources = this.getResources();
-    String[] codes = resources.getStringArray(R.array.city_arrays);
-    int pos = city.getSelectedItemPosition();
-    String donorid;
-    String city = codes[pos];
-    String areaname = area.getText().toString();
-    String streetname = street.getText().toString();
-    String house = houseno.getText().toString();
-    String picurl;
-    Boolean veg = isveg.isChecked();
-    //false if non-veg
-    String otherdetails = other_details.getText().toString();
-}
+    };
 
 }
+
+
+
