@@ -48,6 +48,16 @@ public class Getlocation extends FragmentActivity implements LocationListener, O
                     return;
                 }
                 location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+                double latitude = location.getLatitude();
+
+                // Getting longitude of the current location
+                double longitude = location.getLongitude();
+
+
+                latitude_value = Double.toString(latitude);
+                longitude_value = Double.toString(longitude);
+                Log.d("latitude",latitude_value);
+                Log.d("long",longitude_value);
                 Intent resultIntent = new Intent();
                 resultIntent.putExtra("latitude", latitude_value);
                 resultIntent.putExtra("longitude", longitude_value);
