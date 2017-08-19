@@ -2,6 +2,7 @@ package com.example.feedingindiaapp;
 
 
 import android.Manifest;
+import android.Manifest.permission;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -9,21 +10,16 @@ import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.FragmentActivity;
+import android.view.View;
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
-
-import android.Manifest.permission;
-import android.support.design.widget.FloatingActionButton;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.FragmentActivity;
-import android.os.Bundle;
-import android.util.Log;
-import android.view.View;
-import android.widget.Toast;
 
 public class Getlocation extends FragmentActivity implements LocationListener, OnMapReadyCallback {
     GoogleMap googleMap;
@@ -48,6 +44,16 @@ public class Getlocation extends FragmentActivity implements LocationListener, O
                     return;
                 }
                 location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+
+                double latitude = location.getLatitude();
+
+                // Getting longitude of the current location
+                double longitude = location.getLongitude();
+
+
+                latitude_value = Double.toString(latitude);
+                longitude_value = Double.toString(longitude);
+
                 Intent resultIntent = new Intent();
                 resultIntent.putExtra("latitude", latitude_value);
                 resultIntent.putExtra("longitude", longitude_value);
@@ -71,20 +77,20 @@ public class Getlocation extends FragmentActivity implements LocationListener, O
 
     @Override
     public void onLocationChanged(Location location) {
-        double latitude = location.getLatitude();
-
-        // Getting longitude of the current location
-        double longitude = location.getLongitude();
-
-
-        latitude_value = Double.toString(latitude);
-        longitude_value = Double.toString(longitude);
+//        double latitude = location.getLatitude();
+//
+//        // Getting longitude of the current location
+//        double longitude = location.getLongitude();
+//
+//
+//        latitude_value = Double.toString(latitude);
+//        longitude_value = Double.toString(longitude);
         // Creating a LatLng object for the current location
-        LatLng latLng = new LatLng(latitude, longitude);
+//        LatLng latLng = new LatLng(latitude, longitude);
+//
+//        myPosition = new LatLng(latitude, longitude);
 
-        myPosition = new LatLng(latitude, longitude);
-
-        googleMap.addMarker(new MarkerOptions().position(myPosition).title("Start"));
+//        googleMap.addMarker(new MarkerOptions().position(myPosition).title("Start"));
 
 
     }

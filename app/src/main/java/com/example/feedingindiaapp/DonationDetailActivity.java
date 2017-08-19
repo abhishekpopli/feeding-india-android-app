@@ -1,14 +1,9 @@
 package com.example.feedingindiaapp;
 
-import android.app.FragmentTransaction;
 import android.content.Intent;
-import android.location.Location;
-import android.location.LocationManager;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -22,7 +17,6 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
@@ -37,28 +31,30 @@ import org.json.JSONObject;
 import java.io.IOException;
 
 import de.hdodenhof.circleimageview.CircleImageView;
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.HttpUrl;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
 public class DonationDetailActivity extends AppCompatActivity implements OnMapReadyCallback {
 
-
-    GoogleMap googleMap;
-    LatLng myPosition;
-    Location location;
-    LocationManager locationManager;
-    private static final String DONATION_DETAIL_URL = "https://feedingindiaapp.000webhostapp.com/getdata/donation_detail.php?donation_id=";
+    // Server URL
+    private static final String DONATION_DETAIL_URL = "https://feedingindiaapp.000webhostapp.com/getdata/donation_detail.php";
+    // Adapter to show image slider for donation images
     DonationDetailsImageAdapter donationDetailsImageAdapter;
-
+    // Variables to control authentication
     private Boolean isVolunteer = true;
     private Boolean isAuthenticatedDonor = false;
-
+    // Variables to control program flow and te receive data from intent
     private Long donationId;
     private Boolean isPicked;
     private Boolean hasPickupGPS;
+    // Object in which all fetched details are stored
+    private Donation donation;
 
-    // These varibales are used to store additional data from request that aren't in Donaltion class
+    // These variables are used to store additional data from request that aren't in Donation class
     private Boolean isIndividual;
     private String volunteerName;
     private String volunteerPhotoUrl;
@@ -66,7 +62,6 @@ public class DonationDetailActivity extends AppCompatActivity implements OnMapRe
     private String pickupTime;
     private String pickupLocation = "";
     private String[] imageUrls = new String[2];
-    private Donation donation;
 
     // Variables for views
     private FloatingActionButton confirmBtn;
@@ -95,19 +90,16 @@ public class DonationDetailActivity extends AppCompatActivity implements OnMapRe
     private LinearLayout mapContainer;
     private TextView pickupLocationView;
     private Button openMapsBtn;
-    SupportMapFragment fm;
-    android.support.v4.app.FragmentTransaction ft;
-    LinearLayout layout;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_donation_detail);
 
-        // Puts the back button in AppBar
-        //getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        layout = (LinearLayout) findViewById(R.id.map_layout);
-        layout.setVisibility(View.GONE);
+//         Puts the back button in AppBar
+//        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
         progressBar = (ProgressBar) findViewById(R.id.detail_progress_bar);
         donorImage = (CircleImageView) findViewById(R.id.detail_donor_image);
         confirmBtn = (FloatingActionButton) findViewById(R.id.confirm_fab_btn);
@@ -146,217 +138,278 @@ public class DonationDetailActivity extends AppCompatActivity implements OnMapRe
         });
 
         //Receive donation_id from calling activity
-        donationId = getIntent().getLongExtra("donation_id", Long.valueOf(1));
+        donationId = getIntent().getLongExtra("donation_id", 1L);
 
-        //Fetched data and initialises donationDetailsAdapter
-        loadDonationDataFromServer();
+        // Initially hide all views
+        hideViews();
+
+        //Fetch and display data
+        connectToServer();
     }
 
-    private void loadDonationDataFromServer() {
 
-        AsyncTask<Void, Void, Void> task = new AsyncTask<Void, Void, Void>() {
+    private void hideViews() {
+
+        // Check required to make them visible
+        confirmBtn.setVisibility(View.INVISIBLE);
+        mapContainer.setVisibility(View.GONE);
+
+        // No check required to make visible
+        volunteerContainer.setVisibility(View.GONE);
+        pickupContainer.setVisibility(View.GONE);
+        otherDetailsContainer.setVisibility(View.GONE);
+        scrollView.setVisibility(View.INVISIBLE);
+    }
+
+    private void connectToServer() {
+
+        //Build URL
+        HttpUrl.Builder urlBuilder = HttpUrl.parse(DONATION_DETAIL_URL).newBuilder();
+        urlBuilder.addQueryParameter("donation_id", String.valueOf(donationId));
+        String url = urlBuilder.build().toString();
+
+
+        OkHttpClient client = new OkHttpClient();
+        Request request = new Request.Builder()
+                .url(url)
+                .build();
+
+        // Using Asynchronous network call
+        client.newCall(request).enqueue(new Callback() {
+
             @Override
-            protected void onPreExecute() {
-                super.onPreExecute();
+            public void onFailure(Call call, IOException e) {
 
-                // Check required to make them visible
-                confirmBtn.setVisibility(View.INVISIBLE);
-                mapContainer.setVisibility(View.GONE);
+                // Need to put everything to display/change in UI inside runOnUiThread
+                // Condition when we cannot connect to the internet
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
 
-                // No check required to make visible
-                volunteerContainer.setVisibility(View.GONE);
-                pickupContainer.setVisibility(View.GONE);
-                otherDetailsContainer.setVisibility(View.GONE);
-                scrollView.setVisibility(View.INVISIBLE);
+                        progressBar.setVisibility(View.INVISIBLE);
+                        Toast.makeText(DonationDetailActivity.this, "Cannot connect to server", Toast.LENGTH_SHORT).show();
+                    }
+                });
+
 
             }
 
             @Override
-            protected Void doInBackground(Void... params) {
+            public void onResponse(Call call, Response response) throws IOException {
 
-                OkHttpClient client = new OkHttpClient();
-                Request request = new Request.Builder()
-                        .url(DONATION_DETAIL_URL + String.valueOf(donationId))
-                        .build();
+                if (!response.isSuccessful()) {
 
-                try {
+                    // Condition when response code sent by the server says error
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
 
-                    Response response = client.newCall(request).execute();
-
-                    JSONArray array = new JSONArray(response.body().string());
-                    JSONObject object = array.getJSONObject(0);
-
-                    if (object.getString("is_picked").equals("1")) {
-                        isPicked = true;
-                    } else {
-                        isPicked = false;
-                    }
-
-                    if (object.getString("has_pickup_gps").equals("1")) {
-                        hasPickupGPS = true;
-                    } else {
-                        hasPickupGPS = false;
-                    }
-
-                    //If donation has been picked up, we also retreive volunteer details
-                    if (isPicked) {
-
-                        if (hasPickupGPS) {
-
-                            donation = new Donation(
-                                    object.getLong("donation_id"),
-                                    object.getString("request_date"),
-                                    object.getString("pickup_date"),
-                                    object.getLong("donor_id"),
-                                    object.getLong("volunteer_id"),
-                                    object.getString("pickup_photo_url"),
-                                    object.getString("delivery_photo_url"),
-                                    object.getString("pickup_city"),
-                                    object.getString("pickup_area"),
-                                    object.getString("pickup_street"),
-                                    object.getString("pickup_house_no"),
-                                    Short.parseShort(object.getString("is_veg")),
-                                    Short.parseShort(object.getString("is_perishable")),
-                                    Short.parseShort(object.getString("is_accepted")),
-                                    Short.parseShort(object.getString("is_picked")),
-                                    Short.parseShort(object.getString("is_completed")),
-                                    object.getString("other_details"),
-                                    object.getString("donor_photo_url"),
-                                    object.getString("donor_name"),
-                                    Short.parseShort(object.getString("has_pickup_gps")),
-                                    Double.parseDouble(object.getString("pickup_gps_latitude")),
-                                    Double.parseDouble(object.getString("pickup_gps_longitude"))
-                            );
-
-                        } else {
-
-                            donation = new Donation(
-                                    object.getLong("donation_id"),
-                                    object.getString("request_date"),
-                                    object.getString("pickup_date"),
-                                    object.getLong("donor_id"),
-                                    object.getLong("volunteer_id"),
-                                    object.getString("pickup_photo_url"),
-                                    object.getString("delivery_photo_url"),
-                                    object.getString("pickup_city"),
-                                    object.getString("pickup_area"),
-                                    object.getString("pickup_street"),
-                                    object.getString("pickup_house_no"),
-                                    Short.parseShort(object.getString("is_veg")),
-                                    Short.parseShort(object.getString("is_perishable")),
-                                    Short.parseShort(object.getString("is_accepted")),
-                                    Short.parseShort(object.getString("is_picked")),
-                                    Short.parseShort(object.getString("is_completed")),
-                                    object.getString("other_details"),
-                                    object.getString("donor_photo_url"),
-                                    object.getString("donor_name"),
-                                    Short.parseShort(object.getString("has_pickup_gps"))
-                            );
-
+                            progressBar.setVisibility(View.INVISIBLE);
+                            Toast.makeText(DonationDetailActivity.this, "Didn't get correct response from server", Toast.LENGTH_SHORT).show();
                         }
+                    });
 
-                        requestTime = object.getString("request_time");
-                        pickupTime = object.getString("pickup_time");
+                } else {
 
-                        if (Short.parseShort(object.getString("donor_type")) == 0) {
-                            isIndividual = true;
-                        } else {
-                            isIndividual = false;
-                        }
+                    // If load data from server is successful then display data
+                    if (loadData(response)) {
 
-                        volunteerName = object.getString("volunteer_name");
-                        volunteerPhotoUrl = object.getString("volunteer_photo_url");
-
-                    } else {
-
-                        if (hasPickupGPS) {
-
-                            donation = new Donation(
-                                    object.getLong("donation_id"),
-                                    object.getString("request_date"),
-                                    object.getString("pickup_date"),
-                                    object.getLong("donor_id"),
-                                    object.getString("pickup_photo_url"),
-                                    object.getString("delivery_photo_url"),
-                                    object.getString("pickup_city"),
-                                    object.getString("pickup_area"),
-                                    object.getString("pickup_street"),
-                                    object.getString("pickup_house_no"),
-                                    object.getString("other_details"),
-                                    Short.parseShort(object.getString("is_veg")),
-                                    Short.parseShort(object.getString("is_perishable")),
-                                    Short.parseShort(object.getString("is_accepted")),
-                                    Short.parseShort(object.getString("is_picked")),
-                                    Short.parseShort(object.getString("is_completed")),
-                                    object.getString("donor_photo_url"),
-                                    object.getString("donor_name"),
-                                    Short.parseShort(object.getString("has_pickup_gps")),
-                                    Double.parseDouble(object.getString("pickup_gps_latitude")),
-                                    Double.parseDouble(object.getString("pickup_gps_longitude"))
-                            );
-                        } else {
-
-                            donation = new Donation(
-                                    object.getLong("donation_id"),
-                                    object.getString("request_date"),
-                                    object.getString("pickup_date"),
-                                    object.getLong("donor_id"),
-                                    object.getString("pickup_photo_url"),
-                                    object.getString("delivery_photo_url"),
-                                    object.getString("pickup_city"),
-                                    object.getString("pickup_area"),
-                                    object.getString("pickup_street"),
-                                    object.getString("pickup_house_no"),
-                                    object.getString("other_details"),
-                                    Short.parseShort(object.getString("is_veg")),
-                                    Short.parseShort(object.getString("is_perishable")),
-                                    Short.parseShort(object.getString("is_accepted")),
-                                    Short.parseShort(object.getString("is_picked")),
-                                    Short.parseShort(object.getString("is_completed")),
-                                    object.getString("donor_photo_url"),
-                                    object.getString("donor_name"),
-                                    Short.parseShort(object.getString("has_pickup_gps"))
-                            );
-
-                        }
-
-
-                        requestTime = object.getString("request_time");
-                        pickupTime = object.getString("pickup_time");
-
-                        if (Short.parseShort(object.getString("donor_type")) == 0) {
-                            isIndividual = true;
-                        } else {
-                            isIndividual = false;
-                        }
+                        // Display data when everything is correct
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                displayData();
+                            }
+                        });
 
                     }
-
-                    imageUrls[0] = donation.getPickupPhotoUrl();
-                    imageUrls[1] = donation.getDeliveryPhotoUrl();
-
-                } catch (IOException | JSONException e) {
-                    e.printStackTrace();
                 }
 
-                return null;
             }
+        });
 
-            @Override
-            protected void onPostExecute(Void aVoid) {
-                super.onPostExecute(aVoid);
-
-                afterDataLoad();
-            }
-
-
-        };
-
-        //Execute the Async task
-        task.execute();
     }
 
-    private void afterDataLoad() {
+
+    private Boolean loadData(Response response) {
+
+        try {
+
+            final String responseData = response.body().string();
+
+            JSONArray array = new JSONArray(responseData);
+            JSONObject object = array.getJSONObject(0);
+
+            if (object.getString("is_picked").equals("1")) {
+                isPicked = true;
+            } else {
+                isPicked = false;
+            }
+
+            if (object.getString("has_pickup_gps").equals("1")) {
+                hasPickupGPS = true;
+            } else {
+                hasPickupGPS = false;
+            }
+
+            //If donation has been picked up, we also retrieve volunteer details
+            if (isPicked) {
+
+                if (hasPickupGPS) {
+
+                    donation = new Donation(
+                            object.getLong("donation_id"),
+                            object.getString("request_date"),
+                            object.getString("pickup_date"),
+                            object.getLong("donor_id"),
+                            object.getLong("volunteer_id"),
+                            object.getString("pickup_photo_url"),
+                            object.getString("delivery_photo_url"),
+                            object.getString("pickup_city"),
+                            object.getString("pickup_area"),
+                            object.getString("pickup_street"),
+                            object.getString("pickup_house_no"),
+                            Short.parseShort(object.getString("is_veg")),
+                            Short.parseShort(object.getString("is_perishable")),
+                            Short.parseShort(object.getString("is_accepted")),
+                            Short.parseShort(object.getString("is_picked")),
+                            Short.parseShort(object.getString("is_completed")),
+                            object.getString("other_details"),
+                            object.getString("donor_photo_url"),
+                            object.getString("donor_name"),
+                            Short.parseShort(object.getString("has_pickup_gps")),
+                            Double.parseDouble(object.getString("pickup_gps_latitude")),
+                            Double.parseDouble(object.getString("pickup_gps_longitude"))
+                    );
+
+                } else {
+
+                    donation = new Donation(
+                            object.getLong("donation_id"),
+                            object.getString("request_date"),
+                            object.getString("pickup_date"),
+                            object.getLong("donor_id"),
+                            object.getLong("volunteer_id"),
+                            object.getString("pickup_photo_url"),
+                            object.getString("delivery_photo_url"),
+                            object.getString("pickup_city"),
+                            object.getString("pickup_area"),
+                            object.getString("pickup_street"),
+                            object.getString("pickup_house_no"),
+                            Short.parseShort(object.getString("is_veg")),
+                            Short.parseShort(object.getString("is_perishable")),
+                            Short.parseShort(object.getString("is_accepted")),
+                            Short.parseShort(object.getString("is_picked")),
+                            Short.parseShort(object.getString("is_completed")),
+                            object.getString("other_details"),
+                            object.getString("donor_photo_url"),
+                            object.getString("donor_name"),
+                            Short.parseShort(object.getString("has_pickup_gps"))
+                    );
+
+                }
+
+                requestTime = object.getString("request_time");
+                pickupTime = object.getString("pickup_time");
+
+                if (Short.parseShort(object.getString("donor_type")) == 0) {
+                    isIndividual = true;
+                } else {
+                    isIndividual = false;
+                }
+
+                volunteerName = object.getString("volunteer_name");
+                volunteerPhotoUrl = object.getString("volunteer_photo_url");
+
+            } else {
+
+                if (hasPickupGPS) {
+
+                    donation = new Donation(
+                            object.getLong("donation_id"),
+                            object.getString("request_date"),
+                            object.getString("pickup_date"),
+                            object.getLong("donor_id"),
+                            object.getString("pickup_photo_url"),
+                            object.getString("delivery_photo_url"),
+                            object.getString("pickup_city"),
+                            object.getString("pickup_area"),
+                            object.getString("pickup_street"),
+                            object.getString("pickup_house_no"),
+                            object.getString("other_details"),
+                            Short.parseShort(object.getString("is_veg")),
+                            Short.parseShort(object.getString("is_perishable")),
+                            Short.parseShort(object.getString("is_accepted")),
+                            Short.parseShort(object.getString("is_picked")),
+                            Short.parseShort(object.getString("is_completed")),
+                            object.getString("donor_photo_url"),
+                            object.getString("donor_name"),
+                            Short.parseShort(object.getString("has_pickup_gps")),
+                            Double.parseDouble(object.getString("pickup_gps_latitude")),
+                            Double.parseDouble(object.getString("pickup_gps_longitude"))
+                    );
+                } else {
+
+                    donation = new Donation(
+                            object.getLong("donation_id"),
+                            object.getString("request_date"),
+                            object.getString("pickup_date"),
+                            object.getLong("donor_id"),
+                            object.getString("pickup_photo_url"),
+                            object.getString("delivery_photo_url"),
+                            object.getString("pickup_city"),
+                            object.getString("pickup_area"),
+                            object.getString("pickup_street"),
+                            object.getString("pickup_house_no"),
+                            object.getString("other_details"),
+                            Short.parseShort(object.getString("is_veg")),
+                            Short.parseShort(object.getString("is_perishable")),
+                            Short.parseShort(object.getString("is_accepted")),
+                            Short.parseShort(object.getString("is_picked")),
+                            Short.parseShort(object.getString("is_completed")),
+                            object.getString("donor_photo_url"),
+                            object.getString("donor_name"),
+                            Short.parseShort(object.getString("has_pickup_gps"))
+                    );
+
+                }
+
+
+                requestTime = object.getString("request_time");
+                pickupTime = object.getString("pickup_time");
+
+                if (Short.parseShort(object.getString("donor_type")) == 0) {
+                    isIndividual = true;
+                } else {
+                    isIndividual = false;
+                }
+
+            }
+
+            imageUrls[0] = donation.getPickupPhotoUrl();
+            imageUrls[1] = donation.getDeliveryPhotoUrl();
+
+        } catch (IOException | JSONException e) {
+
+            e.printStackTrace();
+
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+
+                    progressBar.setVisibility(View.INVISIBLE);
+                    Toast.makeText(DonationDetailActivity.this, "Cannot parse data from server correctly", Toast.LENGTH_SHORT).show();
+                }
+            });
+
+            return false;
+        }
+
+        return true;
+    }
+
+
+    private void displayData() {
 
         // For displaying images in slider
         if (imageUrls == null) {
@@ -460,9 +513,10 @@ public class DonationDetailActivity extends AppCompatActivity implements OnMapRe
             pickupLocationView.setText(pickupLocation);
 
             if (hasPickupGPS == true) {
-                layout.setVisibility(View.VISIBLE);
+
                 mapContainer.setVisibility(View.VISIBLE);
-                fm = (SupportMapFragment)
+
+                SupportMapFragment fm = (SupportMapFragment)
                         getSupportFragmentManager().findFragmentById(R.id.detail_map);
 
                 // Getting GoogleMap object from the fragment
@@ -522,6 +576,7 @@ public class DonationDetailActivity extends AppCompatActivity implements OnMapRe
         scrollView.setVisibility(View.VISIBLE);
         progressBar.setVisibility(View.INVISIBLE);
     }
+
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
