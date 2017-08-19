@@ -46,7 +46,14 @@
             android:value="AIzaSyDVV0JuqEstGuxswOOkcXJnwM3u_Sm-pD8" />
         <!-- End Maps Android Key -->
 
-        <activity android:name=".Getlocation"></activity>
+        <activity android:name=".Getlocation" />
+        <activity android:name=".SplashActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
     </application>
 
 </manifest>
