@@ -98,6 +98,7 @@ public class DonationDetailActivity extends AppCompatActivity implements OnMapRe
     SupportMapFragment fm;
     android.support.v4.app.FragmentTransaction ft;
     LinearLayout layout;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -320,7 +321,6 @@ public class DonationDetailActivity extends AppCompatActivity implements OnMapRe
                         }
 
 
-
                         requestTime = object.getString("request_time");
                         pickupTime = object.getString("pickup_time");
 
@@ -472,10 +472,11 @@ public class DonationDetailActivity extends AppCompatActivity implements OnMapRe
                     @Override
                     public void onClick(View v) {
 
+                        String geoURI = "geo:0,0?q=" + donation.getPickupGPSLatitude() + "," + donation.getPickupGPSLongitude() + "(Pickup Location)";
+
                         Intent intent = new Intent(Intent.ACTION_VIEW, Uri
-                                .parse("geo:"+donation.getPickupGPSLatitude()+","+ donation.getPickupGPSLongitude()));
-                        String a ="geo:"+donation.getPickupGPSLatitude()+","+ donation.getPickupGPSLongitude();
-                        Toast.makeText(DonationDetailActivity.this,a, Toast.LENGTH_SHORT).show();
+                                .parse(geoURI));
+
                         if (intent.resolveActivity(getPackageManager()) != null) {
                             startActivity(intent);
                         }
@@ -527,8 +528,8 @@ public class DonationDetailActivity extends AppCompatActivity implements OnMapRe
         MapsInitializer.initialize(this);
 
 
-       googleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
-        googleMap.addMarker(new MarkerOptions().position(new LatLng(donation.getPickupGPSLatitude(), donation.getPickupGPSLongitude()  )).title("Pickup Location"));
+        googleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+        googleMap.addMarker(new MarkerOptions().position(new LatLng(donation.getPickupGPSLatitude(), donation.getPickupGPSLongitude())).title("Pickup Location"));
 
         CameraPosition cameraPosition = CameraPosition.builder().target(new LatLng(donation.getPickupGPSLatitude(), donation.getPickupGPSLongitude())).zoom(16).bearing(0).tilt(45).build();
         googleMap.moveCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
