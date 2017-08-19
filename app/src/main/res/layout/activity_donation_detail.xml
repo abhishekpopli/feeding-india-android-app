@@ -575,24 +575,28 @@
                                     android:text="Map"
                                     android:textColor="#fff"
                                     android:textSize="18dp" />
+
                                 <LinearLayout
                                     android:id="@+id/map_layout"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content">
-                                <fragment xmlns:android="http://schemas.android.com/apk/res/android"
-                                    xmlns:map="http://schemas.android.com/apk/res-auto"
-                                    android:id="@+id/detail_map"
-                                    android:layout_width="fill_parent"
-                                    android:layout_height="300dp"
-                                    class="com.google.android.gms.maps.SupportMapFragment"
-                                    tools:layout_editor_absoluteY="8dp"
-                                    tools:layout_editor_absoluteX="8dp" />
+
+                                    <fragment xmlns:android="http://schemas.android.com/apk/res/android"
+                                        xmlns:map="http://schemas.android.com/apk/res-auto"
+                                        android:id="@+id/detail_map"
+                                        class="com.google.android.gms.maps.SupportMapFragment"
+                                        android:layout_width="fill_parent"
+                                        android:layout_height="300dp"
+                                        tools:layout_editor_absoluteX="8dp"
+                                        tools:layout_editor_absoluteY="8dp" />
+
                                 </LinearLayout>
 
                                 <Button
                                     android:id="@+id/detail_open_maps_btn"
                                     android:layout_width="wrap_content"
                                     android:layout_height="48dp"
+                                    android:layout_marginTop="8dp"
                                     android:background="@drawable/light_blue_tag"
                                     android:paddingLeft="8dp"
                                     android:paddingRight="8dp"
