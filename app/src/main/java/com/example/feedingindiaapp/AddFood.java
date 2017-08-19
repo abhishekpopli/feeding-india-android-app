@@ -30,26 +30,42 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
 
 public class AddFood extends AppCompatActivity implements  View.OnClickListener {
+    ProgressDialog progressDialog;
 
+    private String donor_id ="1";
+    private Uri picUri;
     private TextView latitude;
     private TextView longitude;
     private Spinner city;
     private EditText area;
     private EditText street;
     private EditText houseno;
+    private String has_pickup_gps ="0";
+    private String pickup_gps_latitude = "";
+    private String pickup_gps_longitude = "";
     private ImageView upload_pic;
     private CheckBox isveg;
     private CheckBox isperishable;
     private EditText other_details;
     private FloatingActionButton submit_button;
     protected int LOAD_IMAGE_CAMERA = 0, CROP_IMAGE = 1, LOAD_IMAGE_GALLARY = 2;
-    private Uri picUri;
+
     Button seemap;
     File pic;
     Bundle extras;
@@ -74,7 +90,6 @@ public class AddFood extends AppCompatActivity implements  View.OnClickListener 
         isveg = (CheckBox) findViewById(R.id.is_veg);
         isperishable = (CheckBox) findViewById(R.id.is_perishable);
         other_details = (EditText) findViewById(R.id.other_details);
-
 
         submit_button = (FloatingActionButton) findViewById(R.id.submit_button);
         submit_button.setOnClickListener(this);
@@ -181,39 +196,22 @@ public class AddFood extends AppCompatActivity implements  View.OnClickListener 
                 // get the cropped bitmap
                 Bitmap photo = extras.getParcelable("data");
                 upload_pic.setImageBitmap(photo);
-
+                upload_pic.setTag("newpic");
 
                 new uploadcloudinary().execute();
             }
         }
         else if (resultCode == Activity.RESULT_OK && data!=null)
         {
-            String latitude_value = data.getStringExtra("latitude");
-            String longitude_value = data.getStringExtra("longitude");
+            has_pickup_gps="1";
+
+            pickup_gps_latitude = data.getStringExtra("latitude");
+            pickup_gps_longitude = data.getStringExtra("longitude");
             latitude.setVisibility(View.VISIBLE);
             longitude.setVisibility(View.VISIBLE);
-            latitude.setText(latitude_value);
-            longitude.setText(longitude_value);
+            latitude.setText(pickup_gps_latitude);
+            longitude.setText(pickup_gps_longitude);
         }
-    }
-    public void TransferData()
-    {
-
-        Toast.makeText(this, "Happy!!", Toast.LENGTH_SHORT).show();
-        Resources resources = this.getResources();
-        String[] codes = resources.getStringArray(R.array.city_arrays);
-        int pos = city.getSelectedItemPosition();
-        String donorid;
-        String city = codes[pos];
-        String areaname = area.getText().toString();
-        String streetname = street.getText().toString();
-        String house = houseno.getText().toString();
-        String picurl;
-        Boolean veg = isveg.isChecked();
-        //false if non-veg
-        Boolean perishable = isperishable.isChecked();
-        //true if persihable
-        String otherdetails = other_details.getText().toString();
     }
 
     protected void CropImage() {
@@ -250,24 +248,27 @@ public class AddFood extends AppCompatActivity implements  View.OnClickListener 
             return;
 
         }
+        Resources resources = this.getResources();
+        String[] codes = resources.getStringArray(R.array.city_arrays);
+        int pos = city.getSelectedItemPosition();
 
-        final ProgressDialog progressDialog = new ProgressDialog(AddFood.this);
-        progressDialog.setIndeterminate(true);
-        progressDialog.setCancelable(false);
-        progressDialog.setTitle("Submiiting your donation");
-        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-        progressDialog.setMessage("Please wait...");
-        progressDialog.show();
+        String city = codes[pos];
+        String areaname = area.getText().toString();
+        String streetname = street.getText().toString();
+        String house = houseno.getText().toString();
 
-        new android.os.Handler().postDelayed(
-                new Runnable() {
-                    public void run() {
-                        // On complete, adding food to database
-                        Toast.makeText(AddFood.this, "Hello", Toast.LENGTH_SHORT).show();
+        Boolean veg = isveg.isChecked();
+        //true if veg
+        Boolean perishable = isperishable.isChecked();
+        //true if persihable
+        String otherdetails = other_details.getText().toString();
 
-                        progressDialog.dismiss();
-                    }
-                }, 2000);
+        String[] details ={donor_id,picUri.toString(),city,areaname,streetname,house,has_pickup_gps,pickup_gps_latitude,pickup_gps_longitude,String.valueOf(isveg)
+        ,String.valueOf(isperishable),otherdetails};
+
+        Bgtask bg = new Bgtask();
+        bg.execute(details);
+
     }
 
 
@@ -291,6 +292,94 @@ public class AddFood extends AppCompatActivity implements  View.OnClickListener 
             return null;
         }
     };
+
+
+    private class Bgtask extends AsyncTask<String[], Void, String[]> {
+
+        @Override
+        protected void onPreExecute() {
+
+            progressDialog = new ProgressDialog(AddFood.this);
+            progressDialog.setIndeterminate(true);
+            progressDialog.setCancelable(false);
+            progressDialog.setTitle("Submiiting your donation");
+            progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            progressDialog.setMessage("Please wait...");
+            progressDialog.show();
+
+
+        }
+
+        @Override
+        protected String[] doInBackground(String[]... passing) {
+
+
+            String result[] =new String[1];
+            String fetch_url = "https://feedingindiaapp.000webhostapp.com/adddata/addfood.php";
+            try {
+
+
+                URL url = new URL(fetch_url);
+                HttpURLConnection http = (HttpURLConnection) url.openConnection();
+                http.setRequestMethod("POST");
+                http.setDoInput(true);
+                http.setDoOutput(true);
+                OutputStream os = http.getOutputStream();
+                BufferedWriter bf = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
+                String[] details = passing[0];
+
+                String postdata = URLEncoder.encode("donor_id", "UTF-8") + "=" + URLEncoder.encode(details[0], "UTF-8") + "&" +
+                        URLEncoder.encode("pickup_photo_url", "UTF-8") + "=" + URLEncoder.encode(details[1], "UTF-8")+ "&" +
+                        URLEncoder.encode("pickup_city", "UTF-8") + "=" + URLEncoder.encode(details[2], "UTF-8")+ "&" +
+                        URLEncoder.encode("pickup_area", "UTF-8") + "=" + URLEncoder.encode(details[3], "UTF-8")+ "&" +
+                        URLEncoder.encode("pickup_street", "UTF-8") + "=" + URLEncoder.encode(details[4], "UTF-8")+ "&" +
+                        URLEncoder.encode("pickup_house_no", "UTF-8") + "=" + URLEncoder.encode(details[5], "UTF-8")+ "&" +
+                        URLEncoder.encode("has_pickup_gps", "UTF-8") + "=" + URLEncoder.encode(details[6], "UTF-8")+ "&" +
+                        URLEncoder.encode("pickup_gps_latitude", "UTF-8") + "=" + URLEncoder.encode(details[7], "UTF-8") + "&" +
+                        URLEncoder.encode("pickup_gps_longitude", "UTF-8") + "=" + URLEncoder.encode(details[8], "UTF-8") + "&" +
+                        URLEncoder.encode("is_veg", "UTF-8") + "=" + URLEncoder.encode(details[9], "UTF-8") + "&" +
+                        URLEncoder.encode("is_perishable", "UTF-8") + "=" + URLEncoder.encode(details[10], "UTF-8") + "&" +
+                        URLEncoder.encode("other_details", "UTF-8") + "=" + URLEncoder.encode(details[11], "UTF-8") ;
+                bf.write(postdata);
+                bf.flush();
+                bf.close();
+                os.close();
+
+                InputStream is = http.getInputStream();
+                BufferedReader br = new BufferedReader(new InputStreamReader(is, "iso-8859-1"));
+                String line = "";
+
+                while ((line = br.readLine()) != null) {
+                    result[0] += line;
+
+                }
+
+                br.close();
+                is.close();
+                http.disconnect();
+                return result;
+
+
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+
+            return null;
+        }
+
+
+        @Override
+        protected void onPostExecute(String[] result) {
+
+            Toast.makeText(AddFood.this, result[0], Toast.LENGTH_SHORT).show();
+            progressDialog.dismiss();
+
+        }
+    }
+
 
 }
 
