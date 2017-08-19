@@ -1,8 +1,7 @@
 package com.example.feedingindiaapp;
 
-import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.content.Intent;
+import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.ImageView;
@@ -34,7 +33,7 @@ public class SplashActivity extends AppCompatActivity {
                     finish();
                 }
                 else {
-                    Intent i = new Intent(SplashActivity.this, LoginActivity.class);
+                    Intent i = new Intent(SplashActivity.this, TempActivity.class);
                     startActivity(i);
                     finish();
                 }
