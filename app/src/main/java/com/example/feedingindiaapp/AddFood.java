@@ -285,7 +285,7 @@ public class AddFood extends AppCompatActivity implements  View.OnClickListener 
             Cloudinary cloudinary = new Cloudinary(config);
 
             try {
-                cloudinary.uploader().upload(pic.getAbsolutePath(), ObjectUtils.emptyMap());
+                cloudinary.uploader().upload(pic.getAbsolutePath(), ObjectUtils.asMap("public_id",donor_id+picUri.toString()));
             } catch (IOException e) {
                 e.printStackTrace();
             }
