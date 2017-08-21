@@ -40,7 +40,8 @@
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".LoginActivity"
-            android:theme="@style/AppTheme.NoActionBar"/>
+            android:theme="@style/AppTheme"
+            android:label="Let's Get Started"/>
         <activity
             android:name=".AddFood"
             android:theme="@style/AppTheme.NoActionBar" />

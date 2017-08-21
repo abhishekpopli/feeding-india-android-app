@@ -1,35 +1,38 @@
 package com.example.feedingindiaapp;
 
 import android.os.Bundle;
-import android.support.design.widget.TabLayout;
-import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
 
 public class LoginActivity extends AppCompatActivity {
 
-    private ViewPager viewPager;
-    private TabLayout tabLayout;
+    private String userEmail;
+    private String userPassword;
+
+    private Button formSubmitBtn;
+    private EditText userEmailField;
+    private EditText userPasswordField;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        viewPager = (ViewPager) findViewById(R.id.container);
-        setupViewPager();
+        formSubmitBtn = (Button) findViewById(R.id.login_form_submit_btn);
+        userEmailField = (EditText) findViewById(R.id.login_form_email);
+        userPasswordField = (EditText) findViewById(R.id.login_form_password);
 
-        tabLayout = (TabLayout) findViewById(R.id.tabs);
-        tabLayout.setupWithViewPager(viewPager);
+        formSubmitBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
 
-    }
+                userEmail = userEmailField.getText().toString();
+                userPassword = userPasswordField.getText().toString();
 
-    private void setupViewPager() {
-
-        LoginPageAdapter loginPageAdapter = new LoginPageAdapter(getSupportFragmentManager());
-        loginPageAdapter.addFragment(new DonorLoginFragment(), "Donor");
-        loginPageAdapter.addFragment(new VolunteerLoginFragment(), "Volunteer");
-
-        viewPager.setAdapter(loginPageAdapter);
+            }
+        });
 
     }
 }
