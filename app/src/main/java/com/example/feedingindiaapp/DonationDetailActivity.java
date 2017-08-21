@@ -90,7 +90,7 @@ public class DonationDetailActivity extends AppCompatActivity implements OnMapRe
     private LinearLayout mapContainer;
     private TextView pickupLocationView;
     private Button openMapsBtn;
-
+    private LinearLayout layout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -126,7 +126,8 @@ public class DonationDetailActivity extends AppCompatActivity implements OnMapRe
         mapContainer = (LinearLayout) findViewById(R.id.detail_map_container);
         pickupLocationView = (TextView) findViewById(R.id.detail_location);
         openMapsBtn = (Button) findViewById(R.id.detail_open_maps_btn);
-
+        layout = (LinearLayout) findViewById(R.id.map_layout);
+        layout.setVisibility(View.GONE);
 
         // Setting onClick listener on FAB
         confirmBtn.setOnClickListener(new View.OnClickListener() {
@@ -513,7 +514,7 @@ public class DonationDetailActivity extends AppCompatActivity implements OnMapRe
             pickupLocationView.setText(pickupLocation);
 
             if (hasPickupGPS == true) {
-
+                layout.setVisibility(View.VISIBLE);
                 mapContainer.setVisibility(View.VISIBLE);
 
                 SupportMapFragment fm = (SupportMapFragment)

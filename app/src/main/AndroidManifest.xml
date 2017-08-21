@@ -2,11 +2,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.feedingindiaapp">
 
-    <!-- Maps Android Key -->
-    <meta-data
-        android:name="com.google.android.geo.API_KEY"
-        android:value="AIzaSyDVV0JuqEstGuxswOOkcXJnwM3u_Sm-pD8" />
-    <!-- End Maps Android Key -->
 
     <uses-feature
         android:glEsVersion="0x00020000"
@@ -51,7 +46,10 @@
             android:parentActivityName=".MainActivity" />
         <activity android:name=".Getlocation" />
         <activity android:name=".TempActivity" />
-        <activity android:name=".RegisterDetailsActivity"></activity>
+        <activity android:name=".RegisterDetailsActivity"/>
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyDVV0JuqEstGuxswOOkcXJnwM3u_Sm-pD8" />
     </application>
 
 </manifest>

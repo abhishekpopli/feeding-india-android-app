@@ -585,9 +585,7 @@
                                         android:id="@+id/detail_map"
                                         class="com.google.android.gms.maps.SupportMapFragment"
                                         android:layout_width="fill_parent"
-                                        android:layout_height="300dp"
-                                        tools:layout_editor_absoluteX="8dp"
-                                        tools:layout_editor_absoluteY="8dp" />
+                                        android:layout_height="300dp" />
 
                                 </LinearLayout>
 
