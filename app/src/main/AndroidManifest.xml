@@ -2,7 +2,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.feedingindiaapp">
 
-
     <uses-feature
         android:glEsVersion="0x00020000"
         android:required="true" />
@@ -35,8 +34,8 @@
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".LoginActivity"
-            android:theme="@style/AppTheme"
-            android:label="Let's Get Started"/>
+            android:label="Welcome Back"
+            android:theme="@style/AppTheme" />
         <activity
             android:name=".AddFood"
             android:theme="@style/AppTheme.NoActionBar" />
@@ -46,10 +45,15 @@
             android:parentActivityName=".MainActivity" />
         <activity android:name=".Getlocation" />
         <activity android:name=".TempActivity" />
-        <activity android:name=".RegisterDetailsActivity"/>
+        <activity
+            android:name=".RegisterActivity"
+            android:label="Let&apos;s Get Started" />
+
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyDVV0JuqEstGuxswOOkcXJnwM3u_Sm-pD8" />
+
+        <activity android:name=".RegisterDetailsActivity"></activity>
     </application>
 
 </manifest>

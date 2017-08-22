@@ -23,7 +23,7 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
-public class LoginActivity extends AppCompatActivity {
+public class RegisterActivity extends AppCompatActivity {
 
     private static final String USER_AUTH_URL = "https://feedingindiaapp.000webhostapp.com/getauth/register_login.php";
 
@@ -31,7 +31,6 @@ public class LoginActivity extends AppCompatActivity {
     private String userPassword;
     private String userType;
 
-    private Button newUserBtn;
     private Button formSubmitBtn;
     private TextInputEditText userEmailField;
     private TextInputEditText userPasswordField;
@@ -40,14 +39,11 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_login);
+        setContentView(R.layout.activity_register);
 
-        formSubmitBtn = (Button) findViewById(R.id.login_form_submit_btn);
-        userEmailField = (TextInputEditText) findViewById(R.id.login_form_email);
-        userPasswordField = (TextInputEditText) findViewById(R.id.login_form_password);
+        userEmailField = (TextInputEditText) findViewById(R.id.register_form_email);
+        userPasswordField = (TextInputEditText) findViewById(R.id.register_form_password);
         loadingLayout = (RelativeLayout) findViewById(R.id.loading_layout);
-        newUserBtn = (Button) findViewById(R.id.login_new_user_btn);
-
 
         formSubmitBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -60,16 +56,8 @@ public class LoginActivity extends AppCompatActivity {
                     loadingLayout.setVisibility(View.VISIBLE);
                     sendAuthenticationRequest();
                 } else {
-                    Toast.makeText(LoginActivity.this, "Please fill all the fields", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(RegisterActivity.this, "Please fill all the fields", Toast.LENGTH_SHORT).show();
                 }
-            }
-        });
-
-        newUserBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(LoginActivity.this, RegisterActivity.class);
-                startActivity(intent);
             }
         });
 
@@ -125,7 +113,7 @@ public class LoginActivity extends AppCompatActivity {
                 .add("email", userEmail)
                 .add("password", userPassword)
                 .add("user_type", userType)
-                .add("action", "login")
+                .add("action", "register")
                 .build();
 
         Request request = new Request.Builder()
@@ -142,7 +130,7 @@ public class LoginActivity extends AppCompatActivity {
                     public void run() {
 
                         loadingLayout.setVisibility(View.INVISIBLE);
-                        Toast.makeText(LoginActivity.this, "Cannot connect to server", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(RegisterActivity.this, "Cannot connect to server", Toast.LENGTH_SHORT).show();
                     }
                 });
 
@@ -157,7 +145,7 @@ public class LoginActivity extends AppCompatActivity {
                         public void run() {
 
                             loadingLayout.setVisibility(View.INVISIBLE);
-                            Toast.makeText(LoginActivity.this, "Didn't get correct response from server", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(RegisterActivity.this, "Didn't get correct response from server", Toast.LENGTH_SHORT).show();
                         }
                     });
                 } else {
@@ -184,14 +172,14 @@ public class LoginActivity extends AppCompatActivity {
 
                     loadingLayout.setVisibility(View.INVISIBLE);
 
-                    Toast.makeText(LoginActivity.this, responseMessage, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(RegisterActivity.this, responseMessage, Toast.LENGTH_SHORT).show();
 
                     if (responseCode == 0) {
                         // Do nothing
                     } else if (responseCode == 1) {
 
                         //Also store in shared preferences
-                        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                        Intent intent = new Intent(RegisterActivity.this, MainActivity.class);
                         startActivity(intent);
                     }
                 }

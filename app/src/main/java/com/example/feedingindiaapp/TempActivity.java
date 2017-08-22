@@ -10,6 +10,7 @@ public class TempActivity extends AppCompatActivity {
 
     private Button gotoLogin;
     private Button gotoMainActivity;
+    private Button gotoRegister;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -18,6 +19,7 @@ public class TempActivity extends AppCompatActivity {
 
         gotoLogin = (Button) findViewById(R.id.goto_login);
         gotoMainActivity = (Button) findViewById(R.id.goto_main);
+        gotoRegister = (Button) findViewById(R.id.goto_register);
 
         gotoLogin.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -31,6 +33,14 @@ public class TempActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(TempActivity.this,MainActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        gotoRegister.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(TempActivity.this, RegisterActivity.class);
                 startActivity(intent);
             }
         });
