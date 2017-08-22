@@ -48,12 +48,13 @@
         <activity
             android:name=".RegisterActivity"
             android:label="Let&apos;s Get Started" />
+        <activity
+            android:name=".RegisterDetailsActivity"
+            android:label="Almost Done"/>
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyDVV0JuqEstGuxswOOkcXJnwM3u_Sm-pD8" />
-
-        <activity android:name=".RegisterDetailsActivity"></activity>
     </application>
 
 </manifest>

@@ -44,6 +44,7 @@ public class RegisterActivity extends AppCompatActivity {
         userEmailField = (TextInputEditText) findViewById(R.id.register_form_email);
         userPasswordField = (TextInputEditText) findViewById(R.id.register_form_password);
         loadingLayout = (RelativeLayout) findViewById(R.id.loading_layout);
+        formSubmitBtn = (Button) findViewById(R.id.register_form_submit_btn);
 
         formSubmitBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -179,7 +180,10 @@ public class RegisterActivity extends AppCompatActivity {
                     } else if (responseCode == 1) {
 
                         //Also store in shared preferences
-                        Intent intent = new Intent(RegisterActivity.this, MainActivity.class);
+                        Intent intent = new Intent(RegisterActivity.this, RegisterDetailsActivity.class);
+                        intent.putExtra("email",userEmail);
+                        intent.putExtra("password",userPassword);
+                        intent.putExtra("user_type",userType);
                         startActivity(intent);
                     }
                 }
