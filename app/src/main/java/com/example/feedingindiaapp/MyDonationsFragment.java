@@ -1,11 +1,10 @@
 package com.example.feedingindiaapp;
 
-
 import android.content.Intent;
-import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -28,74 +27,42 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
-
-/**
- * A simple {@link Fragment} subclass.
- */
-public class PendingDonationsFragment extends Fragment {
-
+public class MyDonationsFragment extends Fragment {
     private static final String DONATION_LIST_URL = "https://feedingindiaapp.000webhostapp.com/getdata/donations_list.php";
 
     private RecyclerView recyclerView;
     private RecyclerView.Adapter adapter;
-
-    private ArrayList<Donation> listItemsPending = new ArrayList<>();
-
-    private FloatingActionButton addDonationBtn;
     private ProgressBar progressBar;
+    private ArrayList<Donation> listOfDonations = new ArrayList<>();
 
-    public PendingDonationsFragment() {
+    public MyDonationsFragment() {
         // Required empty public constructor
     }
-
-
-    /**
-     * Only run findViewById calls in this method
-     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_donations_list, container, false);
-
-        recyclerView = (RecyclerView) view.findViewById(R.id.recylerView);
-        addDonationBtn = (FloatingActionButton) view.findViewById(R.id.add_fab_btn);
-        progressBar = (ProgressBar) view.findViewById(R.id.list_progress_bar);
+        View view = inflater.inflate(R.layout.activity_my_donations_fragment, container, false);
+        recyclerView = (RecyclerView) view.findViewById(R.id.recylerViewofmydonations);
+        progressBar = (ProgressBar) view.findViewById(R.id.list_progress_bar_my_donations);
 
         return view;
 
     }
 
-
-    /**
-     * Run everything in this method except findViewById calls
-     */
-    @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        // Set onclick listener on FAB
-        addDonationBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent i =new Intent(PendingDonationsFragment.this.getContext(),AddFood.class);
-                startActivity(i);
-            }
-        });
-
 
         // Set layout manager to recyler view
-        final LinearLayoutManager layoutManager = new LinearLayoutManager(PendingDonationsFragment.this.getContext());
+        final LinearLayoutManager layoutManager = new LinearLayoutManager(MyDonationsFragment.this.getContext());
         recyclerView.setLayoutManager(layoutManager);
-
-
         // Initially fetch data from server (no = limit specified in PHP file)
         connectToServer(0);
 
 
         // Create a new adapter
-        adapter = new DonationAdapter(listItemsPending, PendingDonationsFragment.this.getContext());
-
+        adapter = new DonationAdapter(listOfDonations, MyDonationsFragment.this.getContext());
         // Assign adapter to recycler view
         recyclerView.setAdapter(adapter);
 
@@ -105,8 +72,8 @@ public class PendingDonationsFragment extends Fragment {
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
 
                 // Load more data when last item in arraylist is displayed on screen
-                if (layoutManager.findLastCompletelyVisibleItemPosition() == listItemsPending.size() - 1) {
-                    connectToServer(listItemsPending.get(listItemsPending.size() - 1).getDonationId());
+                if (layoutManager.findLastCompletelyVisibleItemPosition() == listOfDonations.size() - 1) {
+                    connectToServer(listOfDonations.get(listOfDonations.size() - 1).getDonationId());
                 }
 
             }
@@ -115,6 +82,8 @@ public class PendingDonationsFragment extends Fragment {
 
 
     }
+
+
 
 
     private void connectToServer(final long donation_id) {
@@ -135,12 +104,12 @@ public class PendingDonationsFragment extends Fragment {
 
                 // Need to put everything to display/change in UI inside runOnUiThread
                 // Condition when we cannot connect to the internet
-                PendingDonationsFragment.this.getActivity().runOnUiThread(new Runnable() {
+                MyDonationsFragment.this.getActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
 
                         progressBar.setVisibility(View.INVISIBLE);
-                        Toast.makeText(PendingDonationsFragment.this.getContext(), "Cannot connect to server", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(MyDonationsFragment.this.getContext(), "Cannot connect to server", Toast.LENGTH_SHORT).show();
                     }
                 });
 
@@ -152,12 +121,12 @@ public class PendingDonationsFragment extends Fragment {
                 if (!response.isSuccessful()) {
 
                     // Condition when response code sent by the server says error
-                    PendingDonationsFragment.this.getActivity().runOnUiThread(new Runnable() {
+                    MyDonationsFragment.this.getActivity().runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
 
                             progressBar.setVisibility(View.INVISIBLE);
-                            Toast.makeText(PendingDonationsFragment.this.getContext(), "Didn't get correct response from server", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(MyDonationsFragment.this.getContext(), "Didn't get correct response from server", Toast.LENGTH_SHORT).show();
                         }
                     });
 
@@ -167,7 +136,7 @@ public class PendingDonationsFragment extends Fragment {
                     if (loadData(response)) {
 
                         // Display data when everything is correct
-                        PendingDonationsFragment.this.getActivity().runOnUiThread(new Runnable() {
+                        MyDonationsFragment.this.getActivity().runOnUiThread(new Runnable() {
 
                             @Override
                             public void run() {
@@ -190,6 +159,7 @@ public class PendingDonationsFragment extends Fragment {
         });
 
     }
+
 
     private Boolean loadData(Response response) {
 
@@ -218,19 +188,19 @@ public class PendingDonationsFragment extends Fragment {
                         object.getString("pickup_datetime")
                 );
 
-                listItemsPending.add(item);
+                listOfDonations.add(item);
             }
 
         } catch (IOException | JSONException e) {
 
             e.printStackTrace();
 
-            PendingDonationsFragment.this.getActivity().runOnUiThread(new Runnable() {
+            MyDonationsFragment.this.getActivity().runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
 
                     progressBar.setVisibility(View.INVISIBLE);
-                    Toast.makeText(PendingDonationsFragment.this.getContext(), "Cannot parse data from server correctly", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MyDonationsFragment.this.getContext(), "Cannot parse data from server correctly", Toast.LENGTH_SHORT).show();
                 }
             });
 
@@ -240,5 +210,7 @@ public class PendingDonationsFragment extends Fragment {
 
         return true;
     }
+
+
 
 }
