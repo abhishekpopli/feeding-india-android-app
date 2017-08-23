@@ -56,7 +56,6 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyDVV0JuqEstGuxswOOkcXJnwM3u_Sm-pD8" />
 
-        <activity android:name=".MyDonationsFragment"></activity>
     </application>
 
 </manifest>
