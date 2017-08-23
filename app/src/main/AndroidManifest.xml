@@ -50,7 +50,7 @@
             android:label="Let&apos;s Get Started" />
         <activity
             android:name=".RegisterDetailsActivity"
-            android:label="Almost Done"/>
+            android:label="We're Almost Done" />
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"

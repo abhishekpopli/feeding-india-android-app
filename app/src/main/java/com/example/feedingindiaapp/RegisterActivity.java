@@ -179,7 +179,6 @@ public class RegisterActivity extends AppCompatActivity {
                         // Do nothing
                     } else if (responseCode == 1) {
 
-                        //Also store in shared preferences
                         Intent intent = new Intent(RegisterActivity.this, RegisterDetailsActivity.class);
                         intent.putExtra("email",userEmail);
                         intent.putExtra("password",userPassword);

@@ -1,164 +1,208 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:padding="16dp"
     tools:context="com.example.feedingindiaapp.RegisterDetailsActivity">
 
-    <TextView
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:fontFamily="sans-serif-light"
-        android:text="A few more details:"
-        android:textSize="24sp"
-        android:layout_marginBottom="10dp"/>
+        android:layout_height="match_parent">
 
-    <android.support.design.widget.TextInputLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
 
-        <android.support.design.widget.TextInputEditText
-            android:id="@+id/register_name"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:drawableLeft="@drawable/ic_person_add_green_24dp"
-            android:drawablePadding="12dp"
-            android:hint="Name*"
-            android:textColor="@color/colorPrimaryText"
-            android:textColorHint="@color/colorPrimary"
-            android:textSize="17sp" />
+            android:orientation="vertical"
+            android:padding="16dp">
 
-    </android.support.design.widget.TextInputLayout>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:fontFamily="sans-serif-light"
+                android:text="A few more details:"
+                android:textSize="24sp" />
 
-    <android.support.design.widget.TextInputLayout
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <android.support.design.widget.TextInputEditText
+                    android:id="@+id/register_name"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:drawableLeft="@drawable/ic_person_add_green_24dp"
+                    android:drawablePadding="12dp"
+                    android:hint="Name*"
+                    android:textColor="@color/colorPrimaryText"
+                    android:textColorHint="@color/colorPrimary"
+                    android:textSize="17sp" />
+
+            </android.support.design.widget.TextInputLayout>
+
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <android.support.design.widget.TextInputEditText
+                    android:id="@+id/register_phone_1"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:drawableLeft="@drawable/ic_phone_green_24dp"
+                    android:drawablePadding="12dp"
+                    android:hint="Phone No*"
+                    android:textColor="@color/colorPrimaryText"
+                    android:textColorHint="@color/colorPrimary"
+                    android:textSize="17sp" />
+
+            </android.support.design.widget.TextInputLayout>
+
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <android.support.design.widget.TextInputEditText
+                    android:id="@+id/register_phone_2"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:drawableLeft="@drawable/ic_phone_green_24dp"
+                    android:drawablePadding="12dp"
+                    android:hint="Another Phone No"
+                    android:textColor="@color/colorPrimaryText"
+                    android:textColorHint="@color/colorPrimary"
+                    android:textSize="17sp" />
+
+            </android.support.design.widget.TextInputLayout>
+
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <android.support.design.widget.TextInputEditText
+                    android:id="@+id/register_profile_pic"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:drawableLeft="@drawable/ic_account_circle_green_24dp"
+                    android:drawablePadding="12dp"
+                    android:hint="Profile Photo Url"
+                    android:textColor="@color/colorPrimaryText"
+                    android:textColorHint="@color/colorPrimary"
+                    android:textSize="17sp" />
+
+            </android.support.design.widget.TextInputLayout>
+
+            <android.support.design.widget.TextInputLayout
+                android:id="@+id/register_city_container"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <android.support.design.widget.TextInputEditText
+                    android:id="@+id/register_city"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:drawableLeft="@drawable/ic_location_on_green_24dp"
+                    android:drawablePadding="12dp"
+                    android:hint="City*"
+                    android:textColor="@color/colorPrimaryText"
+                    android:textColorHint="@color/colorPrimary"
+                    android:textSize="17sp" />
+
+            </android.support.design.widget.TextInputLayout>
+
+            <LinearLayout
+                android:id="@+id/register_donor_type_container"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:text="Donor Type:"
+                    android:textSize="18sp" />
+
+                <RadioGroup
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:orientation="vertical">
+
+                    <RadioButton
+                        android:id="@+id/individual_radio_btn"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="sans-serif-light"
+                        android:onClick="onRadioClick"
+                        android:text="Individual"
+                        android:textColor="@color/colorPrimaryText"
+                        android:textSize="17sp" />
+
+                    <RadioButton
+                        android:id="@+id/non_individual_radio_btn"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="sans-serif-light"
+                        android:onClick="onRadioClick"
+                        android:text="Restaurant / Non-Individual"
+                        android:textSize="17sp" />
+
+                </RadioGroup>
+
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/register_details_form_submit_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/green_tag_2"
+                android:paddingBottom="10dp"
+                android:paddingLeft="20dp"
+                android:paddingRight="20dp"
+                android:paddingTop="10dp"
+                android:text="Submit Details"
+                android:textAllCaps="false"
+                android:textColor="#fff"
+                android:textSize="18sp" />
+
+
+        </LinearLayout>
+    </ScrollView>
+
+    <RelativeLayout
+        android:id="@+id/loading_layout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <android.support.design.widget.TextInputEditText
-            android:id="@+id/register_phone_1"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:drawableLeft="@drawable/ic_phone_green_24dp"
-            android:drawablePadding="12dp"
-            android:hint="Phone No*"
-            android:textColor="@color/colorPrimaryText"
-            android:textColorHint="@color/colorPrimary"
-            android:textSize="17sp" />
-
-    </android.support.design.widget.TextInputLayout>
-
-    <android.support.design.widget.TextInputLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <android.support.design.widget.TextInputEditText
-            android:id="@+id/register_phone_2"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:drawableLeft="@drawable/ic_phone_green_24dp"
-            android:drawablePadding="12dp"
-            android:hint="Another Phone No"
-            android:textColor="@color/colorPrimaryText"
-            android:textColorHint="@color/colorPrimary"
-            android:textSize="17sp" />
-
-    </android.support.design.widget.TextInputLayout>
-
-    <android.support.design.widget.TextInputLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <android.support.design.widget.TextInputEditText
-            android:id="@+id/register_profile_pic"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:drawableLeft="@drawable/ic_account_circle_green_24dp"
-            android:drawablePadding="12dp"
-            android:hint="Profile Photo Url"
-            android:textColor="@color/colorPrimaryText"
-            android:textColorHint="@color/colorPrimary"
-            android:textSize="17sp" />
-
-    </android.support.design.widget.TextInputLayout>
-
-    <android.support.design.widget.TextInputLayout
-        android:id="@+id/register_city_container"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <android.support.design.widget.TextInputEditText
-            android:id="@+id/register_city"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:drawableLeft="@drawable/ic_location_on_green_24dp"
-            android:drawablePadding="12dp"
-            android:hint="City*"
-            android:textColor="@color/colorPrimaryText"
-            android:textColorHint="@color/colorPrimary"
-            android:textSize="17sp" />
-
-    </android.support.design.widget.TextInputLayout>
-
-    <LinearLayout
-        android:id="@+id/register_donor_type_container"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:layout_height="match_parent"
+        android:background="#DD689F38"
+        android:visibility="invisible">
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:text="Donor Type:"
-            android:textSize="18sp" />
+            android:layout_alignParentTop="true"
+            android:background="@color/colorPrimary"
+            android:fontFamily="sans-serif-light"
+            android:gravity="center_horizontal"
+            android:paddingBottom="20dp"
+            android:paddingLeft="40dp"
+            android:paddingRight="40dp"
+            android:paddingTop="20dp"
+            android:text="Connecting..."
+            android:textColor="#fff"
+            android:textSize="24sp" />
 
-        <RadioGroup
-            android:layout_width="wrap_content"
+        <ProgressBar
+            android:id="@+id/detail_progress_bar"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:orientation="vertical">
+            android:layout_alignParentTop="true"
+            android:layout_marginTop="-9dp"
+            android:indeterminate="true"
+            android:minHeight="22dp" />
 
-            <RadioButton
-                android:id="@+id/individual_radio_btn"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="sans-serif-light"
-                android:onClick="onRadioClick"
-                android:text="Individual"
-                android:textColor="@color/colorPrimaryText"
-                android:textSize="17sp" />
-
-            <RadioButton
-                android:id="@+id/non_individual_radio_btn"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="sans-serif-light"
-                android:onClick="onRadioClick"
-                android:text="Restaurant / Non-Individual"
-                android:textSize="17sp" />
-
-        </RadioGroup>
-
-    </LinearLayout>
-
-    <Button
-        android:id="@+id/register_details_form_submit_btn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="10dp"
-        android:background="@drawable/green_tag_2"
-        android:paddingBottom="10dp"
-        android:paddingLeft="20dp"
-        android:paddingRight="20dp"
-        android:paddingTop="10dp"
-        android:text="Submit Details"
-        android:textAllCaps="false"
-        android:textColor="#fff"
-        android:textSize="18sp" />
-
-
-</LinearLayout>
+    </RelativeLayout>
+</RelativeLayout>
