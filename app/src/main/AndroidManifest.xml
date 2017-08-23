@@ -50,11 +50,13 @@
             android:label="Let&apos;s Get Started" />
         <activity
             android:name=".RegisterDetailsActivity"
-            android:label="We're Almost Done" />
+            android:label="We&apos;re Almost Done" />
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyDVV0JuqEstGuxswOOkcXJnwM3u_Sm-pD8" />
+
+        <activity android:name=".MyDonationsFragment"></activity>
     </application>
 
 </manifest>
