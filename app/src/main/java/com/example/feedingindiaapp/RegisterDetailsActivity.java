@@ -1,6 +1,7 @@
 package com.example.feedingindiaapp;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.design.widget.TextInputEditText;
 import android.support.design.widget.TextInputLayout;
@@ -34,7 +35,7 @@ public class RegisterDetailsActivity extends AppCompatActivity {
     private String userType;
     private boolean isIndividual;
     private boolean isDonor;
-    private boolean clickedRadioButton = false;
+    private boolean clickedRadioButton;
 
     private String userName;
     private String userPhone1;
@@ -49,8 +50,6 @@ public class RegisterDetailsActivity extends AppCompatActivity {
     private TextInputLayout userCityFieldContainer;
     private TextInputEditText userCityField;
     private LinearLayout donorTypeFieldContainer;
-    private RadioButton individualRadioButton;
-    private RadioButton nonIndividualRadioButton;
     private Button registerDetailsSubmitButton;
     private RelativeLayout loadingLayout;
 
@@ -59,6 +58,7 @@ public class RegisterDetailsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register_details);
 
+        // Receive data from calling activity
         userEmail = getIntent().getStringExtra("email");
         userPassword = getIntent().getStringExtra("password");
         userType = getIntent().getStringExtra("user_type");
@@ -70,18 +70,18 @@ public class RegisterDetailsActivity extends AppCompatActivity {
         userCityFieldContainer = (TextInputLayout) findViewById(R.id.register_city_container);
         userCityField = (TextInputEditText) findViewById(R.id.register_city);
         donorTypeFieldContainer = (LinearLayout) findViewById(R.id.register_donor_type_container);
-        individualRadioButton = (RadioButton) findViewById(R.id.individual_radio_btn);
-        nonIndividualRadioButton = (RadioButton) findViewById(R.id.non_individual_radio_btn);
         registerDetailsSubmitButton = (Button) findViewById(R.id.register_details_form_submit_btn);
         loadingLayout = (RelativeLayout) findViewById(R.id.loading_layout);
 
 
+        // Set user type flag
         if (userType.equals("donor")) {
             isDonor = true;
         } else if (userType.equals("volunteer")) {
             isDonor = false;
         }
 
+        // display views that aren't required for the particular donor type
         if (isDonor) {
             userCityFieldContainer.setVisibility(View.GONE);
         } else {
@@ -100,6 +100,7 @@ public class RegisterDetailsActivity extends AppCompatActivity {
                 userCity = userCityField.getText().toString();
 
 
+                // Check if required fields are set, and if yes then send request
                 if (validateFields()) {
                     loadingLayout.setVisibility(View.VISIBLE);
                     sendUpdationRequest();
@@ -112,6 +113,7 @@ public class RegisterDetailsActivity extends AppCompatActivity {
 
     }
 
+    // Handle click on radio buttons, and change donor_type variable
     public void onRadioClick(View view) {
         clickedRadioButton = true;
 
@@ -129,6 +131,11 @@ public class RegisterDetailsActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * This method does form validation
+     *
+     * @return true is all fields are valid, returns false otherwise
+     */
     private boolean validateFields() {
         boolean isValid = true;
 
@@ -167,15 +174,22 @@ public class RegisterDetailsActivity extends AppCompatActivity {
         return isValid;
     }
 
+    /**
+     * This method sends network request, to update corresponding record
+     */
     private void sendUpdationRequest() {
 
         OkHttpClient client = new OkHttpClient();
+
+        // Add all the common fields between diff. user_types initially
         FormBody.Builder formBuilder = new FormBody.Builder()
                 .add("email", userEmail)
                 .add("password", userPassword)
                 .add("name", userName)
                 .add("phone_no_1", userPhone1);
 
+
+        // Conditionally adding attributes to form
         if (userPhone2 != null) {
             formBuilder.add("phone_no_2", userPhone2);
         }
@@ -202,12 +216,15 @@ public class RegisterDetailsActivity extends AppCompatActivity {
         }
 
 
+        // Finally build the request body from form body
         RequestBody formBody = formBuilder.build();
+
 
         Request request = new Request.Builder()
                 .url(USER_REGISTER_URL)
                 .post(formBody)
                 .build();
+
 
         client.newCall(request).enqueue(new Callback() {
             @Override
@@ -263,10 +280,26 @@ public class RegisterDetailsActivity extends AppCompatActivity {
                     Toast.makeText(RegisterDetailsActivity.this, responseMessage, Toast.LENGTH_SHORT).show();
 
                     if (responseCode == 0) {
-                        // Do nothing
+                        // When there is an error
+
+                        // Do nothing, error Toast message is previously displayed
                     } else if (responseCode == 1) {
 
+                        // when request is successful
+
                         //Also store in shared preferences
+                        SharedPreferences sharedPreferences = getSharedPreferences("app_data", MODE_PRIVATE);
+                        SharedPreferences.Editor editor = sharedPreferences.edit();
+
+                        editor.putString("user_email", userEmail);
+                        editor.putString("user_password", userPassword);
+                        editor.putString("user_type", userType);
+                        editor.putBoolean("is_logged_in", true);
+
+                        editor.apply();
+
+
+                        // Route to Main Activity
                         Intent intent = new Intent(RegisterDetailsActivity.this, MainActivity.class);
                         startActivity(intent);
                     }
@@ -274,7 +307,13 @@ public class RegisterDetailsActivity extends AppCompatActivity {
             });
         } catch (JSONException | IOException e) {
 
-            loadingLayout.setVisibility(View.INVISIBLE);
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    loadingLayout.setVisibility(View.INVISIBLE);
+                }
+            });
+
             e.printStackTrace();
         }
 

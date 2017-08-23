@@ -53,6 +53,7 @@ public class RegisterActivity extends AppCompatActivity {
                 userEmail = userEmailField.getText().toString();
                 userPassword = userPasswordField.getText().toString();
 
+                // Checks if all fields are entered correctly
                 if (validateFields()) {
                     loadingLayout.setVisibility(View.VISIBLE);
                     sendAuthenticationRequest();
@@ -64,6 +65,11 @@ public class RegisterActivity extends AppCompatActivity {
 
     }
 
+    /**
+     * This method handles the click on radio buttons, and set donor_type variable
+     *
+     * @param view
+     */
     public void onRadioClick(View view) {
         boolean checked = ((RadioButton) view).isChecked();
 
@@ -80,6 +86,10 @@ public class RegisterActivity extends AppCompatActivity {
     }
 
 
+    /**
+     * This method enforces form validation
+     * @return
+     */
     private boolean validateFields() {
         boolean isValid = true;
 
@@ -105,8 +115,10 @@ public class RegisterActivity extends AppCompatActivity {
     }
 
 
+    /**
+     * This method sends network request
+     */
     private void sendAuthenticationRequest() {
-
 
         OkHttpClient client = new OkHttpClient();
 
@@ -158,6 +170,10 @@ public class RegisterActivity extends AppCompatActivity {
 
     }
 
+    /**
+     * This method handles the response from server
+     * @param response is the JSON string response from server
+     */
     private void handleResponse(final Response response) {
 
         try {
@@ -179,6 +195,7 @@ public class RegisterActivity extends AppCompatActivity {
                         // Do nothing
                     } else if (responseCode == 1) {
 
+                        // Package data in indent and start registerDetails activity
                         Intent intent = new Intent(RegisterActivity.this, RegisterDetailsActivity.class);
                         intent.putExtra("email",userEmail);
                         intent.putExtra("password",userPassword);

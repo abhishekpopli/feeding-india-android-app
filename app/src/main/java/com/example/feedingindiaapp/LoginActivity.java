@@ -1,6 +1,7 @@
 package com.example.feedingindiaapp;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.design.widget.TextInputEditText;
 import android.support.v7.app.AppCompatActivity;
@@ -56,6 +57,7 @@ public class LoginActivity extends AppCompatActivity {
                 userEmail = userEmailField.getText().toString();
                 userPassword = userPasswordField.getText().toString();
 
+                // Enforces form validation, and sends network request if form is valid
                 if (validateFields()) {
                     loadingLayout.setVisibility(View.VISIBLE);
                     sendAuthenticationRequest();
@@ -75,6 +77,12 @@ public class LoginActivity extends AppCompatActivity {
 
     }
 
+
+    /**
+     * Handles click on radio button, and sets user type variable according to it
+     *
+     * @param view
+     */
     public void onRadioClick(View view) {
         boolean checked = ((RadioButton) view).isChecked();
 
@@ -91,6 +99,10 @@ public class LoginActivity extends AppCompatActivity {
     }
 
 
+    /**
+     * This method enforces for form validation
+     * @return true is all required fields are entered, otherwise returns false
+     */
     private boolean validateFields() {
         boolean isValid = true;
 
@@ -169,6 +181,10 @@ public class LoginActivity extends AppCompatActivity {
 
     }
 
+    /**
+     * Handles correct response from server
+     * @param response is the JSON string returned by server
+     */
     private void handleResponse(final Response response) {
 
         try {
@@ -187,10 +203,24 @@ public class LoginActivity extends AppCompatActivity {
                     Toast.makeText(LoginActivity.this, responseMessage, Toast.LENGTH_SHORT).show();
 
                     if (responseCode == 0) {
+                        // when is an error, and request isn't successfull
+
                         // Do nothing
                     } else if (responseCode == 1) {
+                        // when request is successful
 
                         //Also store in shared preferences
+                        SharedPreferences sharedPreferences = getSharedPreferences("app_data", MODE_PRIVATE);
+                        SharedPreferences.Editor editor = sharedPreferences.edit();
+
+                        editor.putString("user_email", userEmail);
+                        editor.putString("user_password", userPassword);
+                        editor.putString("user_type", userType);
+                        editor.putBoolean("is_logged_in", true);
+
+                        editor.apply();
+
+                        // Route to Main Activity
                         Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                         startActivity(intent);
                     }

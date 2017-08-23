@@ -1,6 +1,7 @@
 package com.example.feedingindiaapp;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.FragmentManager;
@@ -12,9 +13,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
-public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
-    private sessionmanager session;
+public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -22,7 +21,6 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        session = new sessionmanager(getApplicationContext());
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -98,13 +96,22 @@ public class MainActivity extends AppCompatActivity
 
         } else if (id == R.id.nav_my_profile) {
 
-        }
-        else if (id == R.id.log_out){
-            session.setLogin(false);
-            Intent i = new Intent(MainActivity.this, TempActivity.class);
-            startActivity(i);
-            finish();
-            return true;
+        } else if (id == R.id.log_out) {
+
+            //Change shared preferences
+            SharedPreferences sharedPreferences = getSharedPreferences("app_data", MODE_PRIVATE);
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+
+            editor.putString("user_email", null);
+            editor.putString("user_password", null);
+            editor.putString("user_type", null);
+            editor.putBoolean("is_logged_in", false);
+
+            editor.apply();
+
+            Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+            startActivity(intent);
+
         }
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
