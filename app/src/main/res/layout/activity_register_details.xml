@@ -68,29 +68,13 @@
                     android:layout_height="wrap_content"
                     android:drawableLeft="@drawable/ic_phone_green_24dp"
                     android:drawablePadding="12dp"
-                    android:hint="Another Phone No"
+                    android:hint="Alternate Phone No"
                     android:textColor="@color/colorPrimaryText"
                     android:textColorHint="@color/colorPrimary"
                     android:textSize="17sp" />
 
             </android.support.design.widget.TextInputLayout>
 
-            <android.support.design.widget.TextInputLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <android.support.design.widget.TextInputEditText
-                    android:id="@+id/register_profile_pic"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:drawableLeft="@drawable/ic_account_circle_green_24dp"
-                    android:drawablePadding="12dp"
-                    android:hint="Profile Photo Url"
-                    android:textColor="@color/colorPrimaryText"
-                    android:textColorHint="@color/colorPrimary"
-                    android:textSize="17sp" />
-
-            </android.support.design.widget.TextInputLayout>
 
             <android.support.design.widget.TextInputLayout
                 android:id="@+id/register_city_container"
@@ -109,7 +93,13 @@
                     android:textSize="17sp" />
 
             </android.support.design.widget.TextInputLayout>
-
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_marginTop="6dp"
+                android:layout_height="80dp"
+                android:id="@+id/upload_yourpic"
+                android:src="@drawable/upload_icon"
+                android:tag="uploadyourpic"/>
             <LinearLayout
                 android:id="@+id/register_donor_type_container"
                 android:layout_width="match_parent"

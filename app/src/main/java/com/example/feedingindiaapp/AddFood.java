@@ -50,6 +50,7 @@ public class AddFood extends AppCompatActivity implements  View.OnClickListener 
 
     private String donor_id ="1";
     private Uri picUri;
+    File pic;
     private TextView latitude;
     private TextView longitude;
     private Spinner city;
@@ -67,7 +68,6 @@ public class AddFood extends AppCompatActivity implements  View.OnClickListener 
     protected int LOAD_IMAGE_CAMERA = 0, CROP_IMAGE = 1, LOAD_IMAGE_GALLARY = 2;
 
     Button seemap;
-    File pic;
     Bundle extras;
 
     @Override
@@ -165,11 +165,7 @@ public class AddFood extends AppCompatActivity implements  View.OnClickListener 
         } else {
             houseno.setError(null);
         }
-        if( (backgroundImageName.equals("uploadpic")))
-        {
-            valid = false;
-            Toast.makeText(this, "Please upload atleast one pic of food !", Toast.LENGTH_SHORT).show();
-        }
+
 
 
         return valid;
@@ -198,7 +194,6 @@ public class AddFood extends AppCompatActivity implements  View.OnClickListener 
                 upload_pic.setImageBitmap(photo);
                 upload_pic.setTag("newpic");
 
-                new uploadcloudinary().execute();
             }
         }
         else if (resultCode == Activity.RESULT_OK && data!=null)
@@ -265,6 +260,8 @@ public class AddFood extends AppCompatActivity implements  View.OnClickListener 
 
         String[] details ={donor_id,picUri.toString(),city,areaname,streetname,house,has_pickup_gps,pickup_gps_latitude,pickup_gps_longitude,String.valueOf(isveg)
         ,String.valueOf(isperishable),otherdetails};
+
+        new uploadcloudinary().execute();
 
         Bgtask bg = new Bgtask();
         bg.execute(details);

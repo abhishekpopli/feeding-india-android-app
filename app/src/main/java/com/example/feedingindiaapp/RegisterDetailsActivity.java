@@ -1,22 +1,37 @@
 package com.example.feedingindiaapp;
 
+import android.app.Activity;
+import android.content.ActivityNotFoundException;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.design.widget.TextInputEditText;
 import android.support.design.widget.TextInputLayout;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
+import com.cloudinary.Cloudinary;
+import com.cloudinary.utils.ObjectUtils;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -42,7 +57,7 @@ public class RegisterDetailsActivity extends AppCompatActivity {
     private String userPhone2;
     private String userProfilePicURL;
     private String userCity;
-
+    private ImageView upload_pic;
     private TextInputEditText userNameField;
     private TextInputEditText userPhone1Field;
     private TextInputEditText userPhone2Field;
@@ -52,6 +67,10 @@ public class RegisterDetailsActivity extends AppCompatActivity {
     private LinearLayout donorTypeFieldContainer;
     private Button registerDetailsSubmitButton;
     private RelativeLayout loadingLayout;
+    protected int LOAD_IMAGE_CAMERA = 0, CROP_IMAGE = 1, LOAD_IMAGE_GALLARY = 2;
+    private Uri picUri;
+    File pic;
+    Bundle extras;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,7 +81,7 @@ public class RegisterDetailsActivity extends AppCompatActivity {
         userEmail = getIntent().getStringExtra("email");
         userPassword = getIntent().getStringExtra("password");
         userType = getIntent().getStringExtra("user_type");
-
+        upload_pic = (ImageView) findViewById(R.id.upload_yourpic);
         userNameField = (TextInputEditText) findViewById(R.id.register_name);
         userPhone1Field = (TextInputEditText) findViewById(R.id.register_phone_1);
         userPhone2Field = (TextInputEditText) findViewById(R.id.register_phone_2);
@@ -103,10 +122,56 @@ public class RegisterDetailsActivity extends AppCompatActivity {
                 // Check if required fields are set, and if yes then send request
                 if (validateFields()) {
                     loadingLayout.setVisibility(View.VISIBLE);
+
+                    new uploadcloudinary().execute();
                     sendUpdationRequest();
                 } else {
                     Toast.makeText(RegisterDetailsActivity.this, "Please fill all the fields", Toast.LENGTH_SHORT).show();
                 }
+            }
+        });
+
+
+
+        upload_pic.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final CharSequence[] options = {"Take Photo", "Choose from Gallery"};
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(RegisterDetailsActivity.this);
+                builder.setTitle("Select Pic Using...");
+                builder.setItems(options, new DialogInterface.OnClickListener() {
+
+                    @Override
+                    public void onClick(DialogInterface dialog, int item) {
+                        if (options[item].equals("Take Photo")) {
+
+                            try {
+                                Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+
+                                pic = new File(Environment.getExternalStorageDirectory(),
+                                        "tmp_" + String.valueOf(System.currentTimeMillis()) + ".jpg");
+
+                                picUri = Uri.fromFile(pic);
+
+                                cameraIntent.putExtra(android.provider.MediaStore.EXTRA_OUTPUT, picUri);
+
+                                cameraIntent.putExtra("return-data", true);
+                                startActivityForResult(cameraIntent, LOAD_IMAGE_CAMERA);
+                            } catch (ActivityNotFoundException e) {
+                                e.printStackTrace();
+                            }
+
+                        } else if (options[item].equals("Choose from Gallery")) {
+                            Intent intent = new Intent(Intent.ACTION_PICK,
+                                    android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                            startActivityForResult(Intent.createChooser(intent, "Select Picture"), LOAD_IMAGE_GALLARY);
+                        }
+                    }
+                });
+
+                builder.show();
+
             }
         });
 
@@ -152,8 +217,12 @@ public class RegisterDetailsActivity extends AppCompatActivity {
         } else {
             userPhone1Field.setError(null);
         }
-
-
+        String backgroundImageName = String.valueOf(upload_pic.getTag());
+        if( (backgroundImageName.equals("uploadyourpic")))
+        {
+            isValid = false;
+            Toast.makeText(this, "Please upload your profile photo!", Toast.LENGTH_SHORT).show();
+        }
         if (isDonor) {
 
             if (!clickedRadioButton) {
@@ -318,4 +387,79 @@ public class RegisterDetailsActivity extends AppCompatActivity {
         }
 
     }
+    protected void CropImage() {
+        try {
+            Intent intent = new Intent("com.android.camera.action.CROP");
+            intent.setDataAndType(picUri, "image/*");
+
+            intent.putExtra("crop", "true");
+            intent.putExtra("outputX", 200);
+            intent.putExtra("outputY", 200);
+            intent.putExtra("aspectX", 3);
+            intent.putExtra("aspectY", 4);
+            intent.putExtra("scaleUpIfNeeded", true);
+            intent.putExtra("return-data", true);
+            pic = new File(Environment.getExternalStorageDirectory(),
+                    "tmp_" + String.valueOf(System.currentTimeMillis()) + ".jpg");
+
+            picUri = Uri.fromFile(pic);
+            intent.putExtra(android.provider.MediaStore.EXTRA_OUTPUT, picUri);
+
+            intent.putExtra("return-data", true);
+
+            startActivityForResult(intent, CROP_IMAGE);
+
+        } catch (ActivityNotFoundException e) {
+            Toast.makeText(this, "Your device doesn't support the crop action!", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    public class uploadcloudinary extends AsyncTask<Void,Void,Void> {
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            Map config = new HashMap();
+            config.put("cloud_name", "feedingindiaapp");
+            config.put("api_key", "721272957494713");
+            config.put("api_secret", "4Mr4HHRpMZ0aKABIuNIsDI5AZvw");
+            Cloudinary cloudinary = new Cloudinary(config);
+
+            try {
+                cloudinary.uploader().upload(pic.getAbsolutePath(), ObjectUtils.asMap("public_id",donor_id+picUri.toString()));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+    };
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        //super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == LOAD_IMAGE_CAMERA && resultCode == RESULT_OK) {
+            CropImage();
+
+        }
+        else if (requestCode == LOAD_IMAGE_GALLARY) {
+            if (data != null) {
+
+                picUri = data.getData();
+                CropImage();
+            }
+        }
+        else if (requestCode == CROP_IMAGE) {
+            if (data != null) {
+                extras = data.getExtras();
+
+                // get the cropped bitmap
+                Bitmap photo = extras.getParcelable("data");
+                upload_pic.setImageBitmap(photo);
+                upload_pic.setTag("newpic");
+
+            }
+        }
+
+    }
+
+
 }
