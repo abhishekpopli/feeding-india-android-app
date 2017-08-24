@@ -61,7 +61,6 @@ public class RegisterDetailsActivity extends AppCompatActivity {
     private TextInputEditText userNameField;
     private TextInputEditText userPhone1Field;
     private TextInputEditText userPhone2Field;
-    private TextInputEditText userProfilePicURLField;
     private TextInputLayout userCityFieldContainer;
     private TextInputEditText userCityField;
     private LinearLayout donorTypeFieldContainer;
@@ -85,7 +84,6 @@ public class RegisterDetailsActivity extends AppCompatActivity {
         userNameField = (TextInputEditText) findViewById(R.id.register_name);
         userPhone1Field = (TextInputEditText) findViewById(R.id.register_phone_1);
         userPhone2Field = (TextInputEditText) findViewById(R.id.register_phone_2);
-        userProfilePicURLField = (TextInputEditText) findViewById(R.id.register_profile_pic);
         userCityFieldContainer = (TextInputLayout) findViewById(R.id.register_city_container);
         userCityField = (TextInputEditText) findViewById(R.id.register_city);
         donorTypeFieldContainer = (LinearLayout) findViewById(R.id.register_donor_type_container);
@@ -115,7 +113,6 @@ public class RegisterDetailsActivity extends AppCompatActivity {
                 userName = userNameField.getText().toString();
                 userPhone1 = userPhone1Field.getText().toString();
                 userPhone2 = userPhone2Field.getText().toString();
-                userProfilePicURL = userProfilePicURLField.getText().toString();
                 userCity = userCityField.getText().toString();
 
 
@@ -217,12 +214,7 @@ public class RegisterDetailsActivity extends AppCompatActivity {
         } else {
             userPhone1Field.setError(null);
         }
-        String backgroundImageName = String.valueOf(upload_pic.getTag());
-        if( (backgroundImageName.equals("uploadyourpic")))
-        {
-            isValid = false;
-            Toast.makeText(this, "Please upload your profile photo!", Toast.LENGTH_SHORT).show();
-        }
+
         if (isDonor) {
 
             if (!clickedRadioButton) {
@@ -425,7 +417,8 @@ public class RegisterDetailsActivity extends AppCompatActivity {
             Cloudinary cloudinary = new Cloudinary(config);
 
             try {
-                cloudinary.uploader().upload(pic.getAbsolutePath(), ObjectUtils.asMap("public_id",donor_id+picUri.toString()));
+                cloudinary.uploader().upload(pic.getAbsolutePath(), ObjectUtils.asMap("public_id","profile_pic_donor_id" +picUri.toString()));
+                //cloudinary.uploader().upload(pic.getAbsolutePath(), ObjectUtils.asMap("public_id","user_name" +picUri.toString()));
             } catch (IOException e) {
                 e.printStackTrace();
             }
