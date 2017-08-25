@@ -15,6 +15,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.view.View;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -43,14 +44,18 @@ public class Getlocation extends FragmentActivity implements LocationListener, O
                 if (ActivityCompat.checkSelfPermission(Getlocation.this, permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(Getlocation.this, permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                     return;
                 }
-
+                double latitude ;
+                double longitude;
                 location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+                if(location!= null) {
+                    latitude = location.getLatitude();
+                    longitude = location.getLongitude();
+                }
+                else {
+                    Toast.makeText(Getlocation.this, "Please select your location.", Toast.LENGTH_SHORT).show();
+                    return;
 
-                double latitude = location.getLatitude();
-
-                // Getting longitude of the current location
-                double longitude = location.getLongitude();
-
+                }
 
                 latitude_value = Double.toString(latitude);
                 longitude_value = Double.toString(longitude);
@@ -135,11 +140,7 @@ public class Getlocation extends FragmentActivity implements LocationListener, O
 
         location = locationManager.getLastKnownLocation(provider);
 
-        if (location != null) {
 
-            onLocationChanged(location);
-            // Getting latitude of the current location
-
-        }
     }
+
 }
