@@ -55,7 +55,6 @@ public class RegisterDetailsActivity extends AppCompatActivity {
     private String userName;
     private String userPhone1;
     private String userPhone2;
-    private String userProfilePicURL;
     private String userCity;
     private ImageView upload_pic;
     private TextInputEditText userNameField;
@@ -255,9 +254,6 @@ public class RegisterDetailsActivity extends AppCompatActivity {
             formBuilder.add("phone_no_2", userPhone2);
         }
 
-        if (userProfilePicURL != null) {
-            formBuilder.add("profile_pic_url", userProfilePicURL);
-        }
 
         if (isDonor) {
 

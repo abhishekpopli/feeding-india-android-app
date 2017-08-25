@@ -43,6 +43,7 @@ public class Getlocation extends FragmentActivity implements LocationListener, O
                 if (ActivityCompat.checkSelfPermission(Getlocation.this, permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(Getlocation.this, permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                     return;
                 }
+
                 location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
 
                 double latitude = location.getLatitude();
@@ -61,7 +62,7 @@ public class Getlocation extends FragmentActivity implements LocationListener, O
                 finish();
             }
         });
-        button.hide();
+
         func();
     }
 
@@ -133,7 +134,6 @@ public class Getlocation extends FragmentActivity implements LocationListener, O
         }
 
         location = locationManager.getLastKnownLocation(provider);
-        button.show();
 
         if (location != null) {
 
@@ -142,5 +142,4 @@ public class Getlocation extends FragmentActivity implements LocationListener, O
 
         }
     }
-
 }

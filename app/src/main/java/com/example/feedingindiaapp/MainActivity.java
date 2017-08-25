@@ -94,6 +94,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         } else if (id == R.id.nav_my_donations) {
 
+            MyDonationsFragment myDonationsFragment = new MyDonationsFragment();
+            FragmentManager manager = getSupportFragmentManager();
+            manager.beginTransaction()
+                    .replace(R.id.content_main_to_replace, myDonationsFragment, myDonationsFragment.getTag())
+                    .commit();
+
+
         } else if (id == R.id.nav_my_profile) {
 
         } else if (id == R.id.log_out) {

@@ -30,6 +30,10 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -47,7 +51,8 @@ import java.util.Map;
 
 public class AddFood extends AppCompatActivity implements  View.OnClickListener {
     ProgressDialog progressDialog;
-
+    JSONObject jsonObject;
+    JSONArray jsonArray;
     private String donor_id ="1";
     private Uri picUri;
     File pic;
@@ -256,10 +261,14 @@ public class AddFood extends AppCompatActivity implements  View.OnClickListener 
         //true if veg
         Boolean perishable = isperishable.isChecked();
         //true if persihable
+        String stringisveg="0",stringisperishable="0";
+        if(veg==true)
+            stringisveg="1";
+        if(perishable==true)
+            stringisperishable="1";
         String otherdetails = other_details.getText().toString();
-
-        String[] details ={donor_id,picUri.toString(),city,areaname,streetname,house,has_pickup_gps,pickup_gps_latitude,pickup_gps_longitude,String.valueOf(isveg)
-        ,String.valueOf(isperishable),otherdetails};
+        String[] details ={donor_id,picUri.toString(),city,areaname,streetname,house,has_pickup_gps,pickup_gps_latitude,pickup_gps_longitude,stringisveg
+        ,stringisperishable,otherdetails};
 
         new uploadcloudinary().execute();
 
@@ -371,8 +380,35 @@ public class AddFood extends AppCompatActivity implements  View.OnClickListener 
         @Override
         protected void onPostExecute(String[] result) {
 
-            Toast.makeText(AddFood.this, result[0], Toast.LENGTH_SHORT).show();
             progressDialog.dismiss();
+            try {
+                String jsonstring = result[0].substring(4,result[0].length());
+                jsonObject = new JSONObject(jsonstring);
+                jsonArray = jsonObject.getJSONArray("server_response");
+                int count=0;
+                String message;
+
+                while(count<jsonArray.length())
+                {
+                    JSONObject jo = jsonArray.getJSONObject(count);
+                    message = jo.getString("message");
+                    if(message.equals("Some Server Error...Try again"))
+                        Toast.makeText(AddFood.this, message, Toast.LENGTH_SHORT).show();
+
+                    else if(message.equals("Food listed for donation...Thank you")) {
+                        Toast.makeText(AddFood.this, "Your donation has been successfully posted. Thank You!!", Toast.LENGTH_SHORT).show();
+                        finish();
+                    }
+
+                    count++;
+                }
+
+
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+                Toast.makeText(AddFood.this, "wromg", Toast.LENGTH_SHORT).show();
+            }
 
         }
     }
