@@ -67,6 +67,7 @@ public class RegisterDetailsActivity extends AppCompatActivity {
     private Button registerDetailsSubmitButton;
     private RelativeLayout loadingLayout;
     private Uri picUri;
+    private String finalurl ="";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,7 +88,8 @@ public class RegisterDetailsActivity extends AppCompatActivity {
         registerDetailsSubmitButton = (Button) findViewById(R.id.register_details_form_submit_btn);
         loadingLayout = (RelativeLayout) findViewById(R.id.loading_layout);
 
-
+        SharedPreferences sharedPreferences = getSharedPreferences("app_data", MODE_PRIVATE);
+        finalurl = String.valueOf(sharedPreferences.getInt("user_id", 0))+sharedPreferences.getString("user_type", null);
         // Set user type flag
         if (userType.equals("donor")) {
             isDonor = true;
@@ -257,7 +259,7 @@ public class RegisterDetailsActivity extends AppCompatActivity {
         userProfilePicURL = "remove this";
 
         if (userProfilePicURL != null) {
-            formBuilder.add("profile_pic_url", "http://cliparts.co/cliparts/6ip/5XK/6ip5XKxMT.png");
+            formBuilder.add("profile_pic_url", "http://res.cloudinary.com/feedingindiaapp/image/upload/v1503743820/"+finalurl+".jpg");
         }
 
         if (isDonor) {
@@ -454,12 +456,10 @@ public class RegisterDetailsActivity extends AppCompatActivity {
             config.put("api_key", "721272957494713");
             config.put("api_secret", "4Mr4HHRpMZ0aKABIuNIsDI5AZvw");
             Cloudinary cloudinary = new Cloudinary(config);
-            SharedPreferences sharedPreferences = getSharedPreferences("app_data", MODE_PRIVATE);
-            int userid = sharedPreferences.getInt("user_id", 0);
-            String usertype = sharedPreferences.getString("user_type", null);
+
             try {
 
-                cloudinary.uploader().upload(pic.getAbsolutePath(), ObjectUtils.asMap("public_id", String.valueOf(userid)));
+                cloudinary.uploader().upload(pic.getAbsolutePath(), ObjectUtils.asMap("public_id",finalurl));
 //                cloudinary.uploader().upload(pic.getAbsolutePath(), ObjectUtils.asMap("public_id", "profile_pic_donor_id" + picUri.toString()));
                 //cloudinary.uploader().upload(pic.getAbsolutePath(), ObjectUtils.asMap("public_id","user_name" +picUri.toString()));
             } catch (IOException e) {
