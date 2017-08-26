@@ -1,6 +1,5 @@
 package com.example.feedingindiaapp;
 
-import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -44,14 +43,15 @@ import okhttp3.Response;
 public class RegisterDetailsActivity extends AppCompatActivity {
 
     private static final String USER_REGISTER_URL = "https://feedingindiaapp.000webhostapp.com/getauth/register_details.php";
-
+    protected int LOAD_IMAGE_CAMERA = 0, CROP_IMAGE = 1, LOAD_IMAGE_GALLARY = 2;
+    File pic;
+    Bundle extras;
     private String userEmail;
     private String userPassword;
     private String userType;
     private boolean isIndividual;
     private boolean isDonor;
     private boolean clickedRadioButton;
-
     private String userName;
     private String userPhone1;
     private String userPhone2;
@@ -65,10 +65,7 @@ public class RegisterDetailsActivity extends AppCompatActivity {
     private LinearLayout donorTypeFieldContainer;
     private Button registerDetailsSubmitButton;
     private RelativeLayout loadingLayout;
-    protected int LOAD_IMAGE_CAMERA = 0, CROP_IMAGE = 1, LOAD_IMAGE_GALLARY = 2;
     private Uri picUri;
-    File pic;
-    Bundle extras;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -324,7 +321,7 @@ public class RegisterDetailsActivity extends AppCompatActivity {
         try {
             final String responseData = response.body().string();
 
-            JSONObject object = new JSONObject(responseData);
+            final JSONObject object = new JSONObject(responseData);
             final int responseCode = object.getInt("response_code");
             final String responseMessage = object.getString("message");
 
@@ -344,21 +341,31 @@ public class RegisterDetailsActivity extends AppCompatActivity {
 
                         // when request is successful
 
-                        //Also store in shared preferences
-                        SharedPreferences sharedPreferences = getSharedPreferences("app_data", MODE_PRIVATE);
-                        SharedPreferences.Editor editor = sharedPreferences.edit();
+                        try {
+                            final int user_id = object.getInt("id");
+                            final String user_name = object.getString("name");
+                            final String password_hash = object.getString("password_hash");
 
-                        editor.putString("user_email", userEmail);
-                        editor.putString("user_password", userPassword);
-                        editor.putString("user_type", userType);
-                        editor.putBoolean("is_logged_in", true);
+                            //Also store in shared preferences
+                            SharedPreferences sharedPreferences = getSharedPreferences("app_data", MODE_PRIVATE);
+                            SharedPreferences.Editor editor = sharedPreferences.edit();
 
-                        editor.apply();
+                            editor.putInt("user_id", user_id);
+                            editor.putString("user_name", user_name);
+                            editor.putString("user_password_hash", password_hash);
+                            editor.putString("user_type", userType);
+                            editor.putBoolean("is_logged_in", true);
 
+                            editor.apply();
 
-                        // Route to Main Activity
-                        Intent intent = new Intent(RegisterDetailsActivity.this, MainActivity.class);
-                        startActivity(intent);
+                            // Route to Main Activity
+                            Intent intent = new Intent(RegisterDetailsActivity.this, MainActivity.class);
+                            startActivity(intent);
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
                     }
                 }
             });
@@ -402,27 +409,7 @@ public class RegisterDetailsActivity extends AppCompatActivity {
         }
     }
 
-    public class uploadcloudinary extends AsyncTask<Void,Void,Void> {
-
         @Override
-        protected Void doInBackground(Void... params) {
-            Map config = new HashMap();
-            config.put("cloud_name", "feedingindiaapp");
-            config.put("api_key", "721272957494713");
-            config.put("api_secret", "4Mr4HHRpMZ0aKABIuNIsDI5AZvw");
-            Cloudinary cloudinary = new Cloudinary(config);
-
-            try {
-                cloudinary.uploader().upload(pic.getAbsolutePath(), ObjectUtils.asMap("public_id","profile_pic_donor_id" +picUri.toString()));
-                //cloudinary.uploader().upload(pic.getAbsolutePath(), ObjectUtils.asMap("public_id","user_name" +picUri.toString()));
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            return null;
-        }
-    };
-
-    @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         //super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == LOAD_IMAGE_CAMERA && resultCode == RESULT_OK) {
@@ -448,6 +435,28 @@ public class RegisterDetailsActivity extends AppCompatActivity {
             }
         }
 
+        }
+
+    ;
+
+    public class uploadcloudinary extends AsyncTask<Void, Void, Void> {
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            Map config = new HashMap();
+            config.put("cloud_name", "feedingindiaapp");
+            config.put("api_key", "721272957494713");
+            config.put("api_secret", "4Mr4HHRpMZ0aKABIuNIsDI5AZvw");
+            Cloudinary cloudinary = new Cloudinary(config);
+
+            try {
+                cloudinary.uploader().upload(pic.getAbsolutePath(), ObjectUtils.asMap("public_id", "profile_pic_donor_id" + picUri.toString()));
+                //cloudinary.uploader().upload(pic.getAbsolutePath(), ObjectUtils.asMap("public_id","user_name" +picUri.toString()));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
     }
 
 

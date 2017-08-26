@@ -109,8 +109,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             SharedPreferences sharedPreferences = getSharedPreferences("app_data", MODE_PRIVATE);
             SharedPreferences.Editor editor = sharedPreferences.edit();
 
-            editor.putString("user_email", null);
-            editor.putString("user_password", null);
+            editor.putInt("user_id", 0);
+            editor.putString("user_name", null);
+            editor.putString("user_password_hash", null);
             editor.putString("user_type", null);
             editor.putBoolean("is_logged_in", false);
 

@@ -190,7 +190,7 @@ public class LoginActivity extends AppCompatActivity {
         try {
             final String responseData = response.body().string();
 
-            JSONObject object = new JSONObject(responseData);
+            final JSONObject object = new JSONObject(responseData);
             final int responseCode = object.getInt("response_code");
             final String responseMessage = object.getString("message");
 
@@ -209,20 +209,32 @@ public class LoginActivity extends AppCompatActivity {
                     } else if (responseCode == 1) {
                         // when request is successful
 
-                        //Also store in shared preferences
-                        SharedPreferences sharedPreferences = getSharedPreferences("app_data", MODE_PRIVATE);
-                        SharedPreferences.Editor editor = sharedPreferences.edit();
+                        try {
 
-                        editor.putString("user_email", userEmail);
-                        editor.putString("user_password", userPassword);
-                        editor.putString("user_type", userType);
-                        editor.putBoolean("is_logged_in", true);
+                            final int user_id = object.getInt("id");
+                            final String user_name = object.getString("name");
+                            final String password_hash = object.getString("password_hash");
 
-                        editor.apply();
+                            //Also store in shared preferences
+                            SharedPreferences sharedPreferences = getSharedPreferences("app_data", MODE_PRIVATE);
+                            SharedPreferences.Editor editor = sharedPreferences.edit();
 
-                        // Route to Main Activity
-                        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                        startActivity(intent);
+                            editor.putInt("user_id", user_id);
+                            editor.putString("user_name", user_name);
+                            editor.putString("user_password_hash", password_hash);
+                            editor.putString("user_type", userType);
+                            editor.putBoolean("is_logged_in", true);
+
+                            editor.apply();
+
+                            // Route to Main Activity
+                            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                            startActivity(intent);
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
                     }
                 }
             });
