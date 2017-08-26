@@ -116,8 +116,10 @@ public class RegisterDetailsActivity extends AppCompatActivity {
                 // Check if required fields are set, and if yes then send request
                 if (validateFields()) {
                     loadingLayout.setVisibility(View.VISIBLE);
+                    String backgroundImageName = String.valueOf(upload_pic.getTag());
+                    if(!backgroundImageName.equals("uploadyourpic"))
+                         new uploadcloudinary().execute();
 
-                    new uploadcloudinary().execute();
                     sendUpdationRequest();
                 } else {
                     Toast.makeText(RegisterDetailsActivity.this, "Please fill all the fields", Toast.LENGTH_SHORT).show();
@@ -454,8 +456,12 @@ public class RegisterDetailsActivity extends AppCompatActivity {
             config.put("api_secret", "4Mr4HHRpMZ0aKABIuNIsDI5AZvw");
             Cloudinary cloudinary = new Cloudinary(config);
 
+            SharedPreferences sharedPreferences = getSharedPreferences("app_data", MODE_PRIVATE);
+            int userid = sharedPreferences.getInt("user_id", 0);
+            String usertype = sharedPreferences.getString("user_type", null);
             try {
-                cloudinary.uploader().upload(pic.getAbsolutePath(), ObjectUtils.asMap("public_id", "abhishekimg"));
+
+                cloudinary.uploader().upload(pic.getAbsolutePath(), ObjectUtils.asMap("public_id", String.valueOf(userid)));
 //                cloudinary.uploader().upload(pic.getAbsolutePath(), ObjectUtils.asMap("public_id", "profile_pic_donor_id" + picUri.toString()));
                 //cloudinary.uploader().upload(pic.getAbsolutePath(), ObjectUtils.asMap("public_id","user_name" +picUri.toString()));
             } catch (IOException e) {

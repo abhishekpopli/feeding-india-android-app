@@ -267,7 +267,7 @@ public class AddFood extends AppCompatActivity implements  View.OnClickListener 
         if(perishable==true)
             stringisperishable="1";
         String otherdetails = other_details.getText().toString();
-        String[] details ={donor_id,picUri.toString(),city,areaname,streetname,house,has_pickup_gps,pickup_gps_latitude,pickup_gps_longitude,stringisveg
+        String[] details ={donor_id,"http://res.cloudinary.com/feedingindiaapp/image/upload/v1503743820/"+donor_id+".jpg",city,areaname,streetname,house,has_pickup_gps,pickup_gps_latitude,pickup_gps_longitude,stringisveg
         ,stringisperishable,otherdetails};
 
         new uploadcloudinary().execute();
@@ -291,7 +291,7 @@ public class AddFood extends AppCompatActivity implements  View.OnClickListener 
             Cloudinary cloudinary = new Cloudinary(config);
 
             try {
-                cloudinary.uploader().upload(pic.getAbsolutePath(), ObjectUtils.asMap("public_id",donor_id+picUri.toString()));
+                cloudinary.uploader().upload(pic.getAbsolutePath(), ObjectUtils.asMap("public_id",donor_id));
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -407,7 +407,7 @@ public class AddFood extends AppCompatActivity implements  View.OnClickListener 
 
             } catch (JSONException e) {
                 e.printStackTrace();
-                Toast.makeText(AddFood.this, "wromg", Toast.LENGTH_SHORT).show();
+                Toast.makeText(AddFood.this, "wrong", Toast.LENGTH_SHORT).show();
             }
 
         }
