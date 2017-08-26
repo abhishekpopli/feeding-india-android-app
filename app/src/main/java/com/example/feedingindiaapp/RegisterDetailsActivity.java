@@ -62,6 +62,7 @@ public class RegisterDetailsActivity extends AppCompatActivity {
     private TextInputEditText userPhone2Field;
     private TextInputLayout userCityFieldContainer;
     private TextInputEditText userCityField;
+    private String userProfilePicURL;
     private LinearLayout donorTypeFieldContainer;
     private Button registerDetailsSubmitButton;
     private RelativeLayout loadingLayout;
@@ -245,12 +246,17 @@ public class RegisterDetailsActivity extends AppCompatActivity {
                 .add("name", userName)
                 .add("phone_no_1", userPhone1);
 
-
         // Conditionally adding attributes to form
         if (userPhone2 != null) {
             formBuilder.add("phone_no_2", userPhone2);
         }
 
+        //TODO: Change this
+        userProfilePicURL = "remove this";
+
+        if (userProfilePicURL != null) {
+            formBuilder.add("profile_pic_url", "http://cliparts.co/cliparts/6ip/5XK/6ip5XKxMT.png");
+        }
 
         if (isDonor) {
 
@@ -338,7 +344,6 @@ public class RegisterDetailsActivity extends AppCompatActivity {
 
                         // Do nothing, error Toast message is previously displayed
                     } else if (responseCode == 1) {
-
                         // when request is successful
 
                         try {
@@ -450,7 +455,8 @@ public class RegisterDetailsActivity extends AppCompatActivity {
             Cloudinary cloudinary = new Cloudinary(config);
 
             try {
-                cloudinary.uploader().upload(pic.getAbsolutePath(), ObjectUtils.asMap("public_id", "profile_pic_donor_id" + picUri.toString()));
+                cloudinary.uploader().upload(pic.getAbsolutePath(), ObjectUtils.asMap("public_id", "abhishekimg"));
+//                cloudinary.uploader().upload(pic.getAbsolutePath(), ObjectUtils.asMap("public_id", "profile_pic_donor_id" + picUri.toString()));
                 //cloudinary.uploader().upload(pic.getAbsolutePath(), ObjectUtils.asMap("public_id","user_name" +picUri.toString()));
             } catch (IOException e) {
                 e.printStackTrace();
