@@ -445,7 +445,6 @@ public class RegisterDetailsActivity extends AppCompatActivity {
         }
 
     ;
-
     public class uploadcloudinary extends AsyncTask<Void, Void, Void> {
 
         @Override
@@ -455,7 +454,6 @@ public class RegisterDetailsActivity extends AppCompatActivity {
             config.put("api_key", "721272957494713");
             config.put("api_secret", "4Mr4HHRpMZ0aKABIuNIsDI5AZvw");
             Cloudinary cloudinary = new Cloudinary(config);
-
             SharedPreferences sharedPreferences = getSharedPreferences("app_data", MODE_PRIVATE);
             int userid = sharedPreferences.getInt("user_id", 0);
             String usertype = sharedPreferences.getString("user_type", null);

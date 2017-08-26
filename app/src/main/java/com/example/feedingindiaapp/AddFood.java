@@ -46,6 +46,7 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.sql.Time;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -71,7 +72,7 @@ public class AddFood extends AppCompatActivity implements  View.OnClickListener 
     private EditText other_details;
     private FloatingActionButton submit_button;
     protected int LOAD_IMAGE_CAMERA = 0, CROP_IMAGE = 1, LOAD_IMAGE_GALLARY = 2;
-
+    private String finalurl = donor_id+ String.valueOf(System.currentTimeMillis());
     Button seemap;
     Bundle extras;
 
@@ -176,6 +177,69 @@ public class AddFood extends AppCompatActivity implements  View.OnClickListener 
         return valid;
     }
 
+
+    protected void CropImage() {
+        try {
+            Intent intent = new Intent("com.android.camera.action.CROP");
+            intent.setDataAndType(picUri, "image/*");
+
+            intent.putExtra("crop", "true");
+            intent.putExtra("outputX", 200);
+            intent.putExtra("outputY", 200);
+            intent.putExtra("aspectX", 3);
+            intent.putExtra("aspectY", 4);
+            intent.putExtra("scaleUpIfNeeded", true);
+            intent.putExtra("return-data", true);
+            pic = new File(Environment.getExternalStorageDirectory(),
+                    "tmp_" + String.valueOf(System.currentTimeMillis()) + ".jpg");
+
+            picUri = Uri.fromFile(pic);
+            intent.putExtra(android.provider.MediaStore.EXTRA_OUTPUT, picUri);
+            intent.putExtra("return-data", true);
+
+            startActivityForResult(intent, CROP_IMAGE);
+
+        } catch (ActivityNotFoundException e) {
+            Toast.makeText(this, "Your device doesn't support the crop action!", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @Override
+    public void onClick(View v) {
+        if(!validate())
+        {
+            return;
+
+        }
+        Resources resources = this.getResources();
+        String[] codes = resources.getStringArray(R.array.city_arrays);
+        int pos = city.getSelectedItemPosition();
+
+        String city = codes[pos];
+        String areaname = area.getText().toString();
+        String streetname = street.getText().toString();
+        String house = houseno.getText().toString();
+
+        Boolean veg = isveg.isChecked();
+        //true if veg
+        Boolean perishable = isperishable.isChecked();
+        //true if persihable
+        String stringisveg="0",stringisperishable="0";
+        if(veg==true)
+            stringisveg="1";
+        if(perishable==true)
+            stringisperishable="1";
+        String otherdetails = other_details.getText().toString();
+        String[] details ={donor_id,"http://res.cloudinary.com/feedingindiaapp/image/upload/v1503743820/"+finalurl+".jpg",city,areaname,streetname,house,has_pickup_gps,pickup_gps_latitude,pickup_gps_longitude,stringisveg
+        ,stringisperishable,otherdetails};
+
+        new uploadcloudinary().execute();
+
+        Bgtask bg = new Bgtask();
+        bg.execute(details);
+
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         //super.onActivityResult(requestCode, resultCode, data);
@@ -214,70 +278,6 @@ public class AddFood extends AppCompatActivity implements  View.OnClickListener 
         }
     }
 
-    protected void CropImage() {
-        try {
-            Intent intent = new Intent("com.android.camera.action.CROP");
-            intent.setDataAndType(picUri, "image/*");
-
-            intent.putExtra("crop", "true");
-            intent.putExtra("outputX", 200);
-            intent.putExtra("outputY", 200);
-            intent.putExtra("aspectX", 3);
-            intent.putExtra("aspectY", 4);
-            intent.putExtra("scaleUpIfNeeded", true);
-            intent.putExtra("return-data", true);
-            pic = new File(Environment.getExternalStorageDirectory(),
-                    "tmp_" + String.valueOf(System.currentTimeMillis()) + ".jpg");
-
-            picUri = Uri.fromFile(pic);
-            intent.putExtra(android.provider.MediaStore.EXTRA_OUTPUT, picUri);
-
-            intent.putExtra("return-data", true);
-
-            startActivityForResult(intent, CROP_IMAGE);
-
-        } catch (ActivityNotFoundException e) {
-            Toast.makeText(this, "Your device doesn't support the crop action!", Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    @Override
-    public void onClick(View v) {
-        if(!validate())
-        {
-            return;
-
-        }
-        Resources resources = this.getResources();
-        String[] codes = resources.getStringArray(R.array.city_arrays);
-        int pos = city.getSelectedItemPosition();
-
-        String city = codes[pos];
-        String areaname = area.getText().toString();
-        String streetname = street.getText().toString();
-        String house = houseno.getText().toString();
-
-        Boolean veg = isveg.isChecked();
-        //true if veg
-        Boolean perishable = isperishable.isChecked();
-        //true if persihable
-        String stringisveg="0",stringisperishable="0";
-        if(veg==true)
-            stringisveg="1";
-        if(perishable==true)
-            stringisperishable="1";
-        String otherdetails = other_details.getText().toString();
-        String[] details ={donor_id,"http://res.cloudinary.com/feedingindiaapp/image/upload/v1503743820/"+donor_id+".jpg",city,areaname,streetname,house,has_pickup_gps,pickup_gps_latitude,pickup_gps_longitude,stringisveg
-        ,stringisperishable,otherdetails};
-
-        new uploadcloudinary().execute();
-
-        Bgtask bg = new Bgtask();
-        bg.execute(details);
-
-    }
-
-
 
 
     public class uploadcloudinary extends AsyncTask<Void,Void,Void> {
@@ -289,9 +289,14 @@ public class AddFood extends AppCompatActivity implements  View.OnClickListener 
             config.put("api_key", "721272957494713");
             config.put("api_secret", "4Mr4HHRpMZ0aKABIuNIsDI5AZvw");
             Cloudinary cloudinary = new Cloudinary(config);
-
+            /*
+            Intent i=new Intent(Intent.ACTION_VIEW);
+            i.setDataAndType(Uri.fromFile(pic), "image/jpeg");
+            startActivity(i);
+            */
             try {
-                cloudinary.uploader().upload(pic.getAbsolutePath(), ObjectUtils.asMap("public_id",donor_id));
+                cloudinary.uploader().upload(pic.getAbsolutePath(), ObjectUtils.asMap("public_id",finalurl));
+
             } catch (IOException e) {
                 e.printStackTrace();
             }
