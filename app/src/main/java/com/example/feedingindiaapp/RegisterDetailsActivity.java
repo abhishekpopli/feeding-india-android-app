@@ -46,6 +46,8 @@ public class RegisterDetailsActivity extends AppCompatActivity {
     protected int LOAD_IMAGE_CAMERA = 0, CROP_IMAGE = 1, LOAD_IMAGE_GALLARY = 2;
     File pic;
     Bundle extras;
+
+    private int userId;
     private String userEmail;
     private String userPassword;
     private String userType;
@@ -78,6 +80,8 @@ public class RegisterDetailsActivity extends AppCompatActivity {
         userEmail = getIntent().getStringExtra("email");
         userPassword = getIntent().getStringExtra("password");
         userType = getIntent().getStringExtra("user_type");
+        userId = getIntent().getIntExtra("user_id", 0);
+
         upload_pic = (ImageView) findViewById(R.id.upload_yourpic);
         userNameField = (TextInputEditText) findViewById(R.id.register_name);
         userPhone1Field = (TextInputEditText) findViewById(R.id.register_phone_1);
@@ -88,8 +92,8 @@ public class RegisterDetailsActivity extends AppCompatActivity {
         registerDetailsSubmitButton = (Button) findViewById(R.id.register_details_form_submit_btn);
         loadingLayout = (RelativeLayout) findViewById(R.id.loading_layout);
 
-        SharedPreferences sharedPreferences = getSharedPreferences("app_data", MODE_PRIVATE);
-        finalurl = String.valueOf(sharedPreferences.getInt("user_id", 0))+sharedPreferences.getString("user_type", null);
+        finalurl = userType + "_" + userId;
+
         // Set user type flag
         if (userType.equals("donor")) {
             isDonor = true;

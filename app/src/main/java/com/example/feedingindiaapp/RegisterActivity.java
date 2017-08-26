@@ -179,7 +179,7 @@ public class RegisterActivity extends AppCompatActivity {
         try {
             final String responseData = response.body().string();
 
-            JSONObject object = new JSONObject(responseData);
+            final JSONObject object = new JSONObject(responseData);
             final int responseCode = object.getInt("response_code");
             final String responseMessage = object.getString("message");
 
@@ -195,12 +195,18 @@ public class RegisterActivity extends AppCompatActivity {
                         // Do nothing
                     } else if (responseCode == 1) {
 
-                        // Package data in indent and start registerDetails activity
-                        Intent intent = new Intent(RegisterActivity.this, RegisterDetailsActivity.class);
-                        intent.putExtra("email",userEmail);
-                        intent.putExtra("password",userPassword);
-                        intent.putExtra("user_type",userType);
-                        startActivity(intent);
+                        try {
+                            // Package data in indent and start registerDetails activity
+                            Intent intent = new Intent(RegisterActivity.this, RegisterDetailsActivity.class);
+                            intent.putExtra("email", userEmail);
+                            intent.putExtra("password", userPassword);
+                            intent.putExtra("user_type", userType);
+                            intent.putExtra("user_id", object.getInt("id"));
+                            startActivity(intent);
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
                     }
                 }
             });
