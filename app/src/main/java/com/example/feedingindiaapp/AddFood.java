@@ -86,7 +86,6 @@ public class AddFood extends AppCompatActivity implements  View.OnClickListener 
         donor_id =  sharedPreferences.getInt("user_id",0);
         password_hash = sharedPreferences.getString("user_password_hash", null);
 
-        Toast.makeText(AddFood.this, password_hash, Toast.LENGTH_SHORT).show();
         finalurl = donor_id+ String.valueOf(System.currentTimeMillis());
         latitude = (TextView) findViewById(R.id.latitude_map);
         longitude = (TextView) findViewById(R.id.longitude_map);
@@ -396,7 +395,6 @@ public class AddFood extends AppCompatActivity implements  View.OnClickListener 
 
             progressDialog.dismiss();
             try {
-                Toast.makeText(AddFood.this, result[0], Toast.LENGTH_SHORT).show();
                 String jsonstring = result[0].substring(4,result[0].length());
                 jsonObject = new JSONObject(jsonstring);
                 jsonArray = jsonObject.getJSONArray("server_response");
