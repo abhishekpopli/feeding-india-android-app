@@ -3,13 +3,12 @@ package com.example.feedingindiaapp;
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
 
-import android.Manifest;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.ActivityNotFoundException;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.PackageManager;
+import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -17,7 +16,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -54,7 +52,7 @@ public class AddFood extends AppCompatActivity implements  View.OnClickListener 
     ProgressDialog progressDialog;
     JSONObject jsonObject;
     JSONArray jsonArray;
-    private String donor_id ="1";
+    private int donor_id ;
     private Uri picUri;
     File pic;
     private TextView latitude;
@@ -72,7 +70,8 @@ public class AddFood extends AppCompatActivity implements  View.OnClickListener 
     private EditText other_details;
     private FloatingActionButton submit_button;
     protected int LOAD_IMAGE_CAMERA = 0, CROP_IMAGE = 1, LOAD_IMAGE_GALLARY = 2;
-    private String finalurl = donor_id+ String.valueOf(System.currentTimeMillis());
+    private String finalurl ;
+    private String  password_hash;
     Button seemap;
     Bundle extras;
 
@@ -83,6 +82,12 @@ public class AddFood extends AppCompatActivity implements  View.OnClickListener 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        SharedPreferences sharedPreferences = getSharedPreferences("app_data", MODE_PRIVATE);
+        donor_id =  sharedPreferences.getInt("user_id",0);
+        password_hash = sharedPreferences.getString("user_password_hash", null);
+
+        Toast.makeText(AddFood.this, password_hash, Toast.LENGTH_SHORT).show();
+        finalurl = donor_id+ String.valueOf(System.currentTimeMillis());
         latitude = (TextView) findViewById(R.id.latitude_map);
         longitude = (TextView) findViewById(R.id.longitude_map);
         latitude.setVisibility(View.GONE);
@@ -229,8 +234,11 @@ public class AddFood extends AppCompatActivity implements  View.OnClickListener 
             stringisveg="1";
         if(perishable==true)
             stringisperishable="1";
+
+
+
         String otherdetails = other_details.getText().toString();
-        String[] details ={donor_id,"http://res.cloudinary.com/feedingindiaapp/image/upload/v1503743820/"+finalurl+".jpg",city,areaname,streetname,house,has_pickup_gps,pickup_gps_latitude,pickup_gps_longitude,stringisveg
+        String[] details ={Integer.toString(donor_id),"http://res.cloudinary.com/feedingindiaapp/image/upload/v1503743820/"+finalurl+".jpg",city,areaname,streetname,house,has_pickup_gps,pickup_gps_latitude,pickup_gps_longitude,stringisveg
         ,stringisperishable,otherdetails};
 
         new uploadcloudinary().execute();
@@ -338,8 +346,9 @@ public class AddFood extends AppCompatActivity implements  View.OnClickListener 
                 OutputStream os = http.getOutputStream();
                 BufferedWriter bf = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
                 String[] details = passing[0];
-
+                // getting String
                 String postdata = URLEncoder.encode("donor_id", "UTF-8") + "=" + URLEncoder.encode(details[0], "UTF-8") + "&" +
+                        URLEncoder.encode("password_hash", "UTF-8") + "=" + URLEncoder.encode(password_hash, "UTF-8")+ "&" +
                         URLEncoder.encode("pickup_photo_url", "UTF-8") + "=" + URLEncoder.encode(details[1], "UTF-8")+ "&" +
                         URLEncoder.encode("pickup_city", "UTF-8") + "=" + URLEncoder.encode(details[2], "UTF-8")+ "&" +
                         URLEncoder.encode("pickup_area", "UTF-8") + "=" + URLEncoder.encode(details[3], "UTF-8")+ "&" +
@@ -387,6 +396,7 @@ public class AddFood extends AppCompatActivity implements  View.OnClickListener 
 
             progressDialog.dismiss();
             try {
+                Toast.makeText(AddFood.this, result[0], Toast.LENGTH_SHORT).show();
                 String jsonstring = result[0].substring(4,result[0].length());
                 jsonObject = new JSONObject(jsonstring);
                 jsonArray = jsonObject.getJSONArray("server_response");
@@ -397,6 +407,7 @@ public class AddFood extends AppCompatActivity implements  View.OnClickListener 
                 {
                     JSONObject jo = jsonArray.getJSONObject(count);
                     message = jo.getString("message");
+
                     if(message.equals("Some Server Error...Try again"))
                         Toast.makeText(AddFood.this, message, Toast.LENGTH_SHORT).show();
 
@@ -404,7 +415,9 @@ public class AddFood extends AppCompatActivity implements  View.OnClickListener 
                         Toast.makeText(AddFood.this, "Your donation has been successfully posted. Thank You!!", Toast.LENGTH_SHORT).show();
                         finish();
                     }
-
+                    else{
+                        Toast.makeText(AddFood.this, "It seems you have tried using wrong credentials. Please log in again!!", Toast.LENGTH_LONG).show();
+                    }
                     count++;
                 }
 
@@ -412,7 +425,7 @@ public class AddFood extends AppCompatActivity implements  View.OnClickListener 
 
             } catch (JSONException e) {
                 e.printStackTrace();
-                Toast.makeText(AddFood.this, "wrong", Toast.LENGTH_SHORT).show();
+                Toast.makeText(AddFood.this, "Internal Error", Toast.LENGTH_SHORT).show();
             }
 
         }
