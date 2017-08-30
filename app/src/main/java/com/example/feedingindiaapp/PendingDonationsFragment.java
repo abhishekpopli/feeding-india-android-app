@@ -29,13 +29,11 @@ import okhttp3.Request;
 import okhttp3.Response;
 
 
-/**
- * A simple {@link Fragment} subclass.
- */
 public class PendingDonationsFragment extends Fragment {
 
     private static final String DONATION_LIST_URL = "https://feedingindiaapp.000webhostapp.com/getdata/donations_list.php";
-
+    private  HttpUrl.Builder urlBuilder;
+    private  OkHttpClient client;
     private RecyclerView recyclerView;
     private RecyclerView.Adapter adapter;
 
@@ -66,6 +64,11 @@ public class PendingDonationsFragment extends Fragment {
 
     }
 
+//    @Override
+//    public void onDetach() {
+//        super.onDetach();
+//        client.connectionPool().evictAll();
+//    }
 
     /**
      * Run everything in this method except findViewById calls
@@ -119,11 +122,11 @@ public class PendingDonationsFragment extends Fragment {
 
     private void connectToServer(final long donation_id) {
         //Build URL
-        HttpUrl.Builder urlBuilder = HttpUrl.parse(DONATION_LIST_URL).newBuilder();
+        urlBuilder = HttpUrl.parse(DONATION_LIST_URL).newBuilder();
         urlBuilder.addQueryParameter("donation_id", String.valueOf(donation_id));
         String url = urlBuilder.build().toString();
 
-        OkHttpClient client = new OkHttpClient();
+        client = new OkHttpClient();
         Request request = new Request.Builder()
                 .url(url)
                 .build();

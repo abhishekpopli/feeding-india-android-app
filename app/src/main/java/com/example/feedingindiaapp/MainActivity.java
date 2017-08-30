@@ -119,6 +119,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             editor.putString("user_password_hash", null);
             editor.putString("user_type", null);
             editor.putBoolean("is_logged_in", false);
+            editor.putString("phoneno",null);
+            editor.putString("emailid",null);
 
             editor.apply();
 

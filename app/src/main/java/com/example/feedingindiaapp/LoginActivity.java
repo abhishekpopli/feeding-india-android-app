@@ -214,7 +214,7 @@ public class LoginActivity extends AppCompatActivity {
                             final int user_id = object.getInt("id");
                             final String user_name = object.getString("name");
                             final String password_hash = object.getString("password_hash");
-
+                            final String phone   = object.getString("phone_no_1");
                             //Also store in shared preferences
                             SharedPreferences sharedPreferences = getSharedPreferences("app_data", MODE_PRIVATE);
                             SharedPreferences.Editor editor = sharedPreferences.edit();
@@ -224,7 +224,8 @@ public class LoginActivity extends AppCompatActivity {
                             editor.putString("user_password_hash", password_hash);
                             editor.putString("user_type", userType);
                             editor.putBoolean("is_logged_in", true);
-
+                            editor.putString("phoneno", phone);
+                            editor.putString("emailid", userEmail);
                             editor.apply();
 
                             // Route to Main Activity

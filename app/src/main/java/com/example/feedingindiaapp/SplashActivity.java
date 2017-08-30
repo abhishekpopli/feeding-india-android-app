@@ -17,9 +17,6 @@ public class SplashActivity extends AppCompatActivity {
 
         new Handler().postDelayed(new Runnable() {
 
-            /**
-             * This function is run after SPLASH_TIME_OUT(in millisecs)
-             */
             @Override
             public void run() {
 

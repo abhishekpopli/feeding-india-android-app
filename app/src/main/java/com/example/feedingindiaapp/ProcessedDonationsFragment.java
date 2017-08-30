@@ -36,6 +36,7 @@ public class ProcessedDonationsFragment extends Fragment {
 
     private static final String DONATION_LIST_URL = "https://feedingindiaapp.000webhostapp.com/getdata/donations_list.php";
 
+    private  OkHttpClient client;
     private RecyclerView recyclerView;
     private RecyclerView.Adapter adapter;
 
@@ -66,6 +67,14 @@ public class ProcessedDonationsFragment extends Fragment {
 
     }
 
+
+
+//    @Override
+//    public void onDetach() {
+//        super.onDetach();
+//        client.connectionPool().evictAll();
+//    }
+//
 
     /**
      * Run everything in this method except findViewById calls
@@ -125,7 +134,7 @@ public class ProcessedDonationsFragment extends Fragment {
         urlBuilder.addQueryParameter("picked", "yes");
         String url = urlBuilder.build().toString();
 
-        OkHttpClient client = new OkHttpClient();
+        client = new OkHttpClient();
         Request request = new Request.Builder()
                 .url(url)
                 .build();

@@ -368,7 +368,8 @@ public class RegisterDetailsActivity extends AppCompatActivity {
                             editor.putString("user_password_hash", password_hash);
                             editor.putString("user_type", userType);
                             editor.putBoolean("is_logged_in", true);
-
+                            editor.putString("phoneno", userPhone1);
+                            editor.putString("emailid", userEmail);
                             editor.apply();
 
                             // Route to Main Activity
