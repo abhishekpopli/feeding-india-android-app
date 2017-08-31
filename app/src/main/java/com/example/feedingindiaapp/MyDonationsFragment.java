@@ -3,6 +3,7 @@ package com.example.feedingindiaapp;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
@@ -13,6 +14,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import org.json.JSONArray;
@@ -42,12 +44,12 @@ import okhttp3.Response;
 import static android.content.Context.MODE_PRIVATE;
 
 public class MyDonationsFragment extends Fragment {
-    private static final String DONATION_LIST_URL = "https://feedingindiaapp.000webhostapp.com/getdata/donations_list.php";
+    private static final String DONATION_LIST_URL = "https://feedingindiaapp.000webhostapp.com/getdata/mydonations.php";
     JSONObject jsonObject;
     JSONArray jsonArray;
+    private RelativeLayout loadingLayout;
     private RecyclerView recyclerView;
     private RecyclerView.Adapter adapter;
-    private ProgressBar progressBar;
     private ArrayList<Donation> listOfDonations = new ArrayList<>();
     private String result = "";
     private String donor_id="";
@@ -60,10 +62,11 @@ public class MyDonationsFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.activity_my_donations_fragment, container, false);
         recyclerView = (RecyclerView) view.findViewById(R.id.recylerViewofmydonations);
-        progressBar = (ProgressBar) view.findViewById(R.id.list_progress_bar_my_donations);
 
         final SharedPreferences sharedPreferences = getActivity().getSharedPreferences("app_data", MODE_PRIVATE);
         donor_id = Integer.toString(sharedPreferences.getInt("user_id",0));
+        loadingLayout = (RelativeLayout) view.findViewById(R.id.loading_layout);
+        loadingLayout.setVisibility(View.VISIBLE);
         return view;
 
     }
@@ -138,6 +141,12 @@ public class MyDonationsFragment extends Fragment {
                 br.close();
                 is.close();
                 http.disconnect();
+                Handler handler =  new Handler(MyDonationsFragment.this.getContext().getMainLooper());
+                handler.post( new Runnable(){
+                    public void run(){
+                        Toast.makeText(MyDonationsFragment.this.getContext(), result, Toast.LENGTH_SHORT).show();
+                    }
+                });
                 return result;
 
 
@@ -154,6 +163,8 @@ public class MyDonationsFragment extends Fragment {
 
         @Override
         protected void onPostExecute(String result) {
+            loadingLayout.setVisibility(View.INVISIBLE);
+
             showlist();
 
 
@@ -188,6 +199,7 @@ public class MyDonationsFragment extends Fragment {
                 );
                 listOfDonations.add(item);
                 count++;
+
             }
 
 
