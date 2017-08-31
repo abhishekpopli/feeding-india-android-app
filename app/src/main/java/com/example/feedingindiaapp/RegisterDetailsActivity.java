@@ -9,6 +9,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
+import android.provider.MediaStore;
 import android.support.design.widget.TextInputEditText;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AlertDialog;
@@ -43,10 +44,15 @@ import okhttp3.Response;
 public class RegisterDetailsActivity extends AppCompatActivity {
 
     private static final String USER_REGISTER_URL = "https://feedingindiaapp.000webhostapp.com/getauth/register_details.php";
-    protected int LOAD_IMAGE_CAMERA = 0, CROP_IMAGE = 1, LOAD_IMAGE_GALLARY = 2;
-    File pic;
-    Bundle extras;
+    private String cloudinaryPictureName = "";
 
+    // Data members for image to be uploaded
+    private int LOAD_IMAGE_CAMERA = 0, CROP_IMAGE = 1, LOAD_IMAGE_GALLERY = 2;
+    private File pic;
+    private Uri picUri;
+    private Boolean addedImage;
+
+    // User data varibales
     private int userId;
     private String userEmail;
     private String userPassword;
@@ -58,18 +64,18 @@ public class RegisterDetailsActivity extends AppCompatActivity {
     private String userPhone1;
     private String userPhone2;
     private String userCity;
-    private ImageView upload_pic;
+    private String userProfilePicUrl = "http://www.msudenver.edu/media/sampleassets/profile-placeholder.png";
+
+    // Views
+    private ImageView uploadPic;
     private TextInputEditText userNameField;
     private TextInputEditText userPhone1Field;
     private TextInputEditText userPhone2Field;
     private TextInputLayout userCityFieldContainer;
     private TextInputEditText userCityField;
-    private String userProfilePicURL;
     private LinearLayout donorTypeFieldContainer;
     private Button registerDetailsSubmitButton;
     private RelativeLayout loadingLayout;
-    private Uri picUri;
-    private String finalurl ="";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,7 +88,9 @@ public class RegisterDetailsActivity extends AppCompatActivity {
         userType = getIntent().getStringExtra("user_type");
         userId = getIntent().getIntExtra("user_id", 0);
 
-        upload_pic = (ImageView) findViewById(R.id.upload_yourpic);
+        cloudinaryPictureName = userType + "_" + userId;
+
+        uploadPic = (ImageView) findViewById(R.id.upload_yourpic);
         userNameField = (TextInputEditText) findViewById(R.id.register_name);
         userPhone1Field = (TextInputEditText) findViewById(R.id.register_phone_1);
         userPhone2Field = (TextInputEditText) findViewById(R.id.register_phone_2);
@@ -91,8 +99,6 @@ public class RegisterDetailsActivity extends AppCompatActivity {
         donorTypeFieldContainer = (LinearLayout) findViewById(R.id.register_donor_type_container);
         registerDetailsSubmitButton = (Button) findViewById(R.id.register_details_form_submit_btn);
         loadingLayout = (RelativeLayout) findViewById(R.id.loading_layout);
-
-        finalurl = userType + "_" + userId;
 
         // Set user type flag
         if (userType.equals("donor")) {
@@ -108,79 +114,128 @@ public class RegisterDetailsActivity extends AppCompatActivity {
             donorTypeFieldContainer.setVisibility(View.GONE);
         }
 
-
         registerDetailsSubmitButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                submitDetails();
+            }
+        });
 
-                userName = userNameField.getText().toString();
-                userPhone1 = userPhone1Field.getText().toString();
-                userPhone2 = userPhone2Field.getText().toString();
-                userCity = userCityField.getText().toString();
+        pic = new File(Environment.getExternalStorageDirectory(),
+                "tmp_" + String.valueOf(System.currentTimeMillis()) + ".jpg");
+        picUri = Uri.fromFile(pic);
 
+        uploadPic.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getPicture();
+            }
+        });
+    }
 
-                // Check if required fields are set, and if yes then send request
-                if (validateFields()) {
-                    loadingLayout.setVisibility(View.VISIBLE);
-                    String backgroundImageName = String.valueOf(upload_pic.getTag());
-                    if(!backgroundImageName.equals("uploadyourpic"))
-                         new uploadcloudinary().execute();
+    private void submitDetails() {
+        userName = userNameField.getText().toString();
+        userPhone1 = userPhone1Field.getText().toString();
+        userPhone2 = userPhone2Field.getText().toString();
+        userCity = userCityField.getText().toString();
 
-                    sendUpdationRequest();
-                } else {
-                    Toast.makeText(RegisterDetailsActivity.this, "Please fill all the fields", Toast.LENGTH_SHORT).show();
+        // Check if required fields are set, and if yes then send request
+        if (validateFields()) {
+
+            loadingLayout.setVisibility(View.VISIBLE);
+
+            if (addedImage) {
+//                System.out.println("Path: " + pic.getAbsolutePath());
+                new uploadToCloudinary().execute();
+            }
+
+            sendUpdationRequest();
+        } else {
+            Toast.makeText(RegisterDetailsActivity.this, "Please fill all the fields", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void getPicture() {
+        final CharSequence[] options = {"Take picture", "Choose from picture from gallery"};
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(RegisterDetailsActivity.this);
+        builder.setTitle("Select Picture using...");
+        builder.setItems(options, new DialogInterface.OnClickListener() {
+
+            @Override
+            public void onClick(DialogInterface dialog, int item) {
+
+                if (options[item].equals(options[0])) {
+                    openCamera();
+                } else if (options[item].equals(options[1])) {
+                    openGallery();
                 }
             }
         });
 
-
-
-        upload_pic.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                final CharSequence[] options = {"Take Photo", "Choose from Gallery"};
-
-                AlertDialog.Builder builder = new AlertDialog.Builder(RegisterDetailsActivity.this);
-                builder.setTitle("Select Pic Using...");
-                builder.setItems(options, new DialogInterface.OnClickListener() {
-
-                    @Override
-                    public void onClick(DialogInterface dialog, int item) {
-                        if (options[item].equals("Take Photo")) {
-
-                            try {
-                                Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
-
-                                pic = new File(Environment.getExternalStorageDirectory(),
-                                        "tmp_" + String.valueOf(System.currentTimeMillis()) + ".jpg");
-
-                                picUri = Uri.fromFile(pic);
-
-                                cameraIntent.putExtra(android.provider.MediaStore.EXTRA_OUTPUT, picUri);
-
-                                cameraIntent.putExtra("return-data", true);
-                                startActivityForResult(cameraIntent, LOAD_IMAGE_CAMERA);
-                            } catch (ActivityNotFoundException e) {
-                                e.printStackTrace();
-                            }
-
-                        } else if (options[item].equals("Choose from Gallery")) {
-                            Intent intent = new Intent(Intent.ACTION_PICK,
-                                    android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-                            startActivityForResult(Intent.createChooser(intent, "Select Picture"), LOAD_IMAGE_GALLARY);
-                        }
-                    }
-                });
-
-                builder.show();
-
-            }
-        });
-
-
+        builder.show();
     }
 
-    // Handle click on radio buttons, and change donor_type variable
+    private void openCamera() {
+        Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+//        pic = new File(Environment.getExternalStorageDirectory(),
+//                "tmp_"+String.valueOf(System.currentTimeMillis()) + ".jpg");
+//        picUri = Uri.fromFile(pic);
+
+        cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, picUri);
+        cameraIntent.putExtra("return-data", true);
+        startActivityForResult(cameraIntent, LOAD_IMAGE_CAMERA);
+    }
+
+    private void openGallery() {
+        Intent galleryIntent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        startActivityForResult(Intent.createChooser(galleryIntent, "Select Image from gallery"), LOAD_IMAGE_GALLERY);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+        if (requestCode == LOAD_IMAGE_CAMERA && resultCode == RESULT_OK) {
+            addedImage = true;
+            cropImage();
+        } else if (requestCode == LOAD_IMAGE_GALLERY) {
+            addedImage = true;
+
+            if (data != null) {
+                picUri = data.getData();
+                cropImage();
+            }
+        } else if (requestCode == CROP_IMAGE) {
+            if (data != null) {
+                Bundle bundle = data.getExtras();
+                Bitmap photo = bundle.getParcelable("data");
+                uploadPic.setImageBitmap(photo);
+            }
+        }
+    }
+
+    private void cropImage() {
+        try {
+
+            Intent intent = new Intent("com.android.camera.action.CROP");
+
+            intent.setDataAndType(picUri, "image/*");
+
+            intent.putExtra("crop", "true");
+            intent.putExtra("outputX", 200);
+            intent.putExtra("outputY", 200);
+            intent.putExtra("aspectX", 3);
+            intent.putExtra("aspectY", 4);
+            intent.putExtra("scaleUpIfNeeded", true);
+            intent.putExtra("return-data", true);
+
+            startActivityForResult(intent, CROP_IMAGE);
+
+        } catch (ActivityNotFoundException e) {
+            Toast.makeText(this, "Please install an app to crop images", Toast.LENGTH_SHORT).show();
+        }
+    }
+
     public void onRadioClick(View view) {
         clickedRadioButton = true;
 
@@ -198,11 +253,6 @@ public class RegisterDetailsActivity extends AppCompatActivity {
         }
     }
 
-    /**
-     * This method does form validation
-     *
-     * @return true is all fields are valid, returns false otherwise
-     */
     private boolean validateFields() {
         boolean isValid = true;
 
@@ -240,9 +290,6 @@ public class RegisterDetailsActivity extends AppCompatActivity {
         return isValid;
     }
 
-    /**
-     * This method sends network request, to update corresponding record
-     */
     private void sendUpdationRequest() {
 
         OkHttpClient client = new OkHttpClient();
@@ -259,11 +306,8 @@ public class RegisterDetailsActivity extends AppCompatActivity {
             formBuilder.add("phone_no_2", userPhone2);
         }
 
-        //TODO: Change this
-        userProfilePicURL = "remove this";
-
-        if (userProfilePicURL != null) {
-            formBuilder.add("profile_pic_url", "http://res.cloudinary.com/feedingindiaapp/image/upload/v1503743820/"+finalurl+".jpg");
+        if (addedImage) {
+            formBuilder.add("profile_pic_url", userProfilePicUrl);
         }
 
         if (isDonor) {
@@ -396,83 +440,40 @@ public class RegisterDetailsActivity extends AppCompatActivity {
         }
 
     }
-    protected void CropImage() {
-        try {
-            Intent intent = new Intent("com.android.camera.action.CROP");
-            intent.setDataAndType(picUri, "image/*");
 
-            intent.putExtra("crop", "true");
-            intent.putExtra("outputX", 200);
-            intent.putExtra("outputY", 200);
-            intent.putExtra("aspectX", 3);
-            intent.putExtra("aspectY", 4);
-            intent.putExtra("scaleUpIfNeeded", true);
-            intent.putExtra("return-data", true);
-            pic = new File(Environment.getExternalStorageDirectory(),
-                    "tmp_" + String.valueOf(System.currentTimeMillis()) + ".jpg");
-
-            picUri = Uri.fromFile(pic);
-            intent.putExtra(android.provider.MediaStore.EXTRA_OUTPUT, picUri);
-
-            intent.putExtra("return-data", true);
-
-            startActivityForResult(intent, CROP_IMAGE);
-
-        } catch (ActivityNotFoundException e) {
-            Toast.makeText(this, "Your device doesn't support the crop action!", Toast.LENGTH_SHORT).show();
-        }
-    }
+    private class uploadToCloudinary extends AsyncTask<Void, Void, Void> {
 
         @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        //super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == LOAD_IMAGE_CAMERA && resultCode == RESULT_OK) {
-            CropImage();
-
+        protected void onPreExecute() {
+//            Toast.makeText(RegisterDetailsActivity.this, "*Path is: " + pic.getAbsolutePath(), Toast.LENGTH_SHORT).show();
         }
-        else if (requestCode == LOAD_IMAGE_GALLARY) {
-            if (data != null) {
-
-                picUri = data.getData();
-                CropImage();
-            }
-        }
-        else if (requestCode == CROP_IMAGE) {
-            if (data != null) {
-                extras = data.getExtras();
-
-                // get the cropped bitmap
-                Bitmap photo = extras.getParcelable("data");
-                upload_pic.setImageBitmap(photo);
-                upload_pic.setTag("newpic");
-
-            }
-        }
-
-        }
-
-    ;
-    public class uploadcloudinary extends AsyncTask<Void, Void, Void> {
 
         @Override
         protected Void doInBackground(Void... params) {
+
             Map config = new HashMap();
             config.put("cloud_name", "feedingindiaapp");
             config.put("api_key", "721272957494713");
             config.put("api_secret", "4Mr4HHRpMZ0aKABIuNIsDI5AZvw");
+
             Cloudinary cloudinary = new Cloudinary(config);
 
             try {
 
-                cloudinary.uploader().upload(pic.getAbsolutePath(), ObjectUtils.asMap("public_id",finalurl));
-//                cloudinary.uploader().upload(pic.getAbsolutePath(), ObjectUtils.asMap("public_id", "profile_pic_donor_id" + picUri.toString()));
-                //cloudinary.uploader().upload(pic.getAbsolutePath(), ObjectUtils.asMap("public_id","user_name" +picUri.toString()));
+//                Toast.makeText(RegisterDetailsActivity.this, "**Path is: " + pic.getAbsolutePath(), Toast.LENGTH_SHORT).show();
+
+                cloudinary.uploader().upload(pic.getAbsolutePath(), ObjectUtils.asMap("public_id", cloudinaryPictureName));
+                userProfilePicUrl = cloudinary.url().imageTag(cloudinaryPictureName + ".jpg");
+
             } catch (IOException e) {
                 e.printStackTrace();
             }
             return null;
         }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+//            Toast.makeText(RegisterDetailsActivity.this, "Image successfully uploaded and url is " + userProfilePicUrl, Toast.LENGTH_SHORT).show();
+        }
     }
-
-
 }

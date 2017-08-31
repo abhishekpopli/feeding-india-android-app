@@ -93,13 +93,14 @@
                     android:textSize="17sp" />
 
             </android.support.design.widget.TextInputLayout>
+
             <ImageView
-                android:layout_width="match_parent"
-                android:layout_marginTop="6dp"
-                android:layout_height="80dp"
                 android:id="@+id/upload_yourpic"
-                android:src="@drawable/upload_icon"
-                android:tag="uploadyourpic"/>
+                android:layout_width="match_parent"
+                android:layout_height="80dp"
+                android:layout_marginTop="6dp"
+                android:src="@drawable/upload_icon" />
+
             <LinearLayout
                 android:id="@+id/register_donor_type_container"
                 android:layout_width="match_parent"
