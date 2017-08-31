@@ -1,6 +1,8 @@
 package com.example.feedingindiaapp;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
@@ -17,7 +19,17 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 
 import okhttp3.Call;
@@ -27,14 +39,18 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
+import static android.content.Context.MODE_PRIVATE;
+
 public class MyDonationsFragment extends Fragment {
     private static final String DONATION_LIST_URL = "https://feedingindiaapp.000webhostapp.com/getdata/donations_list.php";
-
+    JSONObject jsonObject;
+    JSONArray jsonArray;
     private RecyclerView recyclerView;
     private RecyclerView.Adapter adapter;
     private ProgressBar progressBar;
     private ArrayList<Donation> listOfDonations = new ArrayList<>();
-
+    private String result = "";
+    private String donor_id="";
     public MyDonationsFragment() {
         // Required empty public constructor
     }
@@ -46,6 +62,8 @@ public class MyDonationsFragment extends Fragment {
         recyclerView = (RecyclerView) view.findViewById(R.id.recylerViewofmydonations);
         progressBar = (ProgressBar) view.findViewById(R.id.list_progress_bar_my_donations);
 
+        final SharedPreferences sharedPreferences = getActivity().getSharedPreferences("app_data", MODE_PRIVATE);
+        donor_id = Integer.toString(sharedPreferences.getInt("user_id",0));
         return view;
 
     }
@@ -57,8 +75,6 @@ public class MyDonationsFragment extends Fragment {
         // Set layout manager to recyler view
         final LinearLayoutManager layoutManager = new LinearLayoutManager(MyDonationsFragment.this.getContext());
         recyclerView.setLayoutManager(layoutManager);
-        // Initially fetch data from server (no = limit specified in PHP file)
-        connectToServer(0);
 
 
         // Create a new adapter
@@ -71,146 +87,113 @@ public class MyDonationsFragment extends Fragment {
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
 
-                // Load more data when last item in arraylist is displayed on screen
-                if (layoutManager.findLastCompletelyVisibleItemPosition() == listOfDonations.size() - 1) {
-                    connectToServer(listOfDonations.get(listOfDonations.size() - 1).getDonationId());
-                }
 
             }
 
         });
 
+        Bgtask bg = new Bgtask();
+        bg.execute();
 
     }
 
 
+ //                           progressBar.setVisibility(View.INVISIBLE);
 
 
-    private void connectToServer(final long donation_id) {
-        //Build URL
-        HttpUrl.Builder urlBuilder = HttpUrl.parse(DONATION_LIST_URL).newBuilder();
-        urlBuilder.addQueryParameter("donation_id", String.valueOf(donation_id));
-        String url = urlBuilder.build().toString();
 
-        OkHttpClient client = new OkHttpClient();
-        Request request = new Request.Builder()
-                .url(url)
-                .build();
+    private class Bgtask extends AsyncTask<String, String, String> {
 
-        //Using Asynchronous network call
-        client.newCall(request).enqueue(new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
 
-                // Need to put everything to display/change in UI inside runOnUiThread
-                // Condition when we cannot connect to the internet
-                MyDonationsFragment.this.getActivity().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
+        @Override
+        protected String doInBackground(String... params) {
 
-                        progressBar.setVisibility(View.INVISIBLE);
-                        Toast.makeText(MyDonationsFragment.this.getContext(), "Cannot connect to server", Toast.LENGTH_SHORT).show();
-                    }
-                });
 
-            }
+            String fetch_url =  "https://feedingindiaapp.000webhostapp.com/getdata/mydonations.php";;
+            try {
 
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
 
-                if (!response.isSuccessful()) {
+                URL url = new URL(fetch_url);
+                HttpURLConnection http = (HttpURLConnection) url.openConnection();
+                http.setRequestMethod("POST");
+                http.setDoInput(true);
+                http.setDoOutput(true);
+                OutputStream os = http.getOutputStream();
+                BufferedWriter bf = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
+                String postdata = URLEncoder.encode("donor_id", "UTF-8") + "=" + URLEncoder.encode(donor_id, "UTF-8");
+                bf.write(postdata);
+                bf.flush();
+                bf.close();
+                os.close();
 
-                    // Condition when response code sent by the server says error
-                    MyDonationsFragment.this.getActivity().runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
+                InputStream is = http.getInputStream();
+                BufferedReader br = new BufferedReader(new InputStreamReader(is, "iso-8859-1"));
+                String line = "";
 
-                            progressBar.setVisibility(View.INVISIBLE);
-                            Toast.makeText(MyDonationsFragment.this.getContext(), "Didn't get correct response from server", Toast.LENGTH_SHORT).show();
-                        }
-                    });
+                while ((line = br.readLine()) != null) {
+                    result += line;
 
-                } else {
-
-                    // If load data from server is successful then display data
-                    if (loadData(response)) {
-
-                        // Display data when everything is correct
-                        MyDonationsFragment.this.getActivity().runOnUiThread(new Runnable() {
-
-                            @Override
-                            public void run() {
-
-                                if (donation_id == 0) {
-                                    progressBar.setVisibility(View.INVISIBLE);
-                                }
-
-                                // To tell adapter to supply added data items
-                                adapter.notifyDataSetChanged();
-
-                            }
-
-                        });
-
-                    }
                 }
 
-            }
-        });
+                br.close();
+                is.close();
+                http.disconnect();
+                return result;
 
-    }
 
-
-    private Boolean loadData(Response response) {
-
-        try {
-
-            final String responseData = response.body().string();
-
-            JSONArray array = new JSONArray(responseData);
-
-            for (int i = 0; i < array.length(); i++) {
-
-                JSONObject object = array.getJSONObject(i);
-
-                // All values from JSON objects are Strings, hence need to parse in appropriate type
-                Donation item = new Donation(
-                        object.getLong("donation_id"),
-                        object.getString("pickup_area"),
-                        Short.parseShort(object.getString("is_veg")),
-                        Short.parseShort(object.getString("is_perishable")),
-                        Short.parseShort(object.getString("is_accepted")),
-                        Short.parseShort(object.getString("is_picked")),
-                        object.getString("other_details"),
-                        object.getString("photo_url"),
-                        object.getString("name"),
-                        object.getString("request_datetime"),
-                        object.getString("pickup_datetime")
-                );
-
-                listOfDonations.add(item);
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
             }
 
-        } catch (IOException | JSONException e) {
 
-            e.printStackTrace();
-
-            MyDonationsFragment.this.getActivity().runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-
-                    progressBar.setVisibility(View.INVISIBLE);
-                    Toast.makeText(MyDonationsFragment.this.getContext(), "Cannot parse data from server correctly", Toast.LENGTH_SHORT).show();
-                }
-            });
-
-            return false;
-
+            return null;
         }
 
-        return true;
+
+        @Override
+        protected void onPostExecute(String result) {
+            showlist();
+
+
+        }
     }
+    ;
+
+    public void showlist() {
 
 
+        try {
+            jsonObject = new JSONObject(result);
+            jsonArray = jsonObject.getJSONArray("server");
+            int count = 0;
 
+
+            while (count < jsonArray.length()) {
+                JSONObject jo = jsonArray.getJSONObject(count);
+
+                Donation item = new Donation(
+                        jsonObject.getLong("donation_id"),
+                        jsonObject.getString("pickup_area"),
+                        Short.parseShort(jsonObject.getString("is_veg")),
+                        Short.parseShort(jsonObject.getString("is_perishable")),
+                        Short.parseShort(jsonObject.getString("is_accepted")),
+                        Short.parseShort(jsonObject.getString("is_picked")),
+                        jsonObject.getString("other_details"),
+                        jsonObject.getString("photo_url"),
+                        jsonObject.getString("name"),
+                        jsonObject.getString("request_datetime"),
+                        jsonObject.getString("pickup_datetime")
+                );
+                listOfDonations.add(item);
+                count++;
+            }
+
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+    }
 }

@@ -320,7 +320,7 @@ public class AddFood extends AppCompatActivity implements  View.OnClickListener 
             progressDialog = new ProgressDialog(AddFood.this);
             progressDialog.setIndeterminate(true);
             progressDialog.setCancelable(false);
-            progressDialog.setTitle("Submiiting your donation");
+            progressDialog.setTitle("Submitting your donation");
             progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
             progressDialog.setMessage("Please wait...");
             progressDialog.show();

@@ -29,13 +29,10 @@ import okhttp3.Request;
 import okhttp3.Response;
 
 
-/**
- * A simple {@link Fragment} subclass.
- */
+
 public class ProcessedDonationsFragment extends Fragment {
 
     private static final String DONATION_LIST_URL = "https://feedingindiaapp.000webhostapp.com/getdata/donations_list.php";
-
     private  OkHttpClient client;
     private RecyclerView recyclerView;
     private RecyclerView.Adapter adapter;

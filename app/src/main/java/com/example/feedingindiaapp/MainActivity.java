@@ -12,9 +12,11 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
-
+    SharedPreferences sharedPreferences ;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -26,8 +28,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
-
+        sharedPreferences = getSharedPreferences("app_data", MODE_PRIVATE);
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        View hview = navigationView.getHeaderView(0);
+        TextView tname = (TextView) hview.findViewById(R.id.header_name);
+        TextView temail = (TextView) hview.findViewById(R.id.header_email);
+        tname.setText(sharedPreferences.getString("user_name",null));
+        temail.setText(sharedPreferences.getString("emailid",null));
         navigationView.setNavigationItemSelectedListener(this);
 
         // Set the initial Fragment
@@ -111,7 +118,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         } else if (id == R.id.log_out) {
 
             //Change shared preferences
-            SharedPreferences sharedPreferences = getSharedPreferences("app_data", MODE_PRIVATE);
+
             SharedPreferences.Editor editor = sharedPreferences.edit();
 
             editor.putInt("user_id", 0);
