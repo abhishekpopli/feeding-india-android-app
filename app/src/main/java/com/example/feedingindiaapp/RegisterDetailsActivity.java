@@ -46,7 +46,7 @@ import okhttp3.Response;
 public class RegisterDetailsActivity extends AppCompatActivity {
 
     private static final String USER_REGISTER_URL = "https://feedingindiaapp.000webhostapp.com/getauth/register_details.php";
-    private String cloudinaryPictureName = "";
+    private String cloudinaryPictureName;
 
     // Data members for image to be uploaded
     private int LOAD_IMAGE_CAMERA = 0, CROP_IMAGE = 1, LOAD_IMAGE_GALLERY = 2;
@@ -148,9 +148,9 @@ public class RegisterDetailsActivity extends AppCompatActivity {
             if (addedImage) {
 //                System.out.println("Path: " + pic.getAbsolutePath());
                 new uploadToCloudinary().execute();
+            } else {
+                sendUpdationRequest();
             }
-
-            sendUpdationRequest();
         } else {
             Toast.makeText(RegisterDetailsActivity.this, "Please fill all the fields", Toast.LENGTH_SHORT).show();
         }
@@ -493,8 +493,10 @@ public class RegisterDetailsActivity extends AppCompatActivity {
 //                Toast.makeText(RegisterDetailsActivity.this, "**Path is: " + pic.getAbsolutePath(), Toast.LENGTH_SHORT).show();
 
                 cloudinary.uploader().upload(croppedPic.getAbsolutePath(), ObjectUtils.asMap("public_id", cloudinaryPictureName));
-                userProfilePicUrl = cloudinary.url().imageTag(cloudinaryPictureName + ".jpg");
-                System.out.println("URL on cloudinary: " + userProfilePicUrl);
+
+                String[] htmlPicTag = cloudinary.url().imageTag(cloudinaryPictureName + ".jpg").split("'");
+                userProfilePicUrl = htmlPicTag[1];
+//                System.out.println("URL on cloudinary: " + userProfilePicUrl);
 
             } catch (IOException e) {
                 e.printStackTrace();
@@ -505,6 +507,7 @@ public class RegisterDetailsActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(Void aVoid) {
 //            Toast.makeText(RegisterDetailsActivity.this, "Image successfully uploaded and url is " + userProfilePicUrl, Toast.LENGTH_SHORT).show();
+            sendUpdationRequest();
         }
     }
 }
