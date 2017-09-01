@@ -29,6 +29,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -49,7 +51,9 @@ public class RegisterDetailsActivity extends AppCompatActivity {
     // Data members for image to be uploaded
     private int LOAD_IMAGE_CAMERA = 0, CROP_IMAGE = 1, LOAD_IMAGE_GALLERY = 2;
     private File pic;
+    private File croppedPic;
     private Uri picUri;
+    private Uri croppedPicUri;
     private Boolean addedImage;
 
     // User data varibales
@@ -114,16 +118,13 @@ public class RegisterDetailsActivity extends AppCompatActivity {
             donorTypeFieldContainer.setVisibility(View.GONE);
         }
 
+
         registerDetailsSubmitButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 submitDetails();
             }
         });
-
-        pic = new File(Environment.getExternalStorageDirectory(),
-                "tmp_" + String.valueOf(System.currentTimeMillis()) + ".jpg");
-        picUri = Uri.fromFile(pic);
 
         uploadPic.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -158,6 +159,14 @@ public class RegisterDetailsActivity extends AppCompatActivity {
     private void getPicture() {
         final CharSequence[] options = {"Take picture", "Choose from picture from gallery"};
 
+        pic = new File(Environment.getExternalStorageDirectory(),
+                "FeedingIndia" + String.valueOf(System.currentTimeMillis()) + ".jpg");
+        picUri = Uri.fromFile(pic);
+
+        croppedPic = new File(Environment.getExternalStorageDirectory(),
+                "FeedingIndiaCropped" + String.valueOf(System.currentTimeMillis()) + ".jpg");
+        croppedPicUri = Uri.fromFile(pic);
+
         AlertDialog.Builder builder = new AlertDialog.Builder(RegisterDetailsActivity.this);
         builder.setTitle("Select Picture using...");
         builder.setItems(options, new DialogInterface.OnClickListener() {
@@ -183,7 +192,9 @@ public class RegisterDetailsActivity extends AppCompatActivity {
 //        picUri = Uri.fromFile(pic);
 
         cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, picUri);
+//        cameraIntent.putExtra("outputFormat",Bitmap.CompressFormat.JPEG.toString());
         cameraIntent.putExtra("return-data", true);
+
         startActivityForResult(cameraIntent, LOAD_IMAGE_CAMERA);
     }
 
@@ -210,12 +221,29 @@ public class RegisterDetailsActivity extends AppCompatActivity {
                 Bundle bundle = data.getExtras();
                 Bitmap photo = bundle.getParcelable("data");
                 uploadPic.setImageBitmap(photo);
+
+                try {
+                    FileOutputStream fos = new FileOutputStream(croppedPic);
+                    photo.compress(Bitmap.CompressFormat.JPEG, 90, fos);
+                    fos.close();
+
+                } catch (FileNotFoundException e) {
+                    System.out.println("File not found");
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    System.out.println("Error accessing file");
+                    e.printStackTrace();
+                }
             }
         }
     }
 
     private void cropImage() {
         try {
+
+//            croppedPic = new File(Environment.getExternalStorageDirectory(),
+//                    "tmp_crop_"+String.valueOf(System.currentTimeMillis()) + ".jpg");
+//            croppedPicUri = Uri.fromFile(pic);
 
             Intent intent = new Intent("com.android.camera.action.CROP");
 
@@ -224,10 +252,12 @@ public class RegisterDetailsActivity extends AppCompatActivity {
             intent.putExtra("crop", "true");
             intent.putExtra("outputX", 200);
             intent.putExtra("outputY", 200);
-            intent.putExtra("aspectX", 3);
-            intent.putExtra("aspectY", 4);
+            intent.putExtra("aspectX", 1);
+            intent.putExtra("aspectY", 1);
             intent.putExtra("scaleUpIfNeeded", true);
             intent.putExtra("return-data", true);
+//            intent.putExtra("outputFormat",Bitmap.CompressFormat.JPEG.toString());
+            intent.putExtra(MediaStore.EXTRA_OUTPUT, croppedPicUri);
 
             startActivityForResult(intent, CROP_IMAGE);
 
@@ -462,8 +492,9 @@ public class RegisterDetailsActivity extends AppCompatActivity {
 
 //                Toast.makeText(RegisterDetailsActivity.this, "**Path is: " + pic.getAbsolutePath(), Toast.LENGTH_SHORT).show();
 
-                cloudinary.uploader().upload(pic.getAbsolutePath(), ObjectUtils.asMap("public_id", cloudinaryPictureName));
+                cloudinary.uploader().upload(croppedPic.getAbsolutePath(), ObjectUtils.asMap("public_id", cloudinaryPictureName));
                 userProfilePicUrl = cloudinary.url().imageTag(cloudinaryPictureName + ".jpg");
+                System.out.println("URL on cloudinary: " + userProfilePicUrl);
 
             } catch (IOException e) {
                 e.printStackTrace();
