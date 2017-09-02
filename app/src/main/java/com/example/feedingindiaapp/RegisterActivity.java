@@ -203,6 +203,7 @@ public class RegisterActivity extends AppCompatActivity {
                             intent.putExtra("user_type", userType);
                             intent.putExtra("user_id", object.getInt("id"));
                             startActivity(intent);
+                            finish();
 
                         } catch (JSONException e) {
                             e.printStackTrace();
