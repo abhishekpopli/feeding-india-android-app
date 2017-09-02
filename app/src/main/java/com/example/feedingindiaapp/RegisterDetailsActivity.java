@@ -527,6 +527,7 @@ public class RegisterDetailsActivity extends AppCompatActivity {
                             }
 
                             editor.putBoolean("is_logged_in", true);
+                            editor.putString("user_profile_pic_url", userProfilePicUrl);
                             editor.putString("phoneno", userPhone1);
                             editor.putString("emailid", userEmail);
                             editor.apply();

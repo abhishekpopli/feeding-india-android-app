@@ -27,10 +27,12 @@ public class RegisterActivity extends AppCompatActivity {
 
     private static final String USER_AUTH_URL = "https://feedingindiaapp.000webhostapp.com/getauth/register_login.php";
 
+    // User details
     private String userEmail;
     private String userPassword;
     private String userType;
 
+    // Views
     private Button formSubmitBtn;
     private TextInputEditText userEmailField;
     private TextInputEditText userPasswordField;
@@ -41,6 +43,7 @@ public class RegisterActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
 
+        // Getting all views
         userEmailField = (TextInputEditText) findViewById(R.id.register_form_email);
         userPasswordField = (TextInputEditText) findViewById(R.id.register_form_password);
         loadingLayout = (RelativeLayout) findViewById(R.id.loading_layout);
@@ -67,7 +70,6 @@ public class RegisterActivity extends AppCompatActivity {
 
     /**
      * This method handles the click on radio buttons, and set donor_type variable
-     *
      * @param view
      */
     public void onRadioClick(View view) {
@@ -88,7 +90,7 @@ public class RegisterActivity extends AppCompatActivity {
 
     /**
      * This method enforces form validation
-     * @return
+     * @return true is all required fields are entered, otherwise returns false
      */
     private boolean validateFields() {
         boolean isValid = true;
@@ -198,10 +200,12 @@ public class RegisterActivity extends AppCompatActivity {
                         try {
                             // Package data in indent and start registerDetails activity
                             Intent intent = new Intent(RegisterActivity.this, RegisterDetailsActivity.class);
+
                             intent.putExtra("email", userEmail);
                             intent.putExtra("password", userPassword);
                             intent.putExtra("user_type", userType);
                             intent.putExtra("user_id", object.getInt("id"));
+
                             startActivity(intent);
                             finish();
 
@@ -211,7 +215,7 @@ public class RegisterActivity extends AppCompatActivity {
                     }
                 }
             });
-        } catch (JSONException | IOException e) {
+        } catch (JSONException | IOException | NullPointerException e) {
             e.printStackTrace();
         }
 

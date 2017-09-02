@@ -15,6 +15,10 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+
+import de.hdodenhof.circleimageview.CircleImageView;
+
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     SharedPreferences sharedPreferences ;
     @Override
@@ -29,12 +33,23 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         drawer.addDrawerListener(toggle);
         toggle.syncState();
         sharedPreferences = getSharedPreferences("app_data", MODE_PRIVATE);
+
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         View hview = navigationView.getHeaderView(0);
+
+        CircleImageView tphoto = (CircleImageView) hview.findViewById(R.id.detail_donor_image);
         TextView tname = (TextView) hview.findViewById(R.id.header_name);
         TextView temail = (TextView) hview.findViewById(R.id.header_email);
         tname.setText(sharedPreferences.getString("user_name",null));
         temail.setText(sharedPreferences.getString("emailid",null));
+
+        String userProfilePicUrl = sharedPreferences.getString("user_profile_pic_url", "http://www.msudenver.edu/media/sampleassets/profile-placeholder.png");
+        if (userProfilePicUrl.equals("null")) {
+            userProfilePicUrl = "http://www.msudenver.edu/media/sampleassets/profile-placeholder.png";
+        }
+
+        Glide.with(this).load(userProfilePicUrl).into(tphoto);
+
         navigationView.setNavigationItemSelectedListener(this);
 
         // Set the initial Fragment

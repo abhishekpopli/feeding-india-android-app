@@ -28,10 +28,12 @@ public class LoginActivity extends AppCompatActivity {
 
     private static final String USER_AUTH_URL = "https://feedingindiaapp.000webhostapp.com/getauth/register_login.php";
 
+    // User details
     private String userEmail;
     private String userPassword;
     private String userType;
 
+    // Views
     private Button newUserBtn;
     private Button formSubmitBtn;
     private TextInputEditText userEmailField;
@@ -43,6 +45,7 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
+        // Finding all views
         formSubmitBtn = (Button) findViewById(R.id.login_form_submit_btn);
         userEmailField = (TextInputEditText) findViewById(R.id.login_form_email);
         userPasswordField = (TextInputEditText) findViewById(R.id.login_form_password);
@@ -80,8 +83,7 @@ public class LoginActivity extends AppCompatActivity {
 
     /**
      * Handles click on radio button, and sets user type variable according to it
-     *
-     * @param view
+     * @param view is the radio button that is clicked on
      */
     public void onRadioClick(View view) {
         boolean checked = ((RadioButton) view).isChecked();
@@ -127,9 +129,10 @@ public class LoginActivity extends AppCompatActivity {
         return isValid;
     }
 
-
+    /**
+     * This method send the network request to login/register
+     */
     private void sendAuthenticationRequest() {
-
 
         OkHttpClient client = new OkHttpClient();
 
@@ -215,6 +218,8 @@ public class LoginActivity extends AppCompatActivity {
                             final String user_name = object.getString("name");
                             final String password_hash = object.getString("password_hash");
                             final String phone   = object.getString("phone_no_1");
+                            final String userProfilePicUrl = object.getString("photo_url");
+
                             //Also store in shared preferences
                             SharedPreferences sharedPreferences = getSharedPreferences("app_data", MODE_PRIVATE);
                             SharedPreferences.Editor editor = sharedPreferences.edit();
@@ -223,7 +228,21 @@ public class LoginActivity extends AppCompatActivity {
                             editor.putString("user_name", user_name);
                             editor.putString("user_password_hash", password_hash);
                             editor.putString("user_type", userType);
+
+                            if (userType.equals("donor")) {
+                                final int donor_type = object.getInt("donor_type");
+
+                                if (donor_type == 0) {
+                                    editor.putString("donor_type", "individual");
+                                } else {
+                                    editor.putString("donor_type", "non-individual");
+                                }
+                            } else {
+                                editor.putString("donor_type", null);
+                            }
+
                             editor.putBoolean("is_logged_in", true);
+                            editor.putString("user_profile_pic_url", userProfilePicUrl);
                             editor.putString("phoneno", phone);
                             editor.putString("emailid", userEmail);
                             editor.apply();
@@ -240,7 +259,7 @@ public class LoginActivity extends AppCompatActivity {
                     }
                 }
             });
-        } catch (JSONException | IOException e) {
+        } catch (JSONException | IOException | NullPointerException e) {
             e.printStackTrace();
         }
 

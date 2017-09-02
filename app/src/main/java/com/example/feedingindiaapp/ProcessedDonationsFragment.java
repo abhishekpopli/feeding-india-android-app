@@ -143,14 +143,19 @@ public class ProcessedDonationsFragment extends Fragment {
 
                 // Need to put everything to display/change in UI inside runOnUiThread
                 // Condition when we cannot connect to the internet
-                ProcessedDonationsFragment.this.getActivity().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
 
-                        progressBar.setVisibility(View.INVISIBLE);
-                        Toast.makeText(ProcessedDonationsFragment.this.getContext(), "Cannot connect to server", Toast.LENGTH_SHORT).show();
-                    }
-                });
+                if (ProcessedDonationsFragment.this.getActivity() != null) {
+
+                    ProcessedDonationsFragment.this.getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+
+                            progressBar.setVisibility(View.INVISIBLE);
+                            Toast.makeText(ProcessedDonationsFragment.this.getContext(), "Cannot connect to server", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+
+                }
 
             }
 
@@ -160,14 +165,18 @@ public class ProcessedDonationsFragment extends Fragment {
                 if (!response.isSuccessful()) {
 
                     // Condition when response code sent by the server says error
-                    ProcessedDonationsFragment.this.getActivity().runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
+                    if (ProcessedDonationsFragment.this.getActivity() != null) {
 
-                            progressBar.setVisibility(View.INVISIBLE);
-                            Toast.makeText(ProcessedDonationsFragment.this.getContext(), "Didn't get correct response from server", Toast.LENGTH_SHORT).show();
-                        }
-                    });
+                        ProcessedDonationsFragment.this.getActivity().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+
+                                progressBar.setVisibility(View.INVISIBLE);
+                                Toast.makeText(ProcessedDonationsFragment.this.getContext(), "Didn't get correct response from server", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+
+                    }
 
                 } else {
 
@@ -175,21 +184,26 @@ public class ProcessedDonationsFragment extends Fragment {
                     if (loadData(response)) {
 
                         // Display data when everything is correct
-                        ProcessedDonationsFragment.this.getActivity().runOnUiThread(new Runnable() {
+                        if (ProcessedDonationsFragment.this.getActivity() != null) {
 
-                            @Override
-                            public void run() {
+                            ProcessedDonationsFragment.this.getActivity().runOnUiThread(new Runnable() {
 
-                                if (donation_id == 0) {
-                                    progressBar.setVisibility(View.INVISIBLE);
+                                @Override
+                                public void run() {
+
+                                    if (donation_id == 0) {
+                                        progressBar.setVisibility(View.INVISIBLE);
+                                    }
+
+                                    // To tell adapter to supply added data items
+                                    adapter.notifyDataSetChanged();
+
                                 }
 
-                                // To tell adapter to supply added data items
-                                adapter.notifyDataSetChanged();
+                            });
 
-                            }
+                        }
 
-                        });
 
                     }
                 }
@@ -233,14 +247,19 @@ public class ProcessedDonationsFragment extends Fragment {
 
             e.printStackTrace();
 
-            ProcessedDonationsFragment.this.getActivity().runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
+            if (ProcessedDonationsFragment.this.getActivity() != null) {
 
-                    progressBar.setVisibility(View.INVISIBLE);
-                    Toast.makeText(ProcessedDonationsFragment.this.getContext(), "Cannot parse data from server correctly", Toast.LENGTH_SHORT).show();
-                }
-            });
+                ProcessedDonationsFragment.this.getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+
+                        progressBar.setVisibility(View.INVISIBLE);
+                        Toast.makeText(ProcessedDonationsFragment.this.getContext(), "Cannot parse data from server correctly", Toast.LENGTH_SHORT).show();
+                    }
+                });
+
+            }
+
 
             return false;
 
