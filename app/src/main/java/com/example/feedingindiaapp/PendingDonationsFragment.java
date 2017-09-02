@@ -32,13 +32,15 @@ import okhttp3.Response;
 public class PendingDonationsFragment extends Fragment {
 
     private static final String DONATION_LIST_URL = "https://feedingindiaapp.000webhostapp.com/getdata/donations_list.php";
-    private  HttpUrl.Builder urlBuilder;
-    private  OkHttpClient client;
+
+    private HttpUrl.Builder urlBuilder;
+    private OkHttpClient client;
     private RecyclerView recyclerView;
     private RecyclerView.Adapter adapter;
 
     private ArrayList<Donation> listItemsPending = new ArrayList<>();
 
+    // Views
     private FloatingActionButton addDonationBtn;
     private ProgressBar progressBar;
 
@@ -64,11 +66,6 @@ public class PendingDonationsFragment extends Fragment {
 
     }
 
-//    @Override
-//    public void onDetach() {
-//        super.onDetach();
-//        client.connectionPool().evictAll();
-//    }
 
     /**
      * Run everything in this method except findViewById calls
@@ -81,7 +78,7 @@ public class PendingDonationsFragment extends Fragment {
         addDonationBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent i =new Intent(PendingDonationsFragment.this.getContext(),AddFood.class);
+                Intent i = new Intent(PendingDonationsFragment.this.getContext(), AddFood.class);
                 startActivity(i);
             }
         });
@@ -121,6 +118,7 @@ public class PendingDonationsFragment extends Fragment {
 
 
     private void connectToServer(final long donation_id) {
+
         //Build URL
         urlBuilder = HttpUrl.parse(DONATION_LIST_URL).newBuilder();
         urlBuilder.addQueryParameter("donation_id", String.valueOf(donation_id));
@@ -158,7 +156,6 @@ public class PendingDonationsFragment extends Fragment {
                 if (!response.isSuccessful()) {
 
                     // Condition when response code sent by the server says error
-
                     if (PendingDonationsFragment.this.getActivity() != null) {
 
                         PendingDonationsFragment.this.getActivity().runOnUiThread(new Runnable() {
@@ -182,7 +179,6 @@ public class PendingDonationsFragment extends Fragment {
                         if (PendingDonationsFragment.this.getActivity() != null) {
 
                             PendingDonationsFragment.this.getActivity().runOnUiThread(new Runnable() {
-
                                 @Override
                                 public void run() {
 
@@ -194,11 +190,9 @@ public class PendingDonationsFragment extends Fragment {
                                     adapter.notifyDataSetChanged();
 
                                 }
-
                             });
 
                         }
-
 
 
                     }
@@ -239,7 +233,7 @@ public class PendingDonationsFragment extends Fragment {
                 listItemsPending.add(item);
             }
 
-        } catch (IOException | JSONException e) {
+        } catch (IOException | JSONException | NullPointerException e) {
 
             e.printStackTrace();
 

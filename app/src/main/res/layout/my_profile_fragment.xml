@@ -14,9 +14,9 @@
         android:orientation="vertical">
 
         <de.hdodenhof.circleimageview.CircleImageView xmlns:app="http://schemas.android.com/apk/res-auto"
-            android:id="@+id/list_item_image"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
+            android:id="@+id/user_profile_image"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
             android:layout_gravity="center"
             android:src="@drawable/profile_placeholder"
             android:transitionName="donorImage"
@@ -28,25 +28,25 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical|center_horizontal"
             android:layout_marginTop="8dp"
-            android:textSize="20sp"
+            android:text="gfdshfk"
             android:textColor="@color/colorPrimaryText"
-            android:text="gfdshfk"/>
+            android:textSize="20sp" />
 
         <TextView
             android:id="@+id/myprofileemail"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="@color/colorSecondaryText"
             android:layout_gravity="center_vertical|center_horizontal"
             android:layout_marginBottom="8dp"
             android:layout_marginTop="8dp"
             android:text="fdsnfkdsl"
+            android:textColor="@color/colorSecondaryText"
             android:textSize="18sp" />
 
         <View
-            android:layout_marginTop="1dp"
             android:layout_width="fill_parent"
             android:layout_height="2dip"
+            android:layout_marginTop="1dp"
             android:background="#FF00FF00" />
 
     </LinearLayout>

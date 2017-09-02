@@ -39,6 +39,7 @@ public class ProcessedDonationsFragment extends Fragment {
 
     private ArrayList<Donation> listItemsProcessed = new ArrayList<>();
 
+    // Views
     private FloatingActionButton addDonationBtn;
     private ProgressBar progressBar;
 
@@ -64,14 +65,6 @@ public class ProcessedDonationsFragment extends Fragment {
 
     }
 
-
-
-//    @Override
-//    public void onDetach() {
-//        super.onDetach();
-//        client.connectionPool().evictAll();
-//    }
-//
 
     /**
      * Run everything in this method except findViewById calls
@@ -187,7 +180,6 @@ public class ProcessedDonationsFragment extends Fragment {
                         if (ProcessedDonationsFragment.this.getActivity() != null) {
 
                             ProcessedDonationsFragment.this.getActivity().runOnUiThread(new Runnable() {
-
                                 @Override
                                 public void run() {
 
@@ -199,7 +191,6 @@ public class ProcessedDonationsFragment extends Fragment {
                                     adapter.notifyDataSetChanged();
 
                                 }
-
                             });
 
                         }
@@ -243,7 +234,7 @@ public class ProcessedDonationsFragment extends Fragment {
                 listItemsProcessed.add(item);
             }
 
-        } catch (IOException | JSONException e) {
+        } catch (IOException | JSONException | NullPointerException e) {
 
             e.printStackTrace();
 

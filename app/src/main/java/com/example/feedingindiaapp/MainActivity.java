@@ -20,26 +20,44 @@ import com.bumptech.glide.Glide;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
-    SharedPreferences sharedPreferences ;
+
+    private SharedPreferences sharedPreferences;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+
+        sharedPreferences = getSharedPreferences("app_data", MODE_PRIVATE);
+
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+
+        // Getting main views
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+
+        navigationView.setNavigationItemSelectedListener(this);
+
+
+        // Initialising drawer toggle
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
-        sharedPreferences = getSharedPreferences("app_data", MODE_PRIVATE);
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+
+        // Getting secondary views from navigation view
         View hview = navigationView.getHeaderView(0);
-
-        CircleImageView tphoto = (CircleImageView) hview.findViewById(R.id.detail_donor_image);
+        CircleImageView tphoto = (CircleImageView) hview.findViewById(R.id.donor_image);
         TextView tname = (TextView) hview.findViewById(R.id.header_name);
         TextView temail = (TextView) hview.findViewById(R.id.header_email);
+
+
+        // Setting user information on navigation drawer
         tname.setText(sharedPreferences.getString("user_name",null));
         temail.setText(sharedPreferences.getString("emailid",null));
 
@@ -47,10 +65,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         if (userProfilePicUrl.equals("null")) {
             userProfilePicUrl = "http://www.msudenver.edu/media/sampleassets/profile-placeholder.png";
         }
-
         Glide.with(this).load(userProfilePicUrl).into(tphoto);
 
-        navigationView.setNavigationItemSelectedListener(this);
 
         // Set the initial Fragment
         PendingDonationsFragment pendingDonationsFragment = new PendingDonationsFragment();
@@ -60,6 +76,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 .commit();
     }
 
+
+    /**
+     * This method is for hiding navigation drawer when back button is pressed
+     */
     @Override
     public void onBackPressed() {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -70,13 +90,23 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     }
 
+
+    /**
+     * This method inflate the menu; this adds items to the action bar if it is present.
+     */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
         return true;
     }
 
+
+    /**
+     * This method was auto-generated
+     *
+     * @param item
+     * @return
+     */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
@@ -92,10 +122,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         return super.onOptionsItemSelected(item);
     }
 
+
+    /**
+     * This method is for handling navigation view item clicks here
+     * @param item is the menu item that is clicked on
+     */
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
-        // Handle navigation view item clicks here.
+
         int id = item.getItemId();
 
         if (id == R.id.nav_pending_donations) {
@@ -132,17 +167,19 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         } else if (id == R.id.log_out) {
 
-            //Change shared preferences
+            //Change shared preferences on logout
 
             SharedPreferences.Editor editor = sharedPreferences.edit();
 
+            editor.putBoolean("is_logged_in", false);
             editor.putInt("user_id", 0);
             editor.putString("user_name", null);
             editor.putString("user_password_hash", null);
             editor.putString("user_type", null);
-            editor.putBoolean("is_logged_in", false);
+            editor.putString("donor_type", null);
             editor.putString("phoneno",null);
-            editor.putString("emailid",null);
+            editor.putString("emailid", null);
+            editor.putString("user_profile_pic_url",null);
 
             editor.apply();
 
@@ -150,6 +187,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             startActivity(intent);
 
         }
+
+        // Close drawer once menu item has been clicked
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
