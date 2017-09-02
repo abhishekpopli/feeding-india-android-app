@@ -1,17 +1,22 @@
 package com.example.feedingindiaapp;
 
+import android.Manifest;
 import android.content.ActivityNotFoundException;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
 import android.support.design.widget.TextInputEditText;
 import android.support.design.widget.TextInputLayout;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -46,32 +51,40 @@ import okhttp3.Response;
 public class RegisterDetailsActivity extends AppCompatActivity {
 
     private static final String USER_REGISTER_URL = "https://feedingindiaapp.000webhostapp.com/getauth/register_details.php";
-    private String cloudinaryPictureName;
-
+    //Request codes
+    final private int MY_PERMISSIONS_WRITE_EXTERNAL_STORAGE = 1;
     // Data members for image to be uploaded
-    private int LOAD_IMAGE_CAMERA = 0, CROP_IMAGE = 1, LOAD_IMAGE_GALLERY = 2;
+    private final int LOAD_IMAGE_CAMERA = 0, CROP_IMAGE = 1, LOAD_IMAGE_GALLERY = 2;
+    //Associated flags
+    private boolean canWriteExternalStorage = false;
+    private String cloudinaryPictureName;
     private File pic;
     private File croppedPic;
     private Uri picUri;
     private Uri croppedPicUri;
-    private Boolean addedImage;
 
-    // User data varibales
+    // User data varibles
+    // All user classification details
+    private String userType; // for getting data from calling activity only
+    private boolean isIndividual;
+    private boolean isDonor;
+    // Other user details
     private int userId;
     private String userEmail;
     private String userPassword;
-    private String userType;
-    private boolean isIndividual;
-    private boolean isDonor;
-    private boolean clickedRadioButton;
     private String userName;
     private String userPhone1;
     private String userPhone2;
     private String userCity;
-    private String userProfilePicUrl = "http://www.msudenver.edu/media/sampleassets/profile-placeholder.png";
+    private String userProfilePicUrl = "http://www.msudenver.edu/media/sampleassets/profile-placeholder.png"; // Default placeholder image
+
+    //Flags
+    private boolean clickedRadioButton;
+    private boolean addedImage;
 
     // Views
-    private ImageView uploadPic;
+    private ImageView userPicture;
+    private Button changePictureButton;
     private TextInputEditText userNameField;
     private TextInputEditText userPhone1Field;
     private TextInputEditText userPhone2Field;
@@ -94,7 +107,9 @@ public class RegisterDetailsActivity extends AppCompatActivity {
 
         cloudinaryPictureName = userType + "_" + userId;
 
-        uploadPic = (ImageView) findViewById(R.id.upload_yourpic);
+        // Getting all views
+        userPicture = (ImageView) findViewById(R.id.user_picture);
+        changePictureButton = (Button) findViewById(R.id.change_picture_button);
         userNameField = (TextInputEditText) findViewById(R.id.register_name);
         userPhone1Field = (TextInputEditText) findViewById(R.id.register_phone_1);
         userPhone2Field = (TextInputEditText) findViewById(R.id.register_phone_2);
@@ -103,6 +118,7 @@ public class RegisterDetailsActivity extends AppCompatActivity {
         donorTypeFieldContainer = (LinearLayout) findViewById(R.id.register_donor_type_container);
         registerDetailsSubmitButton = (Button) findViewById(R.id.register_details_form_submit_btn);
         loadingLayout = (RelativeLayout) findViewById(R.id.loading_layout);
+
 
         // Set user type flag
         if (userType.equals("donor")) {
@@ -119,6 +135,7 @@ public class RegisterDetailsActivity extends AppCompatActivity {
         }
 
 
+
         registerDetailsSubmitButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -126,7 +143,7 @@ public class RegisterDetailsActivity extends AppCompatActivity {
             }
         });
 
-        uploadPic.setOnClickListener(new View.OnClickListener() {
+        changePictureButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 getPicture();
@@ -134,7 +151,12 @@ public class RegisterDetailsActivity extends AppCompatActivity {
         });
     }
 
+
+    /**
+     * This method runs data validation, and sends network request if data is valid
+     */
     private void submitDetails() {
+
         userName = userNameField.getText().toString();
         userPhone1 = userPhone1Field.getText().toString();
         userPhone2 = userPhone2Field.getText().toString();
@@ -146,117 +168,99 @@ public class RegisterDetailsActivity extends AppCompatActivity {
             loadingLayout.setVisibility(View.VISIBLE);
 
             if (addedImage) {
-//                System.out.println("Path: " + pic.getAbsolutePath());
+                // sendUpdationRequest is called in this Aync task's post execute
                 new uploadToCloudinary().execute();
             } else {
                 sendUpdationRequest();
             }
+
         } else {
             Toast.makeText(RegisterDetailsActivity.this, "Please fill all the fields", Toast.LENGTH_SHORT).show();
         }
     }
 
+
+    /**
+     * This method initialises the picture files and shows dialog to select from where picture is taken
+     */
     private void getPicture() {
-        final CharSequence[] options = {"Take picture", "Choose from picture from gallery"};
 
-        pic = new File(Environment.getExternalStorageDirectory(),
-                "FeedingIndia" + String.valueOf(System.currentTimeMillis()) + ".jpg");
-        picUri = Uri.fromFile(pic);
+        // Check permission, and request permission
+        checkExternalStorageWritePermission();
 
-        croppedPic = new File(Environment.getExternalStorageDirectory(),
-                "FeedingIndiaCropped" + String.valueOf(System.currentTimeMillis()) + ".jpg");
-        croppedPicUri = Uri.fromFile(pic);
+        if (canWriteExternalStorage) {
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(RegisterDetailsActivity.this);
-        builder.setTitle("Select Picture using...");
-        builder.setItems(options, new DialogInterface.OnClickListener() {
+            final CharSequence[] options = {"Take picture", "Choose from picture from gallery"};
 
-            @Override
-            public void onClick(DialogInterface dialog, int item) {
+            // TODO: Change folder where picture/file is created
+            pic = new File(Environment.getExternalStorageDirectory(),
+                    "Donation" + String.valueOf(System.currentTimeMillis()) + ".jpg");
+            picUri = Uri.fromFile(pic);
 
-                if (options[item].equals(options[0])) {
-                    openCamera();
-                } else if (options[item].equals(options[1])) {
-                    openGallery();
+            croppedPic = new File(Environment.getExternalStorageDirectory(),
+                    "DonationCropped" + String.valueOf(System.currentTimeMillis()) + ".jpg");
+            croppedPicUri = Uri.fromFile(pic);
+
+            AlertDialog.Builder builder = new AlertDialog.Builder(RegisterDetailsActivity.this);
+            builder.setTitle("Select Picture using...");
+            builder.setItems(options, new DialogInterface.OnClickListener() {
+
+                @Override
+                public void onClick(DialogInterface dialog, int item) {
+
+                    if (options[item].equals(options[0])) {
+                        openCamera();
+                    } else if (options[item].equals(options[1])) {
+                        openGallery();
+                    }
                 }
-            }
-        });
+            });
 
-        builder.show();
+            builder.show();
+
+        } else {
+            Toast.makeText(this, "You haven't granted permission to store images on external storage", Toast.LENGTH_SHORT).show();
+        }
     }
 
+
+    /**
+     * This methods sends the camera intent
+     */
     private void openCamera() {
         Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-//        pic = new File(Environment.getExternalStorageDirectory(),
-//                "tmp_"+String.valueOf(System.currentTimeMillis()) + ".jpg");
-//        picUri = Uri.fromFile(pic);
 
         cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, picUri);
-//        cameraIntent.putExtra("outputFormat",Bitmap.CompressFormat.JPEG.toString());
         cameraIntent.putExtra("return-data", true);
 
         startActivityForResult(cameraIntent, LOAD_IMAGE_CAMERA);
     }
 
+    /**
+     * This method sends the gallery intent
+     */
     private void openGallery() {
         Intent galleryIntent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+
         startActivityForResult(Intent.createChooser(galleryIntent, "Select Image from gallery"), LOAD_IMAGE_GALLERY);
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-
-        if (requestCode == LOAD_IMAGE_CAMERA && resultCode == RESULT_OK) {
-            addedImage = true;
-            cropImage();
-        } else if (requestCode == LOAD_IMAGE_GALLERY) {
-            addedImage = true;
-
-            if (data != null) {
-                picUri = data.getData();
-                cropImage();
-            }
-        } else if (requestCode == CROP_IMAGE) {
-            if (data != null) {
-                Bundle bundle = data.getExtras();
-                Bitmap photo = bundle.getParcelable("data");
-                uploadPic.setImageBitmap(photo);
-
-                try {
-                    FileOutputStream fos = new FileOutputStream(croppedPic);
-                    photo.compress(Bitmap.CompressFormat.JPEG, 90, fos);
-                    fos.close();
-
-                } catch (FileNotFoundException e) {
-                    System.out.println("File not found");
-                    e.printStackTrace();
-                } catch (IOException e) {
-                    System.out.println("Error accessing file");
-                    e.printStackTrace();
-                }
-            }
-        }
-    }
-
+    /**
+     * This method sends sends crop image intent
+     */
     private void cropImage() {
         try {
-
-//            croppedPic = new File(Environment.getExternalStorageDirectory(),
-//                    "tmp_crop_"+String.valueOf(System.currentTimeMillis()) + ".jpg");
-//            croppedPicUri = Uri.fromFile(pic);
-
             Intent intent = new Intent("com.android.camera.action.CROP");
 
             intent.setDataAndType(picUri, "image/*");
 
             intent.putExtra("crop", "true");
-            intent.putExtra("outputX", 200);
-            intent.putExtra("outputY", 200);
+            intent.putExtra("outputX", 250);
+            intent.putExtra("outputY", 250);
             intent.putExtra("aspectX", 1);
             intent.putExtra("aspectY", 1);
             intent.putExtra("scaleUpIfNeeded", true);
             intent.putExtra("return-data", true);
-//            intent.putExtra("outputFormat",Bitmap.CompressFormat.JPEG.toString());
             intent.putExtra(MediaStore.EXTRA_OUTPUT, croppedPicUri);
 
             startActivityForResult(intent, CROP_IMAGE);
@@ -266,23 +270,79 @@ public class RegisterDetailsActivity extends AppCompatActivity {
         }
     }
 
-    public void onRadioClick(View view) {
-        clickedRadioButton = true;
 
-        boolean checked = ((RadioButton) view).isChecked();
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 
-        if (checked) {
-            switch (view.getId()) {
-                case R.id.individual_radio_btn:
-                    isIndividual = true;
-                    break;
-                case R.id.non_individual_radio_btn:
-                    isIndividual = false;
-                    break;
+        if (requestCode == LOAD_IMAGE_CAMERA && resultCode == RESULT_OK) {
+
+            cropImage();
+
+        } else if (requestCode == LOAD_IMAGE_GALLERY) {
+
+            if (data != null) {
+                picUri = data.getData();
+                cropImage();
             }
+
+        } else if (requestCode == CROP_IMAGE) {
+
+            if (data != null) {
+                Bundle bundle = data.getExtras();
+                Bitmap photo = bundle.getParcelable("data");
+                userPicture.setImageBitmap(photo);
+
+                try {
+                    FileOutputStream fos = new FileOutputStream(croppedPic);
+                    photo.compress(Bitmap.CompressFormat.JPEG, 90, fos);
+                    fos.close();
+                    addedImage = true;
+                } catch (FileNotFoundException e) {
+                    System.out.println("File not found");
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    System.out.println("Error accessing file");
+                    e.printStackTrace();
+                } catch (Exception e) {
+                    System.out.println("Some error occured");
+                    e.printStackTrace();
+                }
+            }
+
         }
     }
 
+
+    /**
+     * Method to handle radio button click to select donor type
+     * Radio buttons are not visible to volunteer, but just adding extra validation
+     *
+     * @param view is the button out of radio group that is clicked
+     */
+    public void onRadioClick(View view) {
+        if (isDonor) {
+
+            clickedRadioButton = true;
+            boolean checked = ((RadioButton) view).isChecked();
+
+            if (checked) {
+                switch (view.getId()) {
+                    case R.id.individual_radio_btn:
+                        isIndividual = true;
+                        break;
+                    case R.id.non_individual_radio_btn:
+                        isIndividual = false;
+                        break;
+                }
+            }
+
+        }
+    }
+
+    /**
+     * This method runs validation on data that is entered
+     * @return true id all data is correct, otherwise false
+     */
     private boolean validateFields() {
         boolean isValid = true;
 
@@ -308,6 +368,7 @@ public class RegisterDetailsActivity extends AppCompatActivity {
 
         } else {
 
+            // Check them is user is volunteer
             if (userCity.isEmpty()) {
                 userCityField.setError("Enter city");
                 isValid = false;
@@ -320,9 +381,14 @@ public class RegisterDetailsActivity extends AppCompatActivity {
         return isValid;
     }
 
+    /**
+     * This method sends the database updation request
+     */
     private void sendUpdationRequest() {
 
         OkHttpClient client = new OkHttpClient();
+
+
 
         // Add all the common fields between diff. user_types initially
         FormBody.Builder formBuilder = new FormBody.Builder()
@@ -360,6 +426,8 @@ public class RegisterDetailsActivity extends AppCompatActivity {
 
         // Finally build the request body from form body
         RequestBody formBody = formBuilder.build();
+
+
 
 
         Request request = new Request.Builder()
@@ -404,6 +472,10 @@ public class RegisterDetailsActivity extends AppCompatActivity {
 
     }
 
+    /**
+     * This method handled response sent by server
+     * @param response
+     */
     private void handleResponse(final Response response) {
 
         try {
@@ -441,6 +513,19 @@ public class RegisterDetailsActivity extends AppCompatActivity {
                             editor.putString("user_name", user_name);
                             editor.putString("user_password_hash", password_hash);
                             editor.putString("user_type", userType);
+
+                            if (isDonor) {
+
+                                if (isIndividual) {
+                                    editor.putString("donor_type", "individual");
+                                } else {
+                                    editor.putString("donor_type", "non-individual");
+                                }
+
+                            } else {
+                                editor.putString("donor_type", null);
+                            }
+
                             editor.putBoolean("is_logged_in", true);
                             editor.putString("phoneno", userPhone1);
                             editor.putString("emailid", userEmail);
@@ -449,6 +534,8 @@ public class RegisterDetailsActivity extends AppCompatActivity {
                             // Route to Main Activity
                             Intent intent = new Intent(RegisterDetailsActivity.this, MainActivity.class);
                             startActivity(intent);
+                            // Ends activity, user cannt return to it by pressing back
+                            finish();
 
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -457,7 +544,7 @@ public class RegisterDetailsActivity extends AppCompatActivity {
                     }
                 }
             });
-        } catch (JSONException | IOException e) {
+        } catch (JSONException | IOException | NullPointerException e) {
 
             runOnUiThread(new Runnable() {
                 @Override
@@ -471,12 +558,70 @@ public class RegisterDetailsActivity extends AppCompatActivity {
 
     }
 
-    private class uploadToCloudinary extends AsyncTask<Void, Void, Void> {
+    /**
+     * Method to check permission and to ask for it if not granted yet
+     */
+    private void checkExternalStorageWritePermission() {
 
-        @Override
-        protected void onPreExecute() {
-//            Toast.makeText(RegisterDetailsActivity.this, "*Path is: " + pic.getAbsolutePath(), Toast.LENGTH_SHORT).show();
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED) {
+
+            // Should we show an explanation?
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+
+                Toast.makeText(this, "Please grant storage permission to store clicked images", Toast.LENGTH_LONG).show();
+
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                        MY_PERMISSIONS_WRITE_EXTERNAL_STORAGE);
+
+            } else {
+
+                // No explanation needed, we can request the permission.
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                        MY_PERMISSIONS_WRITE_EXTERNAL_STORAGE);
+
+            }
+
+        } else {
+            canWriteExternalStorage = true;
         }
+
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+
+        switch (requestCode) {
+            case MY_PERMISSIONS_WRITE_EXTERNAL_STORAGE: {
+
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+                    canWriteExternalStorage = true;
+                    getPicture();
+
+                } else {
+
+                    canWriteExternalStorage = false;
+                }
+                return;
+            }
+
+            // other 'case' lines to check for other
+            // permissions this app might request
+        }
+
+    }
+
+    /**
+     * This Async task upload image onto cloudinary, and then sends database updation request
+     */
+    private class uploadToCloudinary extends AsyncTask<Void, Void, Void> {
 
         @Override
         protected Void doInBackground(Void... params) {
@@ -490,13 +635,11 @@ public class RegisterDetailsActivity extends AppCompatActivity {
 
             try {
 
-//                Toast.makeText(RegisterDetailsActivity.this, "**Path is: " + pic.getAbsolutePath(), Toast.LENGTH_SHORT).show();
-
                 cloudinary.uploader().upload(croppedPic.getAbsolutePath(), ObjectUtils.asMap("public_id", cloudinaryPictureName));
-
                 String[] htmlPicTag = cloudinary.url().imageTag(cloudinaryPictureName + ".jpg").split("'");
+
+                // Extracts image url from
                 userProfilePicUrl = htmlPicTag[1];
-//                System.out.println("URL on cloudinary: " + userProfilePicUrl);
 
             } catch (IOException e) {
                 e.printStackTrace();
@@ -506,7 +649,6 @@ public class RegisterDetailsActivity extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(Void aVoid) {
-//            Toast.makeText(RegisterDetailsActivity.this, "Image successfully uploaded and url is " + userProfilePicUrl, Toast.LENGTH_SHORT).show();
             sendUpdationRequest();
         }
     }
