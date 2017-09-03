@@ -28,7 +28,7 @@
         android:theme="@style/AppTheme">
         <activity
             android:name=".SplashActivity"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:theme="@style/SplashTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -46,9 +46,9 @@
             android:windowSoftInputMode="stateHidden" />
         <activity
             android:name=".AddFood"
+            android:parentActivityName=".MainActivity"
             android:theme="@style/AppTheme.NoActionBar"
-            android:windowSoftInputMode="stateHidden"
-            android:parentActivityName=".MainActivity"/>
+            android:windowSoftInputMode="stateHidden" />
         <activity
             android:name=".DonationDetailActivity"
             android:label="Donation Details"
