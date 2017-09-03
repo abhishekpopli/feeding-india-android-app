@@ -47,7 +47,8 @@
         <activity
             android:name=".AddFood"
             android:theme="@style/AppTheme.NoActionBar"
-            android:windowSoftInputMode="stateHidden" />
+            android:windowSoftInputMode="stateHidden"
+            android:parentActivityName=".MainActivity"/>
         <activity
             android:name=".DonationDetailActivity"
             android:label="Donation Details"

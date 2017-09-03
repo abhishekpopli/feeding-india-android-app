@@ -115,7 +115,25 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        if (id == R.id.logout) {
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+
+            editor.putBoolean("is_logged_in", false);
+            editor.putInt("user_id", 0);
+            editor.putString("user_name", null);
+            editor.putString("user_password_hash", null);
+            editor.putString("user_type", null);
+            editor.putString("donor_type", null);
+            editor.putString("phoneno",null);
+            editor.putString("emailid", null);
+            editor.putString("user_profile_pic_url",null);
+
+            editor.apply();
+
+            Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+            startActivity(intent);
+            finish();
+
             return true;
         }
 
@@ -185,6 +203,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
             Intent intent = new Intent(MainActivity.this, LoginActivity.class);
             startActivity(intent);
+            finish();
 
         }
 

@@ -81,6 +81,11 @@ public class AddFood extends AppCompatActivity implements  View.OnClickListener 
         setContentView(R.layout.activity_add_food);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        toolbar.inflateMenu(R.menu.main);
+        if(getSupportActionBar() != null) {
+            getSupportActionBar().setHomeButtonEnabled(true);
+        }
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         SharedPreferences sharedPreferences = getSharedPreferences("app_data", MODE_PRIVATE);
         donor_id =  sharedPreferences.getInt("user_id",0);
