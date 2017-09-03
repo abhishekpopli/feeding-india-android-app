@@ -183,28 +183,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     .replace(R.id.content_main_to_replace, myprofile, myprofile.getTag())
                     .commit();
 
-        } else if (id == R.id.log_out) {
-
-            //Change shared preferences on logout
-
-            SharedPreferences.Editor editor = sharedPreferences.edit();
-
-            editor.putBoolean("is_logged_in", false);
-            editor.putInt("user_id", 0);
-            editor.putString("user_name", null);
-            editor.putString("user_password_hash", null);
-            editor.putString("user_type", null);
-            editor.putString("donor_type", null);
-            editor.putString("phoneno",null);
-            editor.putString("emailid", null);
-            editor.putString("user_profile_pic_url",null);
-
-            editor.apply();
-
-            Intent intent = new Intent(MainActivity.this, LoginActivity.class);
-            startActivity(intent);
-            finish();
-
         }
 
         // Close drawer once menu item has been clicked

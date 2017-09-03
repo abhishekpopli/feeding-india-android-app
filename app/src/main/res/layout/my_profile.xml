@@ -22,38 +22,40 @@
                 android:src="@drawable/memphis_colorful" />
 
             <View
-                android:id="@+id/seprator_line"
-                android:layout_below="@id/profile_background_graphic"
+                android:id="@+id/profile_seprator_line"
                 android:layout_width="match_parent"
                 android:layout_height="2dp"
-                android:background="@color/colorPrimaryDark"/>
+                android:layout_below="@id/profile_background_graphic"
+                android:background="@color/colorPrimaryDark" />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/seprator_line"
+                android:layout_below="@id/profile_seprator_line"
                 android:background="#fff"
                 android:orientation="vertical">
 
                 <TextView
+                    android:id="@+id/profile_user_name"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:fontFamily="sans-serif-light"
                     android:gravity="center_horizontal"
                     android:paddingTop="58dp"
-                    tools:text="User Name"
                     android:textColor="@color/colorPrimaryText"
-                    android:textSize="24sp" />
+                    android:textSize="24sp"
+                    tools:text="User Name" />
 
                 <TextView
+                    android:id="@+id/profile_user_email"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
                     android:gravity="center_horizontal"
-                    tools:text="User Email"
                     android:textColor="@color/colorSecondaryText"
                     android:textSize="19sp"
-                    android:textStyle="italic" />
+                    android:textStyle="italic"
+                    tools:text="User Email" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -87,11 +89,12 @@
                                 android:textSize="19sp" />
 
                             <TextView
+                                android:id="@+id/profile_user_id"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="4dp"
-                                tools:text="9714494"
-                                android:textSize="20sp" />
+                                android:textSize="20sp"
+                                tools:text="9714494" />
                         </LinearLayout>
 
                     </LinearLayout>
@@ -123,11 +126,12 @@
                                 android:textSize="19sp" />
 
                             <TextView
+                                android:id="@+id/profile_user_ph_1"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="4dp"
-                                tools:text="9891921888"
-                                android:textSize="20sp" />
+                                android:textSize="20sp"
+                                tools:text="9891921888" />
                         </LinearLayout>
 
                     </LinearLayout>
@@ -136,7 +140,8 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="16dp"
-                        android:orientation="horizontal">
+                        android:orientation="horizontal"
+                        android:visibility="gone">
 
                         <ImageView
                             android:layout_width="25dp"
@@ -159,11 +164,12 @@
                                 android:textSize="19sp" />
 
                             <TextView
+                                android:id="@+id/profile_user_ph_2"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="4dp"
-                                tools:text="9891921888"
-                                android:textSize="20sp" />
+                                android:textSize="20sp"
+                                tools:text="9891921888" />
                         </LinearLayout>
 
                     </LinearLayout>
@@ -195,11 +201,12 @@
                                 android:textSize="19sp" />
 
                             <TextView
+                                android:id="@+id/profile_user_full_type"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="4dp"
-                                tools:text="Donor - Individual"
-                                android:textSize="20sp" />
+                                android:textSize="20sp"
+                                tools:text="Donor - Individual" />
                         </LinearLayout>
 
                     </LinearLayout>
@@ -218,6 +225,7 @@
                         android:orientation="horizontal">
 
                         <Button
+                            android:id="@+id/profile_edit_btn"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:background="@drawable/blue_tag_2"
@@ -231,6 +239,7 @@
                             android:textSize="16sp" />
 
                         <Button
+                            android:id="@+id/profile_sign_out_btn"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginLeft="16dp"
@@ -251,7 +260,7 @@
             </LinearLayout>
 
             <de.hdodenhof.circleimageview.CircleImageView xmlns:app="http://schemas.android.com/apk/res-auto"
-                android:id="@+id/user_profile_image"
+                android:id="@+id/profile_user_image"
                 android:layout_width="100dp"
                 android:layout_height="100dp"
                 android:layout_centerHorizontal="true"
