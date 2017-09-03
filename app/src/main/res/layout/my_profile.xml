@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -20,10 +21,17 @@
                 android:scaleType="centerCrop"
                 android:src="@drawable/memphis_colorful" />
 
+            <View
+                android:id="@+id/seprator_line"
+                android:layout_below="@id/profile_background_graphic"
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:background="@color/colorPrimaryDark"/>
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/profile_background_graphic"
+                android:layout_below="@id/seprator_line"
                 android:background="#fff"
                 android:orientation="vertical">
 
@@ -33,18 +41,18 @@
                     android:fontFamily="sans-serif-light"
                     android:gravity="center_horizontal"
                     android:paddingTop="58dp"
-                    android:text="User Name"
+                    tools:text="User Name"
                     android:textColor="@color/colorPrimaryText"
-                    android:textSize="24dp" />
+                    android:textSize="24sp" />
 
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
                     android:gravity="center_horizontal"
-                    android:text="User Email"
+                    tools:text="User Email"
                     android:textColor="@color/colorSecondaryText"
-                    android:textSize="18dp"
+                    android:textSize="19sp"
                     android:textStyle="italic" />
 
                 <LinearLayout
@@ -61,7 +69,7 @@
                         <ImageView
                             android:layout_width="25dp"
                             android:layout_height="25dp"
-                            android:src="@drawable/phone" />
+                            android:src="@drawable/user" />
 
                         <LinearLayout
                             android:layout_width="0dp"
@@ -82,7 +90,7 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="4dp"
-                                android:text="9714494"
+                                tools:text="9714494"
                                 android:textSize="20sp" />
                         </LinearLayout>
 
@@ -118,7 +126,43 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="4dp"
-                                android:text="9891921888"
+                                tools:text="9891921888"
+                                android:textSize="20sp" />
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:orientation="horizontal">
+
+                        <ImageView
+                            android:layout_width="25dp"
+                            android:layout_height="25dp"
+                            android:src="@drawable/phone" />
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:orientation="vertical"
+                            android:paddingLeft="16dp">
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:fontFamily="sans-serif-light"
+                                android:text="Second Phone No:"
+                                android:textColor="@color/colorPrimaryText"
+                                android:textSize="19sp" />
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="4dp"
+                                tools:text="9891921888"
                                 android:textSize="20sp" />
                         </LinearLayout>
 
@@ -154,29 +198,53 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="4dp"
-                                android:text="Donor - Individual"
+                                tools:text="Donor - Individual"
                                 android:textSize="20sp" />
                         </LinearLayout>
 
                     </LinearLayout>
 
-                    <Button
-                        android:id="@+id/login_form_submit_btn"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_horizontal"
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
                         android:layout_marginTop="20dp"
-                        android:background="@drawable/green_tag_2"
-                        android:drawableLeft="@drawable/exit"
-                        android:drawablePadding="8dp"
-                        android:paddingBottom="10dp"
-                        android:paddingLeft="20dp"
-                        android:paddingRight="20dp"
-                        android:paddingTop="10dp"
-                        android:text="Sign Out"
-                        android:textAllCaps="false"
-                        android:textColor="#fff"
-                        android:textSize="18sp" />
+                        android:background="#ddd" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="20dp"
+                        android:gravity="center_horizontal"
+                        android:orientation="horizontal">
+
+                        <Button
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/blue_tag_2"
+                            android:drawableLeft="@drawable/ic_edit_white_24dp"
+                            android:drawablePadding="8dp"
+                            android:paddingLeft="17dp"
+                            android:paddingRight="17dp"
+                            android:text="Edit Profile"
+                            android:textAllCaps="false"
+                            android:textColor="#fff"
+                            android:textSize="16sp" />
+
+                        <Button
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="16dp"
+                            android:background="@drawable/red_tag"
+                            android:drawableLeft="@drawable/ic_exit_to_app_white_24dp"
+                            android:drawablePadding="8dp"
+                            android:paddingLeft="17dp"
+                            android:paddingRight="17dp"
+                            android:text="Sign Out"
+                            android:textAllCaps="false"
+                            android:textColor="#fff"
+                            android:textSize="16sp" />
+
+                    </LinearLayout>
 
                 </LinearLayout>
 
