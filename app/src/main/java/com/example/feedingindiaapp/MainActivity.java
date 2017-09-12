@@ -141,10 +141,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
 
-    /**
-     * This method is for handling navigation view item clicks here
-     * @param item is the menu item that is clicked on
-     */
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {

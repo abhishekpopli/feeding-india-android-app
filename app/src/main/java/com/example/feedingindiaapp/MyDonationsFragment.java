@@ -45,8 +45,6 @@ import static android.content.Context.MODE_PRIVATE;
 
 public class MyDonationsFragment extends Fragment {
     private static final String DONATION_LIST_URL = "https://feedingindiaapp.000webhostapp.com/getdata/mydonations.php";
-    JSONObject jsonObject;
-    JSONArray jsonArray;
     private RelativeLayout loadingLayout;
     private RecyclerView recyclerView;
     private RecyclerView.Adapter adapter;
@@ -87,11 +85,7 @@ public class MyDonationsFragment extends Fragment {
 
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
 
-            @Override
-            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
 
-
-            }
 
         });
 
@@ -112,7 +106,7 @@ public class MyDonationsFragment extends Fragment {
         protected String doInBackground(String... params) {
 
 
-            String fetch_url =  "https://feedingindiaapp.000webhostapp.com/getdata/mydonations.php";;
+            String fetch_url =  "https://feedingindiaapp.000webhostapp.com/getdata/mydonations.php";
             try {
 
 
@@ -141,12 +135,7 @@ public class MyDonationsFragment extends Fragment {
                 br.close();
                 is.close();
                 http.disconnect();
-                Handler handler =  new Handler(MyDonationsFragment.this.getContext().getMainLooper());
-                handler.post( new Runnable(){
-                    public void run(){
-                        Toast.makeText(MyDonationsFragment.this.getContext(), result, Toast.LENGTH_SHORT).show();
-                    }
-                });
+
                 return result;
 
 
@@ -170,38 +159,34 @@ public class MyDonationsFragment extends Fragment {
 
         }
     }
-    ;
+
 
     public void showlist() {
 
 
         try {
-            jsonObject = new JSONObject(result);
-            jsonArray = jsonObject.getJSONArray("server");
+            JSONArray array = new JSONArray(result);
             int count = 0;
-
-
-            while (count < jsonArray.length()) {
-                JSONObject jo = jsonArray.getJSONObject(count);
-
+            while (count < array.length()) {
+                JSONObject jo = array.getJSONObject(count);
                 Donation item = new Donation(
-                        jsonObject.getLong("donation_id"),
-                        jsonObject.getString("pickup_area"),
-                        Short.parseShort(jsonObject.getString("is_veg")),
-                        Short.parseShort(jsonObject.getString("is_perishable")),
-                        Short.parseShort(jsonObject.getString("is_accepted")),
-                        Short.parseShort(jsonObject.getString("is_picked")),
-                        jsonObject.getString("other_details"),
-                        jsonObject.getString("photo_url"),
-                        jsonObject.getString("name"),
-                        jsonObject.getString("request_datetime"),
-                        jsonObject.getString("pickup_datetime")
+                        jo.getLong("donation_id"),
+                        jo.getString("pickup_area"),
+                        Short.parseShort(jo.getString("is_veg")),
+                        Short.parseShort(jo.getString("is_perishable")),
+                        Short.parseShort(jo.getString("is_accepted")),
+                        Short.parseShort(jo.getString("is_picked")),
+                        jo.getString("other_details"),
+                        jo.getString("photo_url"),
+                        jo.getString("name"),
+                        jo.getString("request_datetime"),
+                        jo.getString("pickup_datetime")
                 );
                 listOfDonations.add(item);
                 count++;
 
             }
-
+            adapter.notifyDataSetChanged();
 
         } catch (JSONException e) {
             e.printStackTrace();
