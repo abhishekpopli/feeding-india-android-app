@@ -121,6 +121,7 @@ public class PendingDonationsFragment extends Fragment {
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
+                listItemsPending.clear();
                 connectToServer(0);
             }
         });

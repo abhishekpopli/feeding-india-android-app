@@ -120,6 +120,7 @@ public class ProcessedDonationsFragment extends Fragment {
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
+                listItemsProcessed.clear();
                 connectToServer(0);
             }
         });
