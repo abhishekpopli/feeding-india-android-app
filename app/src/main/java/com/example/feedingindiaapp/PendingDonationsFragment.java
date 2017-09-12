@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -35,8 +36,10 @@ public class PendingDonationsFragment extends Fragment {
 
     private HttpUrl.Builder urlBuilder;
     private OkHttpClient client;
+
     private RecyclerView recyclerView;
     private RecyclerView.Adapter adapter;
+    private SwipeRefreshLayout swipeRefreshLayout;
 
     private ArrayList<Donation> listItemsPending = new ArrayList<>();
 
@@ -61,6 +64,7 @@ public class PendingDonationsFragment extends Fragment {
         recyclerView = (RecyclerView) view.findViewById(R.id.recylerView);
         addDonationBtn = (FloatingActionButton) view.findViewById(R.id.add_fab_btn);
         progressBar = (ProgressBar) view.findViewById(R.id.list_progress_bar);
+        swipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipe_refresh_layout);
 
         return view;
 
@@ -113,7 +117,13 @@ public class PendingDonationsFragment extends Fragment {
 
         });
 
-
+        //Implement refresh functionality
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                connectToServer(0);
+            }
+        });
     }
 
 
@@ -144,6 +154,9 @@ public class PendingDonationsFragment extends Fragment {
 
                             progressBar.setVisibility(View.INVISIBLE);
                             Toast.makeText(PendingDonationsFragment.this.getContext(), "Cannot connect to server", Toast.LENGTH_SHORT).show();
+
+                            // Stop refresh indication
+                            swipeRefreshLayout.setRefreshing(false);
                         }
                     });
 
@@ -164,6 +177,9 @@ public class PendingDonationsFragment extends Fragment {
 
                                 progressBar.setVisibility(View.INVISIBLE);
                                 Toast.makeText(PendingDonationsFragment.this.getContext(), "Didn't get correct response from server", Toast.LENGTH_SHORT).show();
+
+                                // Stop refresh indication
+                                swipeRefreshLayout.setRefreshing(false);
                             }
                         });
 
@@ -189,6 +205,9 @@ public class PendingDonationsFragment extends Fragment {
                                     // To tell adapter to supply added data items
                                     adapter.notifyDataSetChanged();
 
+                                    // Stop refresh indication
+                                    swipeRefreshLayout.setRefreshing(false);
+
                                 }
                             });
 
@@ -197,7 +216,6 @@ public class PendingDonationsFragment extends Fragment {
 
                     }
                 }
-
             }
         });
 
