@@ -108,7 +108,7 @@ public class ProcessedDonationsFragment extends Fragment {
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
 
                 // Load more data when last item in arraylist is displayed on screen
-                if (layoutManager.findLastCompletelyVisibleItemPosition() == listItemsProcessed.size() - 1) {
+                if ((listItemsProcessed.size() != 0) && (layoutManager.findLastCompletelyVisibleItemPosition() == listItemsProcessed.size() - 1)) {
                     connectToServer(listItemsProcessed.get(listItemsProcessed.size() - 1).getDonationId());
                 }
 

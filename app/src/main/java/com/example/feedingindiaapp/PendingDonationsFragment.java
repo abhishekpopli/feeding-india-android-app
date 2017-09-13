@@ -109,7 +109,7 @@ public class PendingDonationsFragment extends Fragment {
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
 
                 // Load more data when last item in arraylist is displayed on screen
-                if (layoutManager.findLastCompletelyVisibleItemPosition() == listItemsPending.size() - 1) {
+                if ((listItemsPending.size() != 0) && (layoutManager.findLastCompletelyVisibleItemPosition() == listItemsPending.size() - 1)) {
                     connectToServer(listItemsPending.get(listItemsPending.size() - 1).getDonationId());
                 }
 
