@@ -1,8 +1,5 @@
 package com.example.feedingindiaapp;
 
-import com.cloudinary.Cloudinary;
-import com.cloudinary.utils.ObjectUtils;
-
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.ActivityNotFoundException;
@@ -28,6 +25,9 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.cloudinary.Cloudinary;
+import com.cloudinary.utils.ObjectUtils;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -35,6 +35,8 @@ import org.json.JSONObject;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -44,17 +46,22 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
-import java.sql.Time;
 import java.util.HashMap;
 import java.util.Map;
 
 public class AddFood extends AppCompatActivity implements  View.OnClickListener {
+    protected int LOAD_IMAGE_CAMERA = 0, CROP_IMAGE = 1, LOAD_IMAGE_GALLARY = 2;
     ProgressDialog progressDialog;
     JSONObject jsonObject;
     JSONArray jsonArray;
+    File pic;
+    File croppedPic;
+    Button seemap;
+    Bundle extras;
+    String foodPicUrl;
     private int donor_id ;
     private Uri picUri;
-    File pic;
+    private Uri croppedPicUri;
     private TextView latitude;
     private TextView longitude;
     private Spinner city;
@@ -69,11 +76,8 @@ public class AddFood extends AppCompatActivity implements  View.OnClickListener 
     private CheckBox isperishable;
     private EditText other_details;
     private FloatingActionButton submit_button;
-    protected int LOAD_IMAGE_CAMERA = 0, CROP_IMAGE = 1, LOAD_IMAGE_GALLARY = 2;
     private String finalurl ;
     private String  password_hash;
-    Button seemap;
-    Bundle extras;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -129,13 +133,18 @@ public class AddFood extends AppCompatActivity implements  View.OnClickListener 
                         if (options[item].equals("Take Photo")) {
 
                             try {
-                                Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
 
                                 pic = new File(Environment.getExternalStorageDirectory(),
                                         "tmp_" + String.valueOf(System.currentTimeMillis()) + ".jpg");
 
                                 picUri = Uri.fromFile(pic);
 
+                                croppedPic = new File(Environment.getExternalStorageDirectory(),
+                                        "tmp_" + String.valueOf(System.currentTimeMillis()) + ".jpg");
+
+                                croppedPicUri = Uri.fromFile(pic); //change this
+
+                                Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
                                 cameraIntent.putExtra(android.provider.MediaStore.EXTRA_OUTPUT, picUri);
 
                                 cameraIntent.putExtra("return-data", true);
@@ -199,12 +208,11 @@ public class AddFood extends AppCompatActivity implements  View.OnClickListener 
             intent.putExtra("aspectY", 4);
             intent.putExtra("scaleUpIfNeeded", true);
             intent.putExtra("return-data", true);
-            pic = new File(Environment.getExternalStorageDirectory(),
-                    "tmp_" + String.valueOf(System.currentTimeMillis()) + ".jpg");
-
-            picUri = Uri.fromFile(pic);
-            intent.putExtra(android.provider.MediaStore.EXTRA_OUTPUT, picUri);
-            intent.putExtra("return-data", true);
+//            pic = new File(Environment.getExternalStorageDirectory(),
+//                    "tmp_" + String.valueOf(System.currentTimeMillis()) + ".jpg");
+//
+//            picUri = Uri.fromFile(pic);
+            intent.putExtra(android.provider.MediaStore.EXTRA_OUTPUT, croppedPicUri);
 
             startActivityForResult(intent, CROP_IMAGE);
 
@@ -242,10 +250,12 @@ public class AddFood extends AppCompatActivity implements  View.OnClickListener 
 
 
         String otherdetails = other_details.getText().toString();
-        String[] details ={Integer.toString(donor_id),"http://res.cloudinary.com/feedingindiaapp/image/upload/v1503743820/"+finalurl+".jpg",city,areaname,streetname,house,has_pickup_gps,pickup_gps_latitude,pickup_gps_longitude,stringisveg
-        ,stringisperishable,otherdetails};
 
         new uploadcloudinary().execute();
+
+        System.out.println("B4 sending the url is: " + foodPicUrl);
+        String[] details = {Integer.toString(donor_id), foodPicUrl, city, areaname, streetname, house, has_pickup_gps, pickup_gps_latitude, pickup_gps_longitude, stringisveg
+                , stringisperishable, otherdetails};
 
         Bgtask bg = new Bgtask();
         bg.execute(details);
@@ -274,6 +284,21 @@ public class AddFood extends AppCompatActivity implements  View.OnClickListener 
                 Bitmap photo = extras.getParcelable("data");
                 upload_pic.setImageBitmap(photo);
                 upload_pic.setTag("newpic");
+
+                try {
+                    FileOutputStream fos = new FileOutputStream(croppedPic);
+                    photo.compress(Bitmap.CompressFormat.JPEG, 90, fos);
+                    fos.close();
+                } catch (FileNotFoundException e) {
+                    System.out.println("File not found");
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    System.out.println("Error accessing file");
+                    e.printStackTrace();
+                } catch (Exception e) {
+                    System.out.println("Some error occured");
+                    e.printStackTrace();
+                }
 
             }
         }
@@ -308,6 +333,12 @@ public class AddFood extends AppCompatActivity implements  View.OnClickListener 
             */
             try {
                 cloudinary.uploader().upload(pic.getAbsolutePath(), ObjectUtils.asMap("public_id",finalurl));
+                String[] htmlPicTag = cloudinary.url().imageTag(finalurl + ".jpg").split("'");
+
+                foodPicUrl = htmlPicTag[1];
+//                foodPicUrl = "hey.jpg";
+//                System.out.println("Returned data is: " + htmlPicTag);
+                System.out.println("Image url is " + foodPicUrl);
 
             } catch (IOException e) {
                 e.printStackTrace();
@@ -351,9 +382,13 @@ public class AddFood extends AppCompatActivity implements  View.OnClickListener 
                 BufferedWriter bf = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
                 String[] details = passing[0];
                 // getting String
+
+                System.out.println("final url is 1: " + foodPicUrl);
+                System.out.println("final url is 2: " + details[1]);
+
                 String postdata = URLEncoder.encode("donor_id", "UTF-8") + "=" + URLEncoder.encode(details[0], "UTF-8") + "&" +
                         URLEncoder.encode("password_hash", "UTF-8") + "=" + URLEncoder.encode(password_hash, "UTF-8")+ "&" +
-                        URLEncoder.encode("pickup_photo_url", "UTF-8") + "=" + URLEncoder.encode(details[1], "UTF-8")+ "&" +
+                        URLEncoder.encode("pickup_photo_url", "UTF-8") + "=" + URLEncoder.encode(foodPicUrl, "UTF-8") + "&" +
                         URLEncoder.encode("pickup_city", "UTF-8") + "=" + URLEncoder.encode(details[2], "UTF-8")+ "&" +
                         URLEncoder.encode("pickup_area", "UTF-8") + "=" + URLEncoder.encode(details[3], "UTF-8")+ "&" +
                         URLEncoder.encode("pickup_street", "UTF-8") + "=" + URLEncoder.encode(details[4], "UTF-8")+ "&" +
@@ -364,6 +399,8 @@ public class AddFood extends AppCompatActivity implements  View.OnClickListener 
                         URLEncoder.encode("is_veg", "UTF-8") + "=" + URLEncoder.encode(details[9], "UTF-8") + "&" +
                         URLEncoder.encode("is_perishable", "UTF-8") + "=" + URLEncoder.encode(details[10], "UTF-8") + "&" +
                         URLEncoder.encode("other_details", "UTF-8") + "=" + URLEncoder.encode(details[11], "UTF-8") ;
+
+
                 bf.write(postdata);
                 bf.flush();
                 bf.close();
